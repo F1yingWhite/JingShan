@@ -1,0 +1,15 @@
+[project]
+name = "back-end"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "black>=24.10.0",
+    "flask-cors>=5.0.0",
+    "flask>=3.0.3",
+    "mysql-connector-python>=9.1.0",
+    "mysql>=0.0.3",
+    "pymysql>=1.1.1",
+    "requests>=2.32.3",
+]

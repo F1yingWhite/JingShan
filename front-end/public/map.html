@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无题</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .demo-title {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script
+        src="https://webapi.amap.com/maps?v=2.0&key=ac9d42969c98762cbeb66e7a552206c9&plugin=AMap.Scale,AMap.ToolBar"></script>
+    <script type="text/javascript"
+        src="https://webapi.amap.com/loca?v=2.0.0&key=ac9d42969c98762cbeb66e7a552206c9"></script>
+
+    <script>
+        // 获取URL中的查询参数
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        const id = getQueryParameter('id');
+        console.log("获得的id为", id);
+
+        var geoData;
+
+        // 初始化函数
+        async function init() {
+            await fetchIndividualData(); // 等待数据获取完成
+            setupMap(); // 设置地图
+        }
+
+        // 发送请求获得数据
+        async function fetchIndividualData() {
+            const url = `https://jinshanback.cpolar.top/individual?id=${id}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                geoData = data.visualization;
+            } catch (error) {
+                console.error("请求失败:", error);
+            }
+        }
+
+        // 设置地图
+        function setupMap() {
+            window.movingDraw = true;
+            var map = new AMap.Map('map', {
+                zoom: 5,
+                showLabel: false,
+                viewMode: '3D',
+                pitch: 55,
+                center: [103.594884, 36.964587],
+            });
+
+            var loca = new Loca.Container({
+                map,
+            });
+
+            loca.ambLight = {
+                intensity: 0.7,
+                color: '#7b7bff',
+            };
+            loca.dirLight = {
+                intensity: 0.8,
+                color: '#fff',
+                target: [0, 0, 0],
+                position: [0, -1, 1],
+            };
+            loca.pointLight = {
+                color: 'rgb(240,88,25)',
+                position: [112.028276, 31.58538, 2000000],
+                intensity: 3,
+                distance: 5000000,
+            };
+
+            var pl = new Loca.PrismLayer({
+                zIndex: 10,
+                opacity: 1,
+                visible: false,
+                hasSide: true,
+            });
+            console.log("获取到的数据:", geoData);
+            var geo = new Loca.GeoJSONSource({
+                data: geoData // 使用获取到的数据
+            });
+            pl.setSource(geo);
+
+            pl.setStyle({
+                unit: 'meter',
+                sideNumber: 4,
+                topColor: (index, f) => {
+                    var n = f.properties['数量'];
+                    return n > 7000 ? '#E97091' : '#2852F1';
+                },
+                sideTopColor: (index, f) => {
+                    var n = f.properties['数量'];
+                    return n > 7000 ? '#E97091' : '#2852F1';
+                },
+                sideBottomColor: '#002bb9',
+                radius: 15000,
+                height: (index, f) => {
+                    var props = f.properties;
+                    // var height = Math.max(100, Math.sqrt(props['数量']) * 9000 - 50000);
+                    var height = Math.max(50000, Math.sqrt(props['数量']) * 30000);
+                    return height;
+                },
+                rotation: 360,
+                altitude: 0,
+            });
+            loca.add(pl);
+            map.on('complete', function () {
+                setTimeout(function () {
+                    pl.show(500);
+                    pl.addAnimate({
+                        key: 'height',
+                        value: [0, 1],
+                        duration: 500,
+                        easing: 'Linear',
+                        transform: 2000,
+                        random: true,
+                        delay: 1000,
+                    });
+                    pl.addAnimate({
+                        key: 'rotation',
+                        value: [0, 1],
+                        duration: 500,
+                        easing: 'Linear',
+                        transform: 2000,
+                        random: true,
+                        delay: 1000,
+                    });
+                }, 100);
+            });
+            loca.animate.start();
+
+            // 事件处理
+            var clickInfo = new AMap.Marker({
+                anchor: 'bottom-center',
+                position: [116.396923, 39.918203, 0],
+            });
+            clickInfo.setMap(map);
+            clickInfo.hide();
+
+            // 鼠标事件
+            map.on('mousemove', function (e) {
+                var feat = pl.queryFeature(e.pixel.toArray());
+                if (feat) {
+                    clickInfo.show();
+                    var props = feat.properties;
+                    // var height = Math.max(100, Math.sqrt(props['数量']) * 9000 - 50000);
+                    var height = Math.max(50000, Math.sqrt(props['数量']) * 30000);
+                    clickInfo.setPosition([feat.coordinates[0], feat.coordinates[1], height]);
+                    clickInfo.setContent(
+                        '<div style="text-align: center; height: 20px; width: 150px; color:#000; font-size: 14px;">' +
+                        feat.properties['名称'] + ': ' + feat.properties['数量'] +
+                        '</div>'
+                    );
+                } else {
+                    clickInfo.hide();
+                }
+            });
+        }
+
+        init(); // 调用初始化函数
+    </script>
+
+</body>
+
+</html>
