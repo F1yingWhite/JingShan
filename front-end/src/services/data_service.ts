@@ -5,8 +5,8 @@ import axios from 'axios';
 const apiClient = axios.create({
   // 设置后端 API 的基础 URL
   // TODO! 在这里修改域名
-  // baseURL: 'http://127.0.0.1:5000/',
-  baseURL: 'https://jinshanback.cpolar.top/',
+  baseURL: 'http://127.0.0.1:5000/',
+  // baseURL: 'https://jinshanback.cpolar.top/',
   // 设置请求头
   headers: {
     Accept: 'application/json',

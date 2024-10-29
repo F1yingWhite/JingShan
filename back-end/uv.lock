@@ -11,6 +11,7 @@ dependencies = [
     { name = "flask-cors" },
     { name = "mysql" },
     { name = "mysql-connector-python" },
+    { name = "mysqlclient" },
     { name = "pymysql" },
     { name = "requests" },
 ]
@@ -22,6 +23,7 @@ requires-dist = [
     { name = "flask-cors", specifier = ">=5.0.0" },
     { name = "mysql", specifier = ">=0.0.3" },
     { name = "mysql-connector-python", specifier = ">=9.1.0" },
+    { name = "mysqlclient", specifier = ">=2.2.5" },
     { name = "pymysql", specifier = ">=1.1.1" },
     { name = "requests", specifier = ">=2.32.3" },
 ]
