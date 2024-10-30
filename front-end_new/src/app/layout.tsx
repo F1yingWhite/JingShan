@@ -28,7 +28,7 @@ export default function RootLayout({
             }}
           >
             <Layout className="h-screen">
-              <div className=" w-full z-10">
+              <div className="w-full z-10">
                 <NavBar />
               </div>
               <Content >

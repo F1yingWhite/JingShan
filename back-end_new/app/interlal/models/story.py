@@ -17,3 +17,11 @@ class Story(SQLModel, table=True):
             statement = select(cls).offset(offset).limit(page_size)
             results = session.exec(statement).all()
             return results
+
+    @classmethod
+    def get_story_page_num(cls, page_size: int):
+        with Session(engine) as session:
+            page_size = page_size if page_size < 100 else 100
+            statement = select(cls)
+            results = session.exec(statement).all()
+            return len(results) // page_size + 1
