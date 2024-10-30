@@ -1,4 +1,7 @@
-from sqlmodel import Field, SQLModel
+# 牌记
+from sqlmodel import Field, Session, SQLModel, select
+
+from . import engine
 
 
 class Colophon(SQLModel, table=True):
@@ -7,6 +10,15 @@ class Colophon(SQLModel, table=True):
     scripture_name: str | None = Field(default=None, max_length=200)
     volume_id: str | None = Field(default=None, max_length=200)
     chapter_id: str | None = Field(default=None, max_length=200)
-    qianzuwen: str | None = Field(default=None, max_length=200)
+    qianziwen: str | None = Field(default=None, max_length=200)
     pdf_id: int | None = Field(default=None)
     page_id: int | None = Field(default=None)
+
+    @classmethod
+    def get_colphon(cls, page: int, page_size: int):
+        with Session(engine) as session:
+            page_size = page_size if page_size < 100 else 100
+            offset = (page - 1) * page_size
+            statement = select(cls).offset(offset).limit(page_size)
+            results = session.exec(statement).all()
+            return results

@@ -1,4 +1,6 @@
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Session, SQLModel, select
+
+from . import engine
 
 
 class Individual(SQLModel, table=True):
