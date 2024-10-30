@@ -16,7 +16,7 @@ const NavIcon: React.FC<NavIconProps> = ({ href, svgPath, text }) => {
   const path = usePathname();
   const isCurrentPath =
     path === href || (path.startsWith(href) && (path === href || path[href.length] === '/'));
-  const textColor = isCurrentPath ?  'text-[#8B4513]':'text-[#9f8a65]' ;
+  const textColor = isCurrentPath ? 'text-[#8B4513]' : 'text-[#9f8a65]';
   const hoverColor = 'hover:text-[#a69e56]';
 
   return (
@@ -55,11 +55,11 @@ export default function NavBar() {
     backgroundImage: path !== '/' ? 'url(/navBg.png)' : 'none',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    padding: 0
+    padding: 0,
   };
 
   return (
-    <Header style={headerStyle} className='flex items-center justify-between p-0'>
+    <Header style={headerStyle} className={`flex items-center justify-between ${path === '/' ? '' : 'shadow-md'}`}>
       <Flex justify="start" className='items-center text-2xl font-bold text-black ml-0'>
         <Image src="/佛经.svg" alt='佛经' width={50} height={50} />
         <span className='ml-2'>求是佛典</span>
@@ -70,6 +70,5 @@ export default function NavBar() {
         ))}
       </Flex>
     </Header>
-
-  )
+  );
 }

@@ -21,8 +21,9 @@ const content: string = `现在，解决径山寺的问题，是非常非常重�
 export default function Page() {
   return (
     <div className="relative w-full h-screen bg-[url('/gate.png')] bg-cover bg-fixed">
-      <div className="mt-10 flex flex-col items-center justify-start pt-16 h-full overflow-auto">
-        <div className="w-3/4 mx-auto my-5 py-8 px-12 bg-[#faf8f5] rounded-lg shadow-md">
+      <div className="absolute inset-0 bg-yellow-600 opacity-30"></div>
+      <div className="flex flex-col items-center justify-start pt-16 h-full overflow-auto relative">
+        <div className="mt-20 w-3/4 mx-auto my-5 py-8 px-12 bg-[#faf8f5] rounded-lg shadow-md z-9">
           <h2 className="text-[#987444] text-4xl text-center">径山藏缘起</h2>
           <hr className="my-2 border-0 h-0.5 bg-[#987444]" />
           <div className="whitespace-pre-line" dangerouslySetInnerHTML={{ __html: content }} />
