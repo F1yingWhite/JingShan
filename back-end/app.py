@@ -671,7 +671,7 @@ def get_answer():
 
 if __name__ == "__main__":
     try:
-        conn = mysql.connector.connect(host="localhost", user="root", password="111", database="jingshan")  # 数据库主机地址  # 数据库用户名  # 数据库密码  # 数据库名
+        conn = mysql.connector.connect(host="localhost", user="root", password="505066278", database="jingshan")  # 数据库主机地址  # 数据库用户名  # 数据库密码  # 数据库名
 
         # 检查连接
         if conn.is_connected():
