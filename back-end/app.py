@@ -57,7 +57,6 @@ def simplify_content(content, terms):
     return brief
 
 
-# 用于截取中文文本中的最后一个子句
 def last_segment(str):
     # 使用正则表达式分割字符串，匹配逗号或句号
     substrings = re.split(r"[，。]", str)
@@ -347,19 +346,6 @@ def get_individual():
             keys_to_remove = [time for time, cnt in time_cnt.items() if cnt == 0]
             for time in keys_to_remove:
                 time_cnt.pop(time)
-            # # 移除头部值为0的键值对，直到遇到非零值
-            # while time_cnt and time_cnt.get(next(iter(time_cnt))) == 0:
-            #     time = next(iter(time_cnt))
-            #     del time_cnt[time]
-            # # 移除尾部值为0的键值对，直到遇到非零值
-            # keys_to_remove = []
-            # for time in reversed(list(time_cnt.keys())):
-            #     if time_cnt[time] == 0:
-            #         keys_to_xvlizhi2024remove.append(time)
-            #     else:
-            #         break  # 遇到非零值时停止移除
-            # for time in keys_to_remove:
-            #     del time_cnt[time]
         result["time_cnt"] = time_cnt
 
         # 检查是否存在非0值
