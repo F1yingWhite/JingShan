@@ -8,11 +8,11 @@ export type Colophon = {
     chapter_id: number;
     qianziwen: string;
 }
-
-export function getColophonList(page: number, page_size: number) {
-    return get(`/colophon/?page=${page}&page_size=${page_size}`);
+export function getColophonList(page: number, page_size: number, params: any) {
+    return post(`/colophon/?page=${page}&page_size=${page_size}`, params);
 }
 
-export function getColophonPageNum(page_size: number) {
-    return get(`/colophon/page_num/?page_size=${page_size}`);
+
+export function getColophonTotalNum(params: any) {
+    return post(`/colophon/total_num/`, params);
 }
