@@ -68,7 +68,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                       children: (
                         <div>
                           {record.content.map((item, index) => (
-                            <div key={index} className="mb-4">
+                            <div key={index} className="mb-4 bg-[#f3f1eb] p-3 rounded-md">
                               <p className="text-[#c19d50] font-bold">参与活动:</p>
                               <p>{item.type.replace(/^类型为：/, '')}</p>
                               <p className="text-[#c19d50] font-bold">相关牌记:</p>
@@ -116,7 +116,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         <div className="h-1/2 p-4">
           <h2 className="text-lg font-semibold text-[#c19d50] text-center">活跃年代</h2>
           {chartData.length > 0 && (
-            <LineChart data={chartData} width={500} height={250}>
+            <LineChart data={chartData} width={500} height={280}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="time" />
               <YAxis />
@@ -126,7 +126,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             </LineChart>
           )}
         </div>
-
+        <hr className="my-4 border-t border-[#c19d50]" />
         <div className="h-1/2 p-4">
           <h2 className="text-lg font-semibold text-[#c19d50] text-center">相关藏经地点</h2>
           <Mapbox />
