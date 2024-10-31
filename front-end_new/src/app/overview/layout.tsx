@@ -1,5 +1,5 @@
 'use client';
-import { LaptopOutlined, NotificationOutlined, UserOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { LaptopOutlined, NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Layout, Menu, FloatButton } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const menuItems = [
-  { key: '1', icon: <UserOutlined />, label: '牌记', path: '/overview/colophon' },
+  { key: '1', icon: <CreditCardOutlined />, label: '牌记', path: '/overview/colophon' },
   { key: '2', icon: <NotificationOutlined />, label: '序跋', path: '/overview/preface_and_postscript' },
   { key: '3', icon: <LaptopOutlined />, label: '故事', path: '/overview/story' },
 ];

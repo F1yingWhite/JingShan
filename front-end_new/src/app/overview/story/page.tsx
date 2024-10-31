@@ -8,7 +8,8 @@ const columns = [
   {
     title: "ID",
     dataIndex: "id",
-    key: "id"
+    key: "id",
+    width: "10%"
   },
   {
     title: "故事名称",
@@ -19,6 +20,7 @@ const columns = [
     title: "故事内容",
     dataIndex: "content",
     key: "content",
+    width:"60%",
     ellipsis: true,
   },
 ];

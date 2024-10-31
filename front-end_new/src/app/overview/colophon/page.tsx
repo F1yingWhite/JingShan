@@ -8,7 +8,8 @@ const columns = [
   {
     title: "ID",
     dataIndex: "id",
-    key: "id"
+    key: "id",
+    width: "10%"
   },
   {
     title: "经名",
@@ -29,7 +30,8 @@ const columns = [
     title: "内容",
     dataIndex: "content",
     key: "content",
-    ellipsis: true, 
+    width: "50%",
+    ellipsis: true,
   },
   {
     title: "千字文",

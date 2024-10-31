@@ -8,7 +8,8 @@ const columns = [
   {
     title: "ID",
     dataIndex: "id",
-    key: "id"
+    key: "id",
+    width: "10%"
   },
   {
     title: "典籍",
@@ -41,14 +42,14 @@ const columns = [
     key: "author"
   },
   {
-    title:"册",
-    dataIndex:"copy_id",
-    key:"copy_id"
+    title: "册",
+    dataIndex: "copy_id",
+    key: "copy_id"
   },
   {
-    title:"页",
-    dataIndex:"page_id",
-    key:"page_id"
+    title: "页",
+    dataIndex: "page_id",
+    key: "page_id"
   }
 ];
 
