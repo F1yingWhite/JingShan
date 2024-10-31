@@ -1,12 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Layout, Input } from 'antd';
+import { Layout, Input, notification } from 'antd';
 import { Footer, Content } from 'antd/es/layout/layout';
 import Image from 'next/image';
-
+import { useRouter } from 'next/navigation';
 const { Search } = Input;
 
 export default function Page() {
+  const router = useRouter();
   const bgStyle = {
     backgroundColor: '#f4f1ea',
     backgroundImage: 'url(/mainPage.png)',
@@ -17,9 +18,22 @@ export default function Page() {
   const footStyle = {
     backgroundColor: "#92754B"
   };
-
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = () => {
+    api.open({
+      message: '⚠️警告',
+      description:
+        '请输入搜索内容',
+      duration: 1.5, // 设置自动关闭时间为 1.5 秒
+    });
+  };
   const search = (value: string) => {
-    console.log(value);
+    if (value.trim()) {
+      console.log(value);
+      router.push(`/search/colophon?keyword=${encodeURIComponent(value)}`);
+    } else {
+      openNotification();
+    }
   };
 
   const centerCol = "flex flex-col items-center";
@@ -38,6 +52,7 @@ export default function Page() {
 
   return (
     <Layout className='h-full' style={bgStyle}>
+      {contextHolder}
       <Content className={centerCol}>
         <div className="w-1/2 flex flex-col items-center mt-20">
           <Image src="/天下径山.png" alt='天下径山' width={400} height={100} />

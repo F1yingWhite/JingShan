@@ -5,19 +5,17 @@ import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-const menuItems = [
-  { key: '1', icon: <CreditCardOutlined />, label: '牌记', path: '/overview/colophon' },
-  { key: '2', icon: <NotificationOutlined />, label: '序跋', path: '/overview/preface_and_postscript' },
-];
-
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode; }) {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState('1'); // 默认选中“牌记”
+  const [selectedKey, setSelectedKey] = useState('1');
+  const router = useRouter();
+
+  const menuItems = [
+    { key: '1', icon: <CreditCardOutlined />, label: '牌记', path: '/search/colophon' },
+    { key: '2', icon: <NotificationOutlined />, label: '序跋', path: '/search/preface_and_postscript' },
+  ];
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -45,7 +43,7 @@ export default function DashboardLayout({
             <Menu.SubMenu key="parent" title="径山藏" icon={<CreditCardOutlined />}>
               {menuItems.map(item => (
                 <Menu.Item key={item.key} icon={item.icon}>
-                  <Link href={item.path}>{item.label}</Link>
+                  <Link href={{ pathname: item.path }}>{item.label}</Link>
                 </Menu.Item>
               ))}
             </Menu.SubMenu>

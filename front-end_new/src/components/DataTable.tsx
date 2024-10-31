@@ -12,7 +12,6 @@ const DataTable = <T extends Record<string, any>>({ columns, getList, getTotalNu
   const fetchData = async (params: any) => {
     const { current, pageSize, ...rest } = params;
     try {
-      // 调用 getList 时传入 current 和 pageSize
       const res = await getList(current, pageSize, rest);
       const total = await getTotalNum(rest);
       return {
@@ -40,6 +39,8 @@ const DataTable = <T extends Record<string, any>>({ columns, getList, getTotalNu
         pageSizeOptions: [10, 20, 50],
       }}
       rowKey="id"
+      scroll={{ y: 'calc(100vh - 360px)' }}
+      
     />
   );
 };

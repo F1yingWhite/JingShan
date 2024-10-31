@@ -1,4 +1,4 @@
-import { ConfigProvider, Layout, theme } from "antd";
+import { ConfigProvider, Layout } from "antd";
 import "./globals.css";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import NavBar from "@/components/NavBar";
@@ -28,16 +28,16 @@ export default function RootLayout({
             }}
           >
             <Layout className="h-screen">
-              <div className="w-full z-10">
+              <div className="fixed top-0 left-0 w-full z-10">
                 <NavBar />
               </div>
-              <Content >
+              <Content className="mt-16">
                 {children}
               </Content>
             </Layout>
           </ConfigProvider>
         </AntdRegistry>
       </body>
-    </html >
+    </html>
   );
 }
