@@ -2,7 +2,7 @@
 import { searchColophon, ContentItem, Colophon } from '@/lib/colophon';
 import { ProList } from '@ant-design/pro-components';
 import { Badge, Collapse } from 'antd';
-import { useParams,useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function Page() {
   let { slug } = useParams();
@@ -14,7 +14,6 @@ export default function Page() {
   );
   const router = useRouter();
   const highlightText = (text: string, highlight: string) => {
-    highlight = decodeURIComponent(highlight)
     const regex = new RegExp(`(${highlight})`, 'gi');
     return text.split(regex).map((part, index) =>
       part.toLowerCase() === highlight.toLowerCase() ? (
@@ -56,7 +55,7 @@ export default function Page() {
                         {record.related_data.map((colophon: Colophon) => (
                           <div key={colophon.id} className="mb-4 p-3 bg-[#f3f1eb] rounded-md" onClick={() => router.push(`/colophon/${colophon.id}`)}>
                             <p className="font-bold">经文名: {colophon.scripture_name}</p>
-                            <p>{highlightText(colophon.content, slug)}</p>
+                            <p>{highlightText(colophon.content, decodeURIComponent(slug))}</p>
                           </div>
                         ))}
                       </div>

@@ -1,5 +1,12 @@
 import { get, post } from './axios'
 
+export type RelatedIndividuals = {
+    name: string;
+    id: number;
+    description: string;
+    type: string;
+}
+
 export type Colophon = {
     id: number;
     content: string;
@@ -9,6 +16,9 @@ export type Colophon = {
     pdf_id: number;
     page_id: number;
     qianziwen: string;
+    place?: string;
+    time?: string;
+    related_individuals?: RelatedIndividuals[];
 }
 
 export type ContentItem = {
@@ -19,6 +29,7 @@ export type ContentItem = {
 export type ContentData = {
     content: ContentItem[];
 };
+
 export function getColophonList(page: number, page_size: number, params: any) {
     return post(`/colophon/?page=${page}&page_size=${page_size}`, params);
 }
@@ -30,4 +41,8 @@ export function getColophonTotalNum(params: any) {
 
 export function searchColophon(keyword: string, page: number, page_size: number) {
     return get(`/colophon/search/?keyword=${keyword}&page=${page}&page_size=${page_size}`)
+}
+
+export function getColophonById(id: number) {
+    return get(`/colophon/detail/?id=${id}`)
 }

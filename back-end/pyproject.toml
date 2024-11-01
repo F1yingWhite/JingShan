@@ -12,5 +12,6 @@ dependencies = [
     "mysql>=0.0.3",
     "mysqlclient>=2.2.5",
     "pymysql>=1.1.1",
+    "pypdf2>=3.0.1",
     "requests>=2.32.3",
 ]

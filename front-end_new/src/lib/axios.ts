@@ -22,6 +22,7 @@ export function get(url: string, options?: any): Promise<any> {
   })
 }
 
+
 export function put(url: string, data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     axios

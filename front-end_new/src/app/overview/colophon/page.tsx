@@ -31,6 +31,9 @@ const columns = [
     dataIndex: "content",
     key: "content",
     width: "50%",
+    // render: (text, record) => (
+    //   <Link className="text-[#c19d50]" href={`/preface_and_postscript/${record.id}`}>{text}</Link>
+    // ),
     ellipsis: true,
   },
   {

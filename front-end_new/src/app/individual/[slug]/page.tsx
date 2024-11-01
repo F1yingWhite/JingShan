@@ -44,6 +44,17 @@ export default function Page({ params }: { params: { slug: string } }) {
     <Badge count={count} style={{ marginInlineStart: 4 }} />
   );
 
+  const highlightText = (text: string, highlight: string) => {
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    return text.split(regex).map((part, index) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <span key={index} className='text-[#c19d50]'>{part}</span>
+      ) : (
+        part
+      )
+    );
+  };
+
   return (
     <div className="flex h-full">
       <div className="flex-1 p-4 border-r border-gray-300 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
@@ -72,7 +83,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                               <p className="text-[#c19d50] font-bold">参与活动:</p>
                               <p>{item.type.replace(/^类型为：/, '')}</p>
                               <p className="text-[#c19d50] font-bold">相关牌记:</p>
-                              <p>{item.content}</p>
+                              <p>{highlightText(item.content, name || '')}</p>
                               <p className="text-[#c19d50] font-bold">补充说明：</p>
                               <p>{item.description}</p>
                             </div>
@@ -114,7 +125,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
       <div className="flex-2 flex flex-col w-1/2 h-full">
         <div className="h-1/2 p-4">
-          <h2 className="text-lg font-semibold text-[#c19d50] text-center">活跃年代</h2>
+          <h2 className="text-lg font-semibold text-[#c19d50] text-center">刻经时间</h2>
           {time && <TimeChart chartData={time}></TimeChart>}
         </div>
         <hr className="my-4 border-t border-[#c19d50]" />

@@ -38,6 +38,7 @@ const DataTable = <T extends Record<string, any>>({ columns, getList, getTotalNu
         pagination={{
           showSizeChanger: true,
           pageSizeOptions: [5, 10, 20, 50],
+          defaultPageSize: 5,
         }}
         rowKey="id"
       />
