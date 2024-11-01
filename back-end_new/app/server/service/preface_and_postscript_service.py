@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from ...interlal.models.preface_and_postscript import Preface_And_Postscript
@@ -55,3 +55,12 @@ async def get_preface_and_postscript_total_num(params: PrefaceAndPostscriptQuery
         page_id=params.page_id,
     )
     return ResponseModel(data={"total_num": total_num})
+
+
+@preface_and_postscript_router.get("/search")
+async def search_preface_and_postscript(keyword: str, page: int, page_size: int):
+    if not keyword:
+        raise HTTPException(status_code=400, detail="Keyword cannot be empty")
+    preface_and_postscripts = Preface_And_Postscript.search_preface_and_postscript(keyword, page, page_size)
+    preface_and_postscripts["success"] = True
+    return ResponseModel(data=preface_and_postscripts)

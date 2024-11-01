@@ -21,12 +21,12 @@ export default function Page() {
 
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto rounded-md">
       <ProTable
         dataSource={individuals}
         rowKey="id"
         headerTitle="人物搜索结果"
-        search={false}  // 这里设置 search 为 false
+        search={false}
         pagination={{
           showSizeChanger: true,
           pageSizeOptions: [5, 10, 20, 50],

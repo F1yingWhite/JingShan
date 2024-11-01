@@ -1,10 +1,8 @@
-'use client';
-
+'use client'
 import { searchColophon, ContentItem, Colophon } from '@/lib/colophon';
 import { ProList } from '@ant-design/pro-components';
 import { Badge, Collapse } from 'antd';
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useParams,useRouter } from 'next/navigation';
 
 export default function Page() {
   let { slug } = useParams();
@@ -14,24 +12,33 @@ export default function Page() {
   const renderBadge = (count: number) => (
     <Badge count={count} style={{ marginInlineStart: 4 }} />
   );
-
+  const router = useRouter();
+  const highlightText = (text: string, highlight: string) => {
+    highlight = decodeURIComponent(highlight)
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    return text.split(regex).map((part, index) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <span key={index} className='text-[#c19d50]'>{part}</span>
+      ) : (
+        part
+      )
+    );
+  };
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto rounded-md">
       <ProList<ContentItem>
         rowKey="name"
         headerTitle="经文列表"
         request={async (params = {}) => {
           const { current = 1, pageSize = 10 } = params;
           const { data, total, success } = await searchColophon(slug, current, pageSize);
-          console.log(data);
           return {
             data: data.content,
             total: total,
           };
         }}
         pagination={{
-          // 设置页面大小是5,10,20,默认是5
           pageSizeOptions: ['5', '10', '20'],
           defaultPageSize: 5,
         }}
@@ -47,9 +54,9 @@ export default function Page() {
                     children: (
                       <div>
                         {record.related_data.map((colophon: Colophon) => (
-                          <div key={colophon.id} className="mb-4 p-3 bg-[#f3f1eb] rounded-md">
+                          <div key={colophon.id} className="mb-4 p-3 bg-[#f3f1eb] rounded-md" onClick={() => router.push(`/colophon/${colophon.id}`)}>
                             <p className="font-bold">经文名: {colophon.scripture_name}</p>
-                            <p>内容: {colophon.content}</p>
+                            <p>{highlightText(colophon.content, slug)}</p>
                           </div>
                         ))}
                       </div>

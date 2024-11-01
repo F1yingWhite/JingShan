@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from ...interlal.models.individual import Individual
@@ -46,5 +46,7 @@ async def get_individuals_detail(id: int):
 
 @individual_router.get("/search")
 async def search_individuals(name: str):
+    if not name:
+        raise HTTPException(status_code=400, detail="Keyword cannot be empty")
     individuals = Individual.search_individuals(name)
     return ResponseModel(data=individuals)

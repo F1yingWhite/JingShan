@@ -1,7 +1,7 @@
 from re import U
 from typing import Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy import true
 
@@ -88,6 +88,8 @@ async def get_colophon_detail(id: int):
 
 @colophon_router.get("/search")
 async def search_colophon(keyword: str, page: int = 1, page_size: int = 20):
+    if not keyword:
+        raise HTTPException(status_code=400, detail="Keyword cannot be empty")
     scripture_names, total_num = Colophon.search_colophon(keyword=keyword, page=page, page_size=page_size)
     colophons = {}
     colophons["content"] = []

@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlmodel import Field, Session, SQLModel, select
 
 from . import engine
@@ -26,7 +27,7 @@ class Preface_And_Postscript(SQLModel, table=True):
         dynasty: str = None,
         author: str = None,
         copy_id: int = None,
-        page_id: int = None
+        page_id: int = None,
     ):
         with Session(engine) as session:
             page_size = min(page_size, 100)  # 限制 page_size 不超过 100
@@ -58,15 +59,7 @@ class Preface_And_Postscript(SQLModel, table=True):
 
     @classmethod
     def get_preface_and_postscript_total_num(
-        cls,
-        classic: str = None,
-        translator: str = None,
-        title: str = None,
-        category: str = None,
-        dynasty: str = None,
-        author: str = None,
-        copy_id: int = None,
-        page_id: int = None
+        cls, classic: str = None, translator: str = None, title: str = None, category: str = None, dynasty: str = None, author: str = None, copy_id: int = None, page_id: int = None
     ):
         with Session(engine) as session:
             statement = select(cls)
@@ -91,3 +84,17 @@ class Preface_And_Postscript(SQLModel, table=True):
 
             results = session.exec(statement).all()
             return len(results)
+
+    @classmethod
+    def search_preface_and_postscript(cls, keyword: str, page: int, page_size: int):
+        with Session(engine) as session:
+            page_size = min(page_size, 100)
+            offset = (page - 1) * page_size
+
+            statement = select(cls, func.count(cls.id).over().label("total_count")).where(cls.title.like(f"%{keyword}%")).offset(offset).limit(page_size)
+
+            results = session.exec(statement).all()
+            data = [result[0] for result in results]  # 提取实际数据
+            total_count = results[0].total_count if results else 0  # 提取总数
+
+            return {"total": total_count, "data": data}
