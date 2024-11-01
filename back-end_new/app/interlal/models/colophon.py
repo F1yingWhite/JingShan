@@ -63,3 +63,8 @@ class Colophon(SQLModel, table=True):
 
             results = session.exec(statement).all()
             return len(results)
+
+    @classmethod
+    def search_colphon(cls, keyword: str, page: int, page_size: int):
+        with Session(engine) as session:
+            page_size = min(page_size, 100)

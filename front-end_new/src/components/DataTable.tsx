@@ -40,7 +40,6 @@ const DataTable = <T extends Record<string, any>>({ columns, getList, getTotalNu
       }}
       rowKey="id"
       scroll={{ y: 'calc(100vh - 360px)' }}
-      
     />
   );
 };

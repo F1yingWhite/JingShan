@@ -19,10 +19,19 @@ export type IndividualDetail = {
     time: PersonTime;
 }
 
+export type Person = {
+    name: string;
+    id: number;
+}
+
 export function getindividualByName(name: string) {
     return get(`/individuals?name= {${name}`);
 }
 
 export function getIndividualDetailById(id: number) {
     return get(`/individuals/detail?id=${id}`);
+}
+
+export function searchIndividuals(name: string) {
+    return get(`/individuals/search?name=${name}`);
 }

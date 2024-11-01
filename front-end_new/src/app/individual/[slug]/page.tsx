@@ -2,9 +2,9 @@
 import { IndividualDetail, getIndividualDetailById, PersonTime, Details } from "@/lib/individual";
 import { useEffect, useState } from "react";
 import Mapbox from "@/components/Mapbox";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { ProList } from '@ant-design/pro-components';
 import { Badge, Collapse } from 'antd';
+import TimeChart from "@/components/TimeChart";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [time, setTime] = useState<PersonTime>();
@@ -115,16 +115,7 @@ export default function Page({ params }: { params: { slug: string } }) {
       <div className="flex-2 flex flex-col w-1/2 h-full">
         <div className="h-1/2 p-4">
           <h2 className="text-lg font-semibold text-[#c19d50] text-center">活跃年代</h2>
-          {chartData.length > 0 && (
-            <LineChart data={chartData} width={500} height={280}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="次数" stroke="#c19d50" />
-            </LineChart>
-          )}
+          {time && <TimeChart chartData={time}></TimeChart>}
         </div>
         <hr className="my-4 border-t border-[#c19d50]" />
         <div className="h-1/2 p-4">

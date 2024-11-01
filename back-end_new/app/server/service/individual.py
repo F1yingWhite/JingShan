@@ -199,3 +199,9 @@ async def get_individuals_detail(id: int):
             time_cnt.pop(time)
     individuals_dict["time"] = time_cnt
     return ResponseModel(data=individuals_dict)
+
+
+@individual_router.get("/search")
+async def search_individuals(name: str):
+    individuals = Individual.search_individuals(name)
+    return ResponseModel(data=individuals)

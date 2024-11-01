@@ -29,8 +29,8 @@ export default function Page() {
   };
   const search = (value: string) => {
     if (value.trim()) {
-      console.log(value);
-      router.push(`/search/colophon?keyword=${encodeURIComponent(value)}`);
+      value = encodeURIComponent(value);
+      router.push(`/search/${value}/colophon`);
     } else {
       openNotification();
     }

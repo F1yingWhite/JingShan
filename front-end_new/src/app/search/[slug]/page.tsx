@@ -3,11 +3,11 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function Page() {
+export default function Page({ params }: { params: { slug: string } }) {
   const router = useRouter();
-  const keyword = new URLSearchParams(window.location.search).get('keyword');
+  const slug = params.slug;
   useEffect(() => {
-    router.push(`/search?keyword=${keyword}`);
+    router.push(`/search/${slug}/colophon`);
   }, [router]);
 
   return null;

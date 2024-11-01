@@ -5,7 +5,6 @@ from .colophon import Colophon
 from .ind_col import Ind_Col
 
 
-
 class Individual(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str | None = Field(default=None, max_length=255)
@@ -30,3 +29,13 @@ class Individual(SQLModel, table=True):
             )
             results = session.exec(statement)
             return results.all()
+
+    @classmethod
+    def search_individuals(cls, name: str = None):
+        with Session(engine) as session:
+            # 使用模糊查询
+            stmt = select(cls)
+            if name is not None:
+                stmt = stmt.where(cls.name.like(f"%{name}%"))
+            individuals = session.exec(stmt).all()
+            return individuals

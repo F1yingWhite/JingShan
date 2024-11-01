@@ -1,9 +1,10 @@
 'use client'
-import React from 'react'
-import { Flex, Layout } from 'antd';
+import React, { useState } from 'react'
+import { Flex, Input, Layout } from 'antd';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { SearchOutlined } from '@ant-design/icons';
 const { Header } = Layout;
 
 interface NavIconProps {
@@ -63,12 +64,30 @@ export default function NavBar() {
     backgroundPosition: 'center',
     padding: 0,
   };
+  const router = useRouter();
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleSearch = (value: string) => {
+    value = encodeURIComponent(value);
+    router.push(`/search/${value}/colophon`);
+    setSearchValue('');
+  }
 
   return (
     <Header style={headerStyle} className={`flex items-center justify-between ${path === '/' ? '' : 'shadow-md'}`}>
       <Flex justify="start" className='items-center text-2xl font-bold text-black ml-0'>
         <Image src="/佛经.svg" alt='佛经' width={50} height={50} />
         <span className='ml-2'>求是佛典</span>
+      </Flex>
+      <Flex>
+        {path !== '/' && (
+          <Input.Search
+            placeholder="搜索..."
+            value={searchValue}
+            onSearch={(value) => handleSearch(value)}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+        )}
       </Flex>
       <Flex justify="center">
         {IconList.map((icon, index) => (

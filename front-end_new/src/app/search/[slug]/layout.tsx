@@ -1,20 +1,21 @@
 'use client';
-import { LaptopOutlined, NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { LaptopOutlined, NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, UserOutlined } from '@ant-design/icons';
 import { Layout, Menu, FloatButton } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode; }) {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState('1');
-  const router = useRouter();
+  const { slug } = useParams();
 
   const menuItems = [
-    { key: '1', icon: <CreditCardOutlined />, label: '牌记', path: '/search/colophon' },
-    { key: '2', icon: <NotificationOutlined />, label: '序跋', path: '/search/preface_and_postscript' },
+    { key: '1', icon: <CreditCardOutlined />, label: '牌记', path: `/search/${slug}/colophon` },
+    { key: '2', icon: <NotificationOutlined />, label: '序跋', path: `/search/${slug}/preface_and_postscript` },
+    { key: '3', icon: <UserOutlined />, label: '人物', path: `/search/${slug}/individual` },
   ];
 
   const toggleCollapsed = () => {
@@ -47,9 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </Menu.Item>
               ))}
             </Menu.SubMenu>
-            <Menu.Item key="3" icon={<LaptopOutlined />}>
-              <Link href="/overview/story">故事</Link>
-            </Menu.Item>
+
           </Menu>
         </Sider>
         <Content className="p-6">
