@@ -16,32 +16,39 @@ export default function Page({ params }: { params: { slug: string } }) {
   const timersRef = useRef<{ [key: number]: NodeJS.Timeout }>({});
 
   useEffect(() => {
-    getColophonById(+slug).then((res: Colophon) => {
-      setColophon(res);
-      setPdfId(res.pdf_id);
-      getPdfLength('colophon', res.pdf_id).then(res2 => {
+    const fetchData = async () => {
+      try {
+        const res: Colophon = await getColophonById(+slug);
+        setColophon(res);
+        setPdfId(res.pdf_id);
+        const res2 = await getPdfLength('colophon', res.pdf_id);
         setTotalPages(res2.length);
-        fetchPdfPage(res.page_id);
+        await fetchPdfPage(res.page_id, res.pdf_id);
         if (containerRef.current) {
           containerRef.current.scrollTo(0, res.page_id * 200);
         }
-      });
-    });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
+    fetchData();
   }, [slug]);
 
-  const fetchPdfPage = async (page: number) => {
+  const fetchPdfPage = async (page: number, pdfId: number) => {
     if (!pdfPages[page]) {
-      let pdfBase64: string = "";
-      await getPdf('colophon', +slug, page).then(res => {
-        pdfBase64 = res.image;
-      });
-      const pdfUrl = `data:image/jpeg;base64,${pdfBase64}`;
-      setPdfPages((prevPages) => {
-        const newPages = [...prevPages];
-        newPages[page] = pdfUrl;
-        return newPages;
-      });
+      try {
+        const res = await getPdf('colophon', pdfId, page);
+        const pdfBase64 = res.image;
+        const pdfUrl = `data:image/jpeg;base64,${pdfBase64}`;
+        setPdfPages((prevPages) => {
+          const newPages = [...prevPages];
+          newPages[page] = pdfUrl;
+          return newPages;
+        });
+      } catch (error) {
+        console.error(`Error fetching PDF page ${page}:`, error);
+      }
     }
   };
 
@@ -50,7 +57,7 @@ export default function Page({ params }: { params: { slug: string } }) {
       const page = Number(entry.target.getAttribute('data-page'));
       if (entry.isIntersecting) {
         timersRef.current[page] = setTimeout(() => {
-          fetchPdfPage(page);
+          fetchPdfPage(page, pdf_id);
         }, 500);
       } else {
         if (timersRef.current[page]) {
@@ -59,7 +66,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         }
       }
     });
-  }, [pdfPages]);
+  }, [pdfPages, pdf_id]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleIntersection, {
@@ -77,7 +84,6 @@ export default function Page({ params }: { params: { slug: string } }) {
     };
   }, [handleIntersection]);
 
-  console.log(colophon)
 
   return (
     <div className="flex h-full">
@@ -136,7 +142,6 @@ export default function Page({ params }: { params: { slug: string } }) {
                   <p className="text-[#c19d50] font-bold">补充说明:</p>
                   <p>{record.description}</p>
                 </div>
-
               ),
             },
             description: {
