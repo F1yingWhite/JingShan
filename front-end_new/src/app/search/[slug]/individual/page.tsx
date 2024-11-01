@@ -12,6 +12,7 @@ export default function Page() {
     slug = slug.join('');
   }
 
+
   const [individuals, setIndividuals] = useState<Person[]>([]);
 
   useEffect(() => {

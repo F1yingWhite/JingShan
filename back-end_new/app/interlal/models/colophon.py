@@ -1,6 +1,8 @@
 # 牌记
 from shutil import which
 
+from pydantic import conset
+from sqlalchemy import func
 from sqlmodel import Field, Session, SQLModel, select
 
 from . import engine
@@ -65,6 +67,46 @@ class Colophon(SQLModel, table=True):
             return len(results)
 
     @classmethod
-    def search_colphon(cls, keyword: str, page: int, page_size: int):
+    def search_colophon(cls, keyword: str, page: int, page_size: int):
         with Session(engine) as session:
             page_size = min(page_size, 100)
+            offset = (page - 1) * page_size
+
+            # 使用窗口函数获取总数并进行分页
+            statement = (
+                select(cls.scripture_name, func.count(cls.scripture_name).over().label("total_count"))
+                .where(cls.content.like(f"%{keyword}%"))
+                .group_by(cls.scripture_name)
+                .offset(offset)
+                .limit(page_size)
+            )
+
+            results = session.exec(statement).all()
+            scripture_names = [result.scripture_name for result in results]
+            # 提取总数
+            total_count = results[0].total_count if results else 0
+            return scripture_names, total_count
+
+    @classmethod
+    def search_colophon_total_num(cls, keyword: str):
+        with Session(engine) as session:
+            statement = select(cls.scripture_name).where(cls.content.like(f"%{keyword}%")).group_by(cls.scripture_name)
+            results = session.exec(statement).all()
+            return len(results)
+
+    @classmethod
+    def get_results_by_scripture_name(cls, scripture_name: str):
+        with Session(engine) as session:
+            statement = select(cls).where(cls.scripture_name == scripture_name)
+            results = session.exec(statement).all()
+            return results
+
+    @classmethod
+    def get_colophon_by_id(cls, colophon_id: int):
+        from .ind_col import Ind_Col
+        from .individual import Individual
+
+        with Session(engine) as session:
+            statement = select(cls, Ind_Col, Individual.name).join(Ind_Col, cls.id == Ind_Col.col_id).join(Individual, Individual.id == Ind_Col.ind_id).where(cls.id == colophon_id)
+            result = session.exec(statement).all()
+            return [{"colophon": row[0], "ind_col": row[1], "individual_name": row[2]} for row in result]

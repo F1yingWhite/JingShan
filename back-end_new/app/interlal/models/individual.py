@@ -1,8 +1,6 @@
 from sqlmodel import Field, Session, SQLModel, select
 
 from . import engine
-from .colophon import Colophon
-from .ind_col import Ind_Col
 
 
 class Individual(SQLModel, table=True):
@@ -19,6 +17,9 @@ class Individual(SQLModel, table=True):
 
     @classmethod
     def get_individuals_by_id(cls, user_id: int):
+        from .colophon import Colophon
+        from .ind_col import Ind_Col
+
         # 使用连表查询
         with Session(engine) as session:
             statement = (

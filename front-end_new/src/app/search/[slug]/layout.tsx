@@ -1,15 +1,16 @@
-'use client';
-import { LaptopOutlined, NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, UserOutlined } from '@ant-design/icons';
-import { Layout, Menu, FloatButton } from 'antd';
+'use client'
+import { NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, UserOutlined, CommentOutlined, CloseOutlined } from '@ant-design/icons';
+import { Layout, Menu, FloatButton, Modal } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode; }) {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState('1');
+  const [isModalOpen, setIsModalOpen] = useState(false); // 控制Modal开关
   const { slug } = useParams();
 
   const menuItems = [
@@ -20,6 +21,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
+  };
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
   };
 
   const handleMenuClick = (key: string) => {
@@ -39,19 +44,37 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             mode="inline"
             selectedKeys={[selectedKey]}
             className="h-full"
+            defaultOpenKeys={['径山藏']}
             onClick={({ key }) => handleMenuClick(key)}
           >
-            <Menu.SubMenu key="parent" title="径山藏" icon={<CreditCardOutlined />}>
+            <Menu.SubMenu key="径山藏" title="径山藏" icon={<CreditCardOutlined />}>
               {menuItems.map(item => (
                 <Menu.Item key={item.key} icon={item.icon}>
                   <Link href={{ pathname: item.path }}>{item.label}</Link>
                 </Menu.Item>
               ))}
             </Menu.SubMenu>
-
           </Menu>
         </Sider>
         <Content className="p-6">
+          <div>
+            <FloatButton
+              shape="circle"
+              type="primary"
+              icon={isModalOpen ? <CloseOutlined /> : <CommentOutlined />}
+              onClick={toggleModal}
+            />
+            <Modal
+              title="客服对话"
+              open={isModalOpen}
+              onCancel={toggleModal}
+              footer={null}
+              mask={false}
+              width={"30%"}
+              style={{ top: "40%", left: "30%", }}
+            >
+            </Modal>
+          </div>
           {children}
         </Content>
       </Layout>

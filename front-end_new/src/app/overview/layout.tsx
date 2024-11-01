@@ -41,8 +41,9 @@ export default function DashboardLayout({
             selectedKeys={[selectedKey]}
             className="h-full"
             onClick={({ key }) => handleMenuClick(key)}
+            defaultOpenKeys={['径山藏']}
           >
-            <Menu.SubMenu key="parent" title="径山藏" icon={<CreditCardOutlined />}>
+            <Menu.SubMenu key="径山藏" title="径山藏" icon={<CreditCardOutlined />}>
               {menuItems.map(item => (
                 <Menu.Item key={item.key} icon={item.icon}>
                   <Link href={item.path}>{item.label}</Link>
