@@ -25,5 +25,5 @@ export function searchPrefaceAndPostscript(keyword: string, page: number, page_s
 }
 
 export function getPrefaceAndPostscriptById(id: number) {
-    return get(`/preface_and_postscript/${id}/`)
+    return get(`/preface_and_postscript/detail/?id=${id}`)
 }

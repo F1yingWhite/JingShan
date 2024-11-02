@@ -2,14 +2,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, Spin } from 'antd';
 import { getPdf, getPdfLength } from '@/lib/pdf';
-import { getColophonById, Colophon } from '@/lib/colophon';
-
+import { getPrefaceAndPostscriptById, PrefaceAndPostscript } from '@/lib/preface_and_postscript';
 
 export default function Page({ params }: { params: { slug: string } }) {
   const slug = params.slug;
   const [pdfPages, setPdfPages] = useState<string[]>([]);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [colophon, setColophon] = useState<Colophon>();
+  const [preface_and_postscript, setPrefaceAndPostscript] = useState<PrefaceAndPostscript>();
   const [pdf_id, setPdfId] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const timersRef = useRef<{ [key: number]: NodeJS.Timeout }>({});
@@ -17,12 +16,12 @@ export default function Page({ params }: { params: { slug: string } }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res: Colophon = await getColophonById(+slug);
-        setColophon(res);
-        setPdfId(res.pdf_id);
-        const res2 = await getPdfLength('colophon', res.pdf_id);
+        const res: PrefaceAndPostscript = await getPrefaceAndPostscriptById(+slug);
+        setPrefaceAndPostscript(res);
+        setPdfId(res.copy_id);
+        const res2 = await getPdfLength('preface_and_postscript', res.copy_id);
         setTotalPages(res2.length);
-        const pageHeight = await fetchPdfPage(res.page_id, res.pdf_id);
+        const pageHeight = await fetchPdfPage(res.page_id, res.copy_id);
         if (pageHeight !== undefined) {
           setPageHeight(pageHeight);
         }
@@ -100,7 +99,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <div className="flex h-full">
-      <div className="w-1/3 overflow-y-auto" ref={containerRef}>
+      <div className="w-2/5 overflow-y-auto" ref={containerRef}>
         {Array.from({ length: totalPages }).map((_, index) => (
           <div key={index} data-page={index} className="mb-4" style={{ height: 'auto' }}>
             {pdfPages[index] ? (
@@ -113,31 +112,30 @@ export default function Page({ params }: { params: { slug: string } }) {
           </div>
         ))}
       </div>
-      <div className="w-2/3 p-8 bg-[#F8F5ED] overflow-y-auto">
-        {colophon && (
+      <div className="w-3/5 p-8 bg-[#F8F5ED] overflow-y-auto">
+        {preface_and_postscript && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 text-[#A48F6A]">碑记内容</h2>
-            <p className="mb-6 leading-relaxed text-[#7C6955]">{colophon.content}</p>
+            <h2 className="text-3xl font-bold mb-6 text-[#A48F6A]">序跋</h2>
+            <p className="mb-6 leading-relaxed text-[#7C6955]">{preface_and_postscript.content}</p>
             <hr className="my-8 border-t border-[#D9CDBF]" />
-            <div className="grid grid-cols-2 gap-8 text-[#7C6955]">
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">经名：</strong> {colophon.scripture_name}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">卷数：</strong> {colophon.volume_id}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">册数：</strong>{colophon.chapter_id}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">千字文：</strong> {colophon.qianziwen || "Not found"}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">刊刻时间：</strong> {colophon.time || "未知"}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">刊刻地点：</strong> {colophon.place || "未知"}
-              </div>
+            <div className="text-xl text-[#7C6955]">
+              {[
+                { label: "序跋篇名", value: preface_and_postscript.title },
+                { label: "典籍", value: preface_and_postscript.classic },
+                { label: "作者", value: preface_and_postscript.author },
+                { label: "经译者", value: preface_and_postscript.translator },
+                { label: "类别", value: preface_and_postscript.category },
+                { label: "朝代", value: preface_and_postscript.dynasty },
+                { label: "册", value: preface_and_postscript.copy_id },
+                { label: "页", value: preface_and_postscript.page_id },
+              ].map((item, index) => (
+                <div key={index}>
+                  <strong className="font-semibold text-[#A48F6A]">{item.label}:</strong> {item.value}
+                  {(index % 2 === 1 && index < 7) && (
+                    <hr className="my-8 border-t border-[#D9CDBF]" />
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}
