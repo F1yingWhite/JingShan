@@ -86,7 +86,7 @@ PROVINCE_DICT = {
     "寂照庵": (119.758997, 30.381654),
     "化城寺": (119.760628, 30.386138),
     #!
-    "顾龙山": "江苏",
+    "顾龙山": (118.80, 31.93),
     "万寿禅寺": (121.546802, 29.862334),
     "接待寺": (119.760628, 30.386138),
     "妙德庵": (113.568582, 39.045599),
@@ -154,5 +154,12 @@ def get_publication_place(text):
     for place in list(PLACE_DICT.keys()):
         if place in to_be_queried:
             return PLACE_DICT[place]
+    else:
+        return "Not found"
+
+
+def get_latitude_and_longitude(place):
+    if place in PROVINCE_DICT:
+        return PROVINCE_DICT[place]
     else:
         return "Not found"

@@ -58,7 +58,7 @@
         // 发送请求获得数据
         async function fetchIndividualData() {
             <!-- const url = `https://jinshanback.cpolar.top/individual?id=${id}`; -->
-            const url = `http://127.0.0.1:5000/individual?id=${id}`;
+            const url = `http://127.0.0.1:5001/api/individuals/detail?id=${id}`;
 
             try {
                 const response = await fetch(url);
@@ -66,7 +66,8 @@
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
-                geoData = data.visualization;
+                geoData = data.data.place;
+                console.log(geoData)
             } catch (error) {
                 console.error("请求失败:", error);
             }
@@ -119,18 +120,18 @@
                 unit: 'meter',
                 sideNumber: 4,
                 topColor: (index, f) => {
-                    var n = f.properties['数量'];
+                    var n = f.properties['count'];
                     return n > 7000 ? '#E97091' : '#2852F1';
                 },
                 sideTopColor: (index, f) => {
-                    var n = f.properties['数量'];
+                    var n = f.properties['count'];
                     return n > 7000 ? '#E97091' : '#2852F1';
                 },
                 sideBottomColor: '#002bb9',
                 radius: 15000,
                 height: (index, f) => {
                     var props = f.properties;
-                    var height = Math.max(50000, Math.sqrt(props['数量']) * 30000);
+                    var height = Math.max(50000, Math.sqrt(props['count']) * 30000);
                     return height;
                 },
                 rotation: 360,
@@ -177,11 +178,11 @@
                     clickInfo.show();
                     var props = feat.properties;
                     // var height = Math.max(100, Math.sqrt(props['数量']) * 9000 - 50000);
-                    var height = Math.max(50000, Math.sqrt(props['数量']) * 30000);
+                    var height = Math.max(50000, Math.sqrt(props['count']) * 30000);
                     clickInfo.setPosition([feat.coordinates[0], feat.coordinates[1], height]);
                     clickInfo.setContent(
                         '<div style="text-align: center; height: 20px; width: 150px; color:#000; font-size: 14px;">' +
-                        feat.properties['名称'] + ': ' + feat.properties['数量'] +
+                        feat.properties['name'] + ': ' + feat.properties['count'] +
                         '</div>'
                     );
                 } else {

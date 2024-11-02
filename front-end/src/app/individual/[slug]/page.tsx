@@ -132,7 +132,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         <hr className="my-4 border-t border-[#c19d50]" />
         <div className="h-1/2 p-4">
           <h2 className="text-lg font-semibold text-[#c19d50] text-center">相关藏经地点</h2>
-          <Mapbox />
+          <Mapbox id={+slug} />
         </div>
       </div>
     </div>
