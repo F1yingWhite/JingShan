@@ -81,10 +81,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             maskClosable={false}
             footer={null}
             width="40%"
-            style={{ position: 'fixed', right: '20px', zIndex: 9 }}
-            wrapClassName="custom-modal"
+            style={{ position: 'fixed', right: '20px', zIndex: 9, overflowY: 'auto', maxHeight: 'calc(89vh - 80px)' }}
+            wrapClassName={"pointer-events-none"}
             title="径山chat"
-            bodyStyle={{ overflowY: 'auto', maxHeight: 'calc(90vh - 80px)' }}
           >
             <div style={{ width: '100%', height: '100%' }}>
               <div ref={listRef} style={{ minHeight: 'calc(65vh - 80px)', maxHeight: 'calc(65vh - 80px)', overflowY: 'auto', marginBottom: '10px' }}>
@@ -117,13 +116,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </Content>
       </Layout>
-      <style jsx global>{`
-                    .custom - modal.ant - modal - content {
-          height: calc(90vh - 80px);
-                display: flex;
-                flex-direction: column;
-        }
-      `}</style>
+
     </section>
   );
 }
