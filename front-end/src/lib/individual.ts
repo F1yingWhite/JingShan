@@ -6,6 +6,7 @@ export type Details = {
         content: string;
         type: string;
         description: string;
+        colophon_id: number
     }>;
 };
 

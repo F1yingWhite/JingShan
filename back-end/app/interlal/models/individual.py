@@ -23,7 +23,7 @@ class Individual(SQLModel, table=True):
         # 使用连表查询
         with Session(engine) as session:
             statement = (
-                select(cls.name, Colophon.content, Colophon.scripture_name, Ind_Col.type, Ind_Col.description)
+                select(cls.name, Colophon.content, Colophon.scripture_name, Ind_Col.type, Ind_Col.description, Ind_Col.col_id)
                 .join(Ind_Col, cls.id == Ind_Col.ind_id)
                 .join(Colophon, Ind_Col.col_id == Colophon.id)
                 .where(cls.id == user_id)

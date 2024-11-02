@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- TODO:懒得重写 -->
 
 <head>
     <meta charset="UTF-8">
@@ -45,7 +46,6 @@
         }
 
         const id = getQueryParameter('id');
-        console.log("获得的id为", id);
 
         var geoData;
 
@@ -110,7 +110,6 @@
                 visible: false,
                 hasSide: true,
             });
-            console.log("获取到的数据:", geoData);
             var geo = new Loca.GeoJSONSource({
                 data: geoData // 使用获取到的数据
             });

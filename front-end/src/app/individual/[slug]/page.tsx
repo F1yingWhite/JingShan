@@ -5,6 +5,7 @@ import Mapbox from "@/components/Mapbox";
 import { ProList } from '@ant-design/pro-components';
 import { Badge, Collapse } from 'antd';
 import TimeChart from "@/components/TimeChart";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [time, setTime] = useState<PersonTime>();
@@ -12,7 +13,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [name, setName] = useState<string>();
   const [searchKey, setSearchKey] = useState<string>('');
   const slug = params.slug;
-
+  const router = useRouter();
   useEffect(() => {
     getIndividualDetailById(+slug).then((data) => {
       setName(data.name);
@@ -79,7 +80,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                       children: (
                         <div>
                           {record.content.map((item, index) => (
-                            <div key={index} className="mb-4 bg-[#f3f1eb] p-3 rounded-md">
+                            <div key={index} className="mb-4 bg-[#f3f1eb] p-3 rounded-md" onClick={() => { router.push(`/colophon/${item.colophon_id}`) }}>
                               <p className="text-[#c19d50] font-bold">参与活动:</p>
                               <p>{item.type.replace(/^类型为：/, '')}</p>
                               <p className="text-[#c19d50] font-bold">相关牌记:</p>

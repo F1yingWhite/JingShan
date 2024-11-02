@@ -1,17 +1,24 @@
 [project]
-name = "back-end"
+name = "back-end-new"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "black>=24.10.0",
-    "flask-cors>=5.0.0",
-    "flask>=3.0.3",
-    "mysql-connector-python>=9.1.0",
-    "mysql>=0.0.3",
+    "fastapi[all]>=0.115.4",
     "mysqlclient>=2.2.5",
-    "pymysql>=1.1.1",
+    "pypdf>=5.1.0",
     "pypdf2>=3.0.1",
-    "requests>=2.32.3",
+    "sqlalchemy>=2.0.36",
+    "sqlmodel>=0.0.22",
+    "uvicorn>=0.32.0",
+    "pdf2image>=1.17.0",
+    "pillow>=11.0.0",
 ]
+
+[tool.poetry]
+name = "径山藏"
+version = "0.1.0"
+description = "Your package description"
+authors = ["Xu Yihan <81723334@qq.com>","Xv Lizhi <xvlizhi24@163.com>"]

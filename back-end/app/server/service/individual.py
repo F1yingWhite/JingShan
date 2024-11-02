@@ -32,7 +32,7 @@ async def get_individuals_detail(id: int):
         individuals_dict["name"] = item.name
         if item.scripture_name not in individuals_dict["details"]:
             individuals_dict["details"][item.scripture_name] = []
-        individuals_dict["details"][item.scripture_name].append({"content": item.content, "type": item.type, "description": item.description})
+        individuals_dict["details"][item.scripture_name].append({"content": item.content, "type": item.type, "description": item.description,"colophon_id":item.col_id})
         if (time := get_publication_time(item.content)) != "Not found":
             time_cnt[time] += 1
     has_non_zero_value = any(cnt != 0 for cnt in time_cnt.values())
