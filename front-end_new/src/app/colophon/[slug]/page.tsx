@@ -14,7 +14,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [pdf_id, setPdfId] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const timersRef = useRef<{ [key: number]: NodeJS.Timeout }>({});
-
+  const [pageHeight, setPageHeight] = useState<number>(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,9 +23,12 @@ export default function Page({ params }: { params: { slug: string } }) {
         setPdfId(res.pdf_id);
         const res2 = await getPdfLength('colophon', res.pdf_id);
         setTotalPages(res2.length);
-        await fetchPdfPage(res.page_id, res.pdf_id);
-        if (containerRef.current) {
-          containerRef.current.scrollTo(0, res.page_id * 200);
+        const pageHeight = await fetchPdfPage(res.page_id, res.pdf_id);
+        if (pageHeight !== undefined) {
+          setPageHeight(pageHeight);
+        }
+        if (containerRef.current && pageHeight) {
+          containerRef.current.scrollTo(0, (res.page_id) * (pageHeight + 16));
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -45,6 +48,17 @@ export default function Page({ params }: { params: { slug: string } }) {
           const newPages = [...prevPages];
           newPages[page] = pdfUrl;
           return newPages;
+        });
+
+        const img = new window.Image();
+        img.src = pdfUrl;
+        return new Promise<number>((resolve) => {
+          img.onload = () => {
+            document.body.appendChild(img);
+            const pageHeight = img.clientHeight;
+            document.body.removeChild(img);
+            resolve(pageHeight);
+          };
         });
       } catch (error) {
         console.error(`Error fetching PDF page ${page}:`, error);
@@ -89,12 +103,11 @@ export default function Page({ params }: { params: { slug: string } }) {
     <div className="flex h-full">
       <div className="w-1/3 overflow-y-auto" ref={containerRef}>
         {Array.from({ length: totalPages }).map((_, index) => (
-          <div key={index} data-page={index} className="mb-4">
+          <div key={index} data-page={index} className="mb-4" style={{ height: 'auto' }}>
             {pdfPages[index] ? (
-              <Image src={pdfPages[index]} alt={`Page ${index + 1}`} />
+              <Image src={pdfPages[index]} alt={`Page ${index + 1}`} style={{ height: 'auto', width: '100%' }} />
             ) : (
-              <div className="flex justify-center items-center h-80">
-                <Spin />
+              <div className="flex justify-center items-center" style={{ height: pageHeight }}>
               </div>
             )}
           </div>
@@ -111,7 +124,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                 <strong className="font-semibold text-[#A48F6A]">经名：</strong> {colophon.scripture_name}
               </div>
               <div>
-                <strong className="font-semibold text-[#A48F6A]">卷数：</strong> 第{colophon.volume_id}卷 / 第{colophon.chapter_id}
+                <strong className="font-semibold text-[#A48F6A]">卷数：</strong> {colophon.volume_id} / {colophon.chapter_id}
               </div>
               <div>
                 <strong className="font-semibold text-[#A48F6A]">册数：</strong> 原藏序目 / 第{colophon.page_id}页
