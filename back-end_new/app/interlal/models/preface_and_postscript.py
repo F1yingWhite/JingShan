@@ -98,3 +98,10 @@ class Preface_And_Postscript(SQLModel, table=True):
             total_count = results[0].total_count if results else 0  # 提取总数
 
             return {"total": total_count, "data": data}
+
+    @classmethod
+    def get_preface_and_postscript_by_id(cls, id: int):
+        with Session(engine) as session:
+            statement = select(cls).where(cls.id == id)
+            result = session.exec(statement).first()
+            return result

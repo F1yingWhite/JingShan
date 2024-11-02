@@ -1,4 +1,5 @@
 # 牌记
+import json
 from shutil import which
 
 from pydantic import conset
@@ -109,4 +110,19 @@ class Colophon(SQLModel, table=True):
         with Session(engine) as session:
             statement = select(cls, Ind_Col, Individual.name).join(Ind_Col, cls.id == Ind_Col.col_id).join(Individual, Individual.id == Ind_Col.ind_id).where(cls.id == colophon_id)
             result = session.exec(statement).all()
-            return [{"colophon": row[0], "ind_col": row[1], "individual_name": row[2]} for row in result]
+            if not result:
+                statement = select(cls).where(cls.id == colophon_id)
+                result = session.exec(statement).all()
+                if not result:
+                    return None
+                colophon_dict = {key: value for key, value in result[0].__dict__.items() if key != '_sa_instance_state'}
+                colophon_json = json.dumps(colophon_dict)
+                colophon_json = json.loads(colophon_json)
+                colophon_json["related_individuals"] = []
+                return colophon_json
+
+            colophon_dict = {key: value for key, value in result[0][0].__dict__.items() if key != '_sa_instance_state'}
+            colophon_json = json.dumps(colophon_dict)
+            colophon_json = json.loads(colophon_json)
+            colophon_json["related_individuals"] = [{"ind_col": {key: value for key, value in row[1].__dict__.items() if key != '_sa_instance_state'}, "individual_name": row[2]} for row in result]
+            return colophon_json

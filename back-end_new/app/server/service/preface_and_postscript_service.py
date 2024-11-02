@@ -64,3 +64,9 @@ async def search_preface_and_postscript(keyword: str, page: int, page_size: int)
     preface_and_postscripts = Preface_And_Postscript.search_preface_and_postscript(keyword, page, page_size)
     preface_and_postscripts["success"] = True
     return ResponseModel(data=preface_and_postscripts)
+
+
+@preface_and_postscript_router.get("/detail")
+async def get_preface_and_postscript_by_id(id: int):
+    preface_and_postscript = Preface_And_Postscript.get_preface_and_postscript_by_id(id)
+    return ResponseModel(data=preface_and_postscript)

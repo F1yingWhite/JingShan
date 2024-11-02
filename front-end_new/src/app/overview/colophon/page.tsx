@@ -16,9 +16,7 @@ const columns = [
     title: "经名",
     dataIndex: "scripture_name",
     key: "scripture_name",
-    render: (text: any, record: any) => (
-      <Link className="text-[#c19d50]" href={`/colophon/${record.id}`}>{record.scripture_name}</Link>
-    ),
+
   },
   {
     title: "卷数",
@@ -35,6 +33,9 @@ const columns = [
     dataIndex: "content",
     key: "content",
     width: "50%",
+    render: (text: any, record: any) => (
+      <Link className="text-[#c19d50]" href={`/colophon/${record.id}`}>{record.content}</Link>
+    ),
 
     ellipsis: true,
   },

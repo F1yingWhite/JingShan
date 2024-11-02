@@ -2,7 +2,7 @@ from re import U
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, conset
 from sqlalchemy import true
 
 from ...interlal.models.colophon import Colophon
@@ -58,32 +58,11 @@ async def get_colophon_total_num(params: ColophonQueryParams):
 @colophon_router.get("/detail")
 async def get_colophon_detail(id: int):
     results = Colophon.get_colophon_by_id(colophon_id=id)
-    result_dict = {}
-    if len(results) == 0:
-        return ResponseModel(data=result_dict)
-
-    colophon_data = results[0]["colophon"].__dict__
-
-    result_dict["content"] = colophon_data.get("content")
-    result_dict["scripture_name"] = colophon_data.get("scripture_name")
-    result_dict["volume_id"] = colophon_data.get("volume_id")
-    result_dict["chapter_id"] = colophon_data.get("chapter_id")
-    result_dict["qianziwen"] = colophon_data.get("qianziwen")
-    result_dict["pdf_id"] = colophon_data.get("pdf_id")
-    result_dict["page_id"] = colophon_data.get("page_id")
-    result_dict["time"] = get_publication_time(result_dict["content"])
-    result_dict["place"] = get_publication_place(result_dict["content"])
-    result_dict["related_individuals"] = []
-    for item in results:
-        ind_col_data = item["ind_col"].__dict__
-        person_dict = {
-            "name": item["individual_name"],
-            "id": ind_col_data.get("ind_id"),
-            "description": ind_col_data.get("description"),
-            "type": ind_col_data.get("type"),
-        }
-        result_dict["related_individuals"].append(person_dict)
-    return ResponseModel(data=result_dict)
+    if not results:
+        raise HTTPException(status_code=404, detail="Colophon not found")
+    results["time"] = get_publication_time(results["content"])
+    results["place"] = get_publication_place(results["content"])
+    return ResponseModel(data=results)
 
 
 @colophon_router.get("/search")

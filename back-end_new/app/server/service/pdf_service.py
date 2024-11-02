@@ -33,7 +33,7 @@ async def get_pdf(pdf_type: Literal["colophon", "preface_and_postscript"], pdf_i
     if page < 0 or page >= len(pdf_reader.pages):
         raise HTTPException(status_code=400, detail="Invalid page number")
 
-    images = convert_from_path(pdf_path, first_page=page + 1, last_page=page + 1)
+    images = convert_from_path(pdf_path, first_page=page, last_page=page)
     if not images:
         raise HTTPException(status_code=500, detail="Failed to convert PDF page to image")
 
