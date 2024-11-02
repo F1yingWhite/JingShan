@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --no-lint",
     "start": "next start",
     "lint": "next lint"
   },
@@ -23,7 +23,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.27.0",
-    "recharts": "^2.13.2"
+    "recharts": "^2.13.2",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -15,6 +15,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const timersRef = useRef<{ [key: number]: NodeJS.Timeout }>({});
   const [pageHeight, setPageHeight] = useState<number>(0);
+  const [scollto, setScrollto] = useState<number>(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -29,7 +30,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           setPageHeight(pageHeight);
         }
         if (containerRef.current && pageHeight) {
-          containerRef.current.scrollTo(0, (res.page_id) * (pageHeight + 16));
+          setScrollto((res.page_id) * (pageHeight + 16))
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -99,6 +100,9 @@ export default function Page({ params }: { params: { slug: string } }) {
     };
   }, [handleIntersection]);
 
+  if (containerRef.current) {
+    containerRef.current.scrollTo(0, scollto);
+  }
 
   return (
     <div className="flex h-full">
