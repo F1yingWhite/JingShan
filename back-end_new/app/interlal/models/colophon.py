@@ -115,14 +115,22 @@ class Colophon(SQLModel, table=True):
                 result = session.exec(statement).all()
                 if not result:
                     return None
-                colophon_dict = {key: value for key, value in result[0].__dict__.items() if key != '_sa_instance_state'}
+                colophon_dict = {key: value for key, value in result[0].__dict__.items() if key != "_sa_instance_state"}
                 colophon_json = json.dumps(colophon_dict)
                 colophon_json = json.loads(colophon_json)
                 colophon_json["related_individuals"] = []
                 return colophon_json
 
-            colophon_dict = {key: value for key, value in result[0][0].__dict__.items() if key != '_sa_instance_state'}
+            colophon_dict = {key: value for key, value in result[0][0].__dict__.items() if key != "_sa_instance_state"}
             colophon_json = json.dumps(colophon_dict)
             colophon_json = json.loads(colophon_json)
-            colophon_json["related_individuals"] = [{"ind_col": {key: value for key, value in row[1].__dict__.items() if key != '_sa_instance_state'}, "individual_name": row[2]} for row in result]
+            colophon_json["related_individuals"] = [
+                {
+                    "name": row[2],
+                    "type": row[1].type,
+                    "description": row[1].description,
+                    "id": row[1].ind_id,
+                }
+                for row in result
+            ]
             return colophon_json

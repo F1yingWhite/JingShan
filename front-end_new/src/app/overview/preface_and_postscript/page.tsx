@@ -3,6 +3,8 @@ import { getPrefaceAndPostscriptList, getcPrefaceAndPostscriptTotalNum } from '@
 import { PrefaceAndPostscript } from '@/lib/preface_and_postscript';
 import React from 'react';
 import DataTable from '@/components/DataTable'; // 确保路径正确
+import { render } from 'react-dom';
+import Link from 'next/link';
 
 const columns = [
   {
@@ -24,7 +26,10 @@ const columns = [
   {
     title: "序跋篇名",
     dataIndex: "title",
-    key: "title"
+    key: "title",
+    render: (text: any, record: any) => (
+      <Link className="text-[#c19d50]" href={`/preface_and_postscript/${record.id}`}>{record.title}</Link>
+    ),
   },
   {
     title: "类别",

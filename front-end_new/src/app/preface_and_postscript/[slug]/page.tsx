@@ -21,6 +21,10 @@ export default function Page({ params }: { params: { slug: string } }) {
         setPdfId(res.copy_id);
         const res2 = await getPdfLength('preface_and_postscript', res.copy_id);
         setTotalPages(res2.length);
+        // ! 特殊处理
+        if (res.copy_id === 1) {
+          res.page_id += 6;
+        }
         const pageHeight = await fetchPdfPage(res.page_id, res.copy_id);
         if (pageHeight !== undefined) {
           setPageHeight(pageHeight);

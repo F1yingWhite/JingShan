@@ -19,6 +19,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     const fetchData = async () => {
       try {
         const res: Colophon = await getColophonById(+slug);
+        console.log(res)
         setColophon(res);
         setPdfId(res.pdf_id);
         const res2 = await getPdfLength('colophon', res.pdf_id);
