@@ -3,6 +3,7 @@ import React from 'react';
 import { getStoryList, getStoryTotalNum } from '@/lib/story';
 import { Story } from '@/lib/story';
 import DataTable from '@/components/DataTable'; // 确保路径正确
+import Link from 'next/link';
 
 const columns = [
   {
@@ -14,7 +15,10 @@ const columns = [
   {
     title: "故事名称",
     dataIndex: "title",
-    key: "title"
+    key: "title",
+    render: (text: any, record: any) => (
+      <Link className="text-[#c19d50]" href={`/story/${record.id}`}>{record.title}</Link>
+    ),
   },
   {
     title: "故事内容",
