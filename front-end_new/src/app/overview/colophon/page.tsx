@@ -3,6 +3,7 @@ import { getColophonList, getColophonTotalNum } from '@/lib/colophon';
 import React from 'react';
 import DataTable from '@/components/DataTable'; // 确保路径正确
 import { Colophon } from '@/lib/colophon';
+import Link from 'next/link';
 
 const columns = [
   {
@@ -14,7 +15,10 @@ const columns = [
   {
     title: "经名",
     dataIndex: "scripture_name",
-    key: "scripture_name"
+    key: "scripture_name",
+    render: (text: any, record: any) => (
+      <Link className="text-[#c19d50]" href={`/colophon/${record.id}`}>{record.scripture_name}</Link>
+    ),
   },
   {
     title: "卷数",
@@ -31,9 +35,7 @@ const columns = [
     dataIndex: "content",
     key: "content",
     width: "50%",
-    // render: (text, record) => (
-    //   <Link className="text-[#c19d50]" href={`/preface_and_postscript/${record.id}`}>{text}</Link>
-    // ),
+
     ellipsis: true,
   },
   {

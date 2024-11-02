@@ -155,7 +155,7 @@ export default function Page({ params }: { params: { slug: string } }) {
               title: '人物姓名',
               dataIndex: 'name',
               render: (text, record) => (
-                <Link href={`/individual/${record.id}`}>{record.name}</Link>
+                <Link className="text-[#c19d50]" href={`/individual/${record.id}`}>{record.name}</Link>
               ),
               width: "20%"
             },
