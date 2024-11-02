@@ -1,7 +1,10 @@
+import base64
+from time import sleep
 from typing import Optional
 
 from fastapi import APIRouter, Query
-from pydantic import BaseModel
+from PIL import Image
+from pydantic import BaseModel, conset
 
 from ...interlal.models.story import Story
 from . import ResponseModel
@@ -10,6 +13,10 @@ from . import ResponseModel
 class StoryQueryParams(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
+
+
+class ContentModel(BaseModel):
+    content: str
 
 
 story_router = APIRouter(prefix="/story")
@@ -37,3 +44,20 @@ async def get_story_total_num(params: StoryQueryParams):
         content=params.content,
     )
     return ResponseModel(data={"total_num": total_num})
+
+
+@story_router.get("/detail")
+async def get_story_detail(id: int):
+    story = Story.get_story_detail(id)
+    return ResponseModel(data=story)
+
+
+@story_router.post("/generate_picture")
+async def generate_picture(content_model: ContentModel):
+    content = content_model.content
+    img_test_path = "./assets/test.jpg"
+    sleep(1)
+    with open(img_test_path, "rb") as f:
+        img = f.read()
+        img_base64 = base64.b64encode(img).decode()
+    return ResponseModel(data={"img": img_base64})

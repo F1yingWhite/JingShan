@@ -37,3 +37,10 @@ class Story(SQLModel, table=True):
 
             results = session.exec(statement).all()
             return len(results)
+
+    @classmethod
+    def get_story_detail(cls, story_id: int):
+        with Session(engine) as session:
+            statement = select(cls).where(cls.id == story_id)
+            result = session.exec(statement).first()
+            return result

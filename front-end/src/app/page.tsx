@@ -4,6 +4,7 @@ import { Layout, Input, notification } from 'antd';
 import { Footer, Content } from 'antd/es/layout/layout';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import Head from 'next/head';
 const { Search } = Input;
 
 export default function Page() {
@@ -52,6 +53,11 @@ export default function Page() {
 
   return (
     <Layout className='h-full' style={bgStyle}>
+      <Head>
+        {/* TODO:Does it works?*/}
+        <title>求是佛典</title>
+        <meta property="og:title" content="求是佛典" key="title" />
+      </Head>
       {contextHolder}
       <Content className={centerCol}>
         <div className="w-1/2 flex flex-col items-center mt-20">
