@@ -1,12 +1,12 @@
 'use client'
 import { NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, UserOutlined, CommentOutlined, CloseOutlined } from '@ant-design/icons';
-import { Layout, Menu, FloatButton, Modal } from 'antd';
+import { Layout, Menu, FloatButton} from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-
+import ChatButton from '@/components/ChatButton';
 export default function DashboardLayout({ children }: { children: React.ReactNode; }) {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState('1');
@@ -57,25 +57,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Menu>
         </Sider>
         <Content className="p-6">
-          <div>
-            <FloatButton
-              shape="circle"
-              type="primary"
-              icon={isModalOpen ? <CloseOutlined /> : <CommentOutlined />}
-              onClick={toggleModal}
-            />
-            <Modal
-              title="客服对话"
-              open={isModalOpen}
-              onCancel={toggleModal}
-              footer={null}
-              mask={false}
-              width={"30%"}
-              style={{ top: "40%", left: "30%", }}
-            >
-            </Modal>
-          </div>
-          {children}
+          <ChatButton />
+         {children}
         </Content>
       </Layout>
     </section>
