@@ -13,6 +13,7 @@ export type Graph = {
     name: string;
     category: number;
     symbolSize: number;
+    value: string;
     label?: {
       show: boolean;
     }
