@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 const { Search } = Input;
-
 export default function Page() {
   const router = useRouter();
   const bgStyle = {
@@ -25,7 +24,7 @@ export default function Page() {
       message: '⚠️警告',
       description:
         '请输入搜索内容',
-      duration: 1.5, // 设置自动关闭时间为 1.5 秒
+      duration: 1.5,
     });
   };
   const search = (value: string) => {

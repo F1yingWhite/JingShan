@@ -1,6 +1,6 @@
 'use client'
 import { NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, UserOutlined, CommentOutlined, CloseOutlined } from '@ant-design/icons';
-import { Layout, Menu, FloatButton} from 'antd';
+import { Layout, Menu, FloatButton } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ import ChatButton from '@/components/ChatButton';
 export default function DashboardLayout({ children }: { children: React.ReactNode; }) {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState('1');
-  const [isModalOpen, setIsModalOpen] = useState(false); // 控制Modal开关
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { slug } = useParams();
 
   const menuItems = [
@@ -58,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </Sider>
         <Content className="p-6">
           <ChatButton />
-         {children}
+          {children}
         </Content>
       </Layout>
     </section>

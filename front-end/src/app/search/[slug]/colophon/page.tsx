@@ -38,7 +38,7 @@ export default function Page() {
           };
         }}
         pagination={{
-          pageSizeOptions: ['5', '10', '20'],
+          pageSizeOptions: ['5', '10', '20','50'],
           defaultPageSize: 5,
         }}
         metas={{
