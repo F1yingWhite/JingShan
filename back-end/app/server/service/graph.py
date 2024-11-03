@@ -45,7 +45,6 @@ def get_graph_by_id(id: int):
             list_of_strings = ["Not Found"]
         id_category_map[node_id] = list_of_strings[0]
         res_dict["categories"].append({"name": list_of_strings[0], "keyword": {}, "base": list_of_strings[0]})
-    print(id_category_map)
     for node_id, count in node_count.items():
         node_index[node_id] = len(res_dict["nodes"])
         res_dict["nodes"].append(
@@ -55,6 +54,7 @@ def get_graph_by_id(id: int):
                 "category": list(id_category_map.values()).index(id_category_map[node_id]),
                 "symbolSize": len(node_links[node_id]) * 10,
                 "label": {"show": True},
+                "value": len(node_links[node_id]),
             }
         )
 
