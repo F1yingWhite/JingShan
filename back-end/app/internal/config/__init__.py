@@ -1,5 +1,6 @@
 import logging
 from doctest import debug
+from typing import Optional
 
 import yaml
 from pydantic import BaseModel, ValidationError
@@ -10,6 +11,7 @@ CONFIG_PATH = "config.yaml"
 class Config(BaseModel):
     database_url: str
     log_file: str
+    redis_url: Optional[str] = None
     debug: bool
 
     @classmethod

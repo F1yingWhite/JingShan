@@ -5,7 +5,7 @@ from unicodedata import category
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, conset
 
-from ...interlal.models.graph import SPO, EntityAttributes, StringMapping
+from ...internal.models.graph import SPO, EntityAttributes, StringMapping
 from . import ResponseModel
 
 graph_router = APIRouter(prefix="/graph")

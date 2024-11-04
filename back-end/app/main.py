@@ -1,7 +1,7 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .server.middlewares.response_middleware import ResponseMiddleware
+from .server.middlewares.redis_middleware import RedisMiddleware
 from .server.service.chat_service import chat_router
 from .server.service.colophon_service import colophon_router
 from .server.service.graph import graph_router
@@ -21,6 +21,7 @@ main_router.include_router(individual_router)
 main_router.include_router(pdf_router)
 main_router.include_router(graph_router)
 main_router.include_router(chat_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

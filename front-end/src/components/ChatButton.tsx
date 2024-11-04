@@ -4,7 +4,7 @@ import { FloatButton, Input, List, Modal } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 
 export default function ChatButton() {
-  const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [chatHistory, setChatHistory] = useState<Message[]>([{ role: "assistant", content: "您好,有什么可以帮助你的吗?" }]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const listRef = useRef<HTMLDivElement>(null);
@@ -54,7 +54,7 @@ export default function ChatButton() {
             renderItem={item => (
               <List.Item style={{ textAlign: item.role === 'user' ? 'right' : 'left' }}>
                 <div className="font-bold">
-                  {item.role === 'user' ? '我' : '助手'}:
+                  {item.role === 'user' ? '我' : '径山chat'}:
                 </div>
                 <div>
                   {item.content}

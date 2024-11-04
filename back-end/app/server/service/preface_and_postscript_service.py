@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from ...interlal.models.preface_and_postscript import Preface_And_Postscript
+from ...internal.models.preface_and_postscript import Preface_And_Postscript
 from . import ResponseModel
 
 

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from ...interlal.models.individual import Individual
-from ...interlal.utils.get_time_place import (
+from ...internal.models.individual import Individual
+from ...internal.utils.get_time_place import (
     TIME_LIST,
     get_latitude_and_longitude,
     get_publication_place,
