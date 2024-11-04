@@ -46,6 +46,7 @@
         }
 
         const id = getQueryParameter('id');
+        const deploy = getQueryParameter('deploy');
 
         var geoData;
 
@@ -57,9 +58,7 @@
 
         // 发送请求获得数据
         async function fetchIndividualData() {
-            <!-- const url = `https://jinshanback.cpolar.top/individual?id=${id}`; -->
-            const url = `http://127.0.0.1:5001/api/individuals/detail?id=${id}`;
-
+            const url = deploy === 'true' ? `https://jingshan.cpolar.top/api/individuals/detail?id=${id}` : `http://127.0.0.1:5001/api/individuals/detail?id=${id}`;
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -77,11 +76,11 @@
         function setupMap() {
             window.movingDraw = true;
             var map = new AMap.Map('map', {
-                zoom: 5,
+                zoom: 4,
                 showLabel: false,
                 viewMode: '3D',
                 pitch: 55,
-                center: [103.594884, 36.964587],
+                center: [113.594884, 30.964587],
             });
 
             var loca = new Loca.Container({

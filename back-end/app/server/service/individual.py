@@ -53,15 +53,17 @@ async def get_individuals_detail(id: int):
         for time in keys_to_remove:
             time_cnt.pop(time)
     individuals_dict["time"] = time_cnt
+    id = 1
     individuals_dict["place"] = {"type": "FeatureCollection", "features": []}
     for place, cnt in place_dict.items():
         individuals_dict["place"]["features"].append(
             {
                 "type": "Feature",
                 "geometry": {"type": "Point", "coordinates": get_latitude_and_longitude(place)},
-                "properties": {"name": place, "count": cnt},
+                "properties": {"name": place, "count": cnt, "id": id},
             }
         )
+        id += 1
     return ResponseModel(data=individuals_dict)
 
 

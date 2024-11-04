@@ -38,6 +38,7 @@ class EntityAttributes(SQLModel, table=True):
 
 
 class SPO(SQLModel, table=True):
+    __tablename__ = "SPO"
     subject_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="stringmapping.id")
     predicate_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="stringmapping.id")
     object_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="stringmapping.id")

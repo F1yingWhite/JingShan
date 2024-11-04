@@ -13,7 +13,6 @@ export default function page({ params }: { params: { slug: number } }) {
       setGraph(res);
     },)
   }, [setGraph])
-  console.log(graph)
   return (
     <>
       {graph && <RelationChart graph={graph} />}
