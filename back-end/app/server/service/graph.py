@@ -3,7 +3,11 @@ import ast
 from fastapi import APIRouter
 from httpx import get
 
-from ...internal.models.graph_database.graph import get_list, get_relation_ship_by_id
+from ...internal.models.graph_database.graph import (
+    get_list,
+    get_relation_ship_by_id,
+    total_num,
+)
 from . import ResponseModel
 
 graph_router = APIRouter(prefix="/graph")
@@ -66,7 +70,26 @@ def get_graph_by_id(name: str):
     return ResponseModel(data=res_dict)
 
 
+def is_literal(s):
+    try:
+        ast.literal_eval(s)
+        return True
+    except (ValueError, SyntaxError):
+        return False
+
+
 @graph_router.get("/list")
 def get_graph_list(page: int, page_size: int):
     results = get_list(page, page_size)
-    return ResponseModel(data=results)
+    nums = total_num()
+    res_dict = []
+    for result in results:
+        temp_dict = {}
+        for key in result["n"]:
+            value = result["n"][key]
+            if is_literal(value):
+                temp_dict[key] = ast.literal_eval(value)
+            else:
+                temp_dict[key] = value
+        res_dict.append(temp_dict)
+    return ResponseModel(data={"success": True, "total": nums[0]["count(n)"], "data": res_dict})

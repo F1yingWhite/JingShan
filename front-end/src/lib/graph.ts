@@ -30,3 +30,14 @@ export type Graph = {
 export function getGraph(name: string) {
   return get(`/graph?name=${name}`);
 }
+
+export type GraphDetail = {
+  name: string;
+  [key: string]: any;
+}
+
+export type GraphLists = GraphDetail[];
+
+export function getGraphList(page: number, pageSize: number) {
+  return get(`/graph/list?page=${page}&page_size=${pageSize}`);
+}

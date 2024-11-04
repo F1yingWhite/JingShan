@@ -18,3 +18,9 @@ def get_list(page: int, page_size: int):
     with neo4j_driver.session() as session:
         result = session.run("MATCH (n) RETURN n SKIP $skip LIMIT $limit", skip=(page - 1) * page_size, limit=page_size)
         return result.data()
+
+
+def total_num():
+    with neo4j_driver.session() as session:
+        result = session.run("MATCH (n) RETURN count(n)")
+        return result.data()

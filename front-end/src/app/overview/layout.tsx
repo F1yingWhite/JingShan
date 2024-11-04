@@ -1,12 +1,11 @@
 'use client';
 import { useState } from 'react';
-import { LaptopOutlined, NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, CommentOutlined } from '@ant-design/icons';
+import { LaptopOutlined, NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, CommentOutlined, NodeIndexOutlined } from '@ant-design/icons';
 import { Layout, Menu, FloatButton } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
 import Link from 'next/link';
 import ChatButton from '@/components/ChatButton';
-
 const menuItems = [
   { key: '1', icon: <CreditCardOutlined />, label: '牌记', path: '/overview/colophon' },
   { key: '2', icon: <NotificationOutlined />, label: '序跋', path: '/overview/preface_and_postscript' },
@@ -42,6 +41,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Menu.SubMenu>
             <Menu.Item key="3" icon={<LaptopOutlined />}>
               <Link href="/overview/story">故事</Link>
+            </Menu.Item>
+            <Menu.Item key="4" icon={<NodeIndexOutlined />}>
+              <Link href="/overview/graph">径山志</Link>
             </Menu.Item>
           </Menu>
         </Sider>
