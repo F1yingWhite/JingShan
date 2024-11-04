@@ -4,7 +4,7 @@ import { FloatButton, Image, Spin } from 'antd';
 import { getPdf } from '@/lib/pdf';
 import { getPrefaceAndPostscriptById, PrefaceAndPostscript } from '@/lib/preface_and_postscript';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 export default function Page({ params }: { params: { slug: string } }) {
   const slug = params.slug;
