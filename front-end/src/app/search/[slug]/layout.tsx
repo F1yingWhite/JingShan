@@ -10,7 +10,6 @@ import ChatButton from '@/components/ChatButton';
 export default function DashboardLayout({ children }: { children: React.ReactNode; }) {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState('1');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { slug } = useParams();
 
   const menuItems = [
@@ -21,10 +20,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
-  };
-
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
   };
 
   const handleMenuClick = (key: string) => {

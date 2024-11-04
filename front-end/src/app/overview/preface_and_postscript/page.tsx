@@ -3,7 +3,6 @@ import { getPrefaceAndPostscriptList, getcPrefaceAndPostscriptTotalNum } from '@
 import { PrefaceAndPostscript } from '@/lib/preface_and_postscript';
 import React from 'react';
 import DataTable from '@/components/DataTable'; // 确保路径正确
-import { render } from 'react-dom';
 import Link from 'next/link';
 
 const columns = [

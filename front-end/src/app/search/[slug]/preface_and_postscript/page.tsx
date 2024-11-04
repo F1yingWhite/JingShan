@@ -31,6 +31,7 @@ export default function Page() {
         pagination={{
           showSizeChanger: true,
           pageSizeOptions: [5, 10, 20, 50],
+          defaultPageSize: 20,
         }}
         search={false}
         columns={[
