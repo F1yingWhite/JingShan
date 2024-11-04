@@ -1,7 +1,6 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .server.middlewares.redis_middleware import RedisMiddleware
 from .server.service.chat_service import chat_router
 from .server.service.colophon_service import colophon_router
 from .server.service.graph import graph_router
