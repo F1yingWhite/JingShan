@@ -6,7 +6,7 @@ from fastapi import APIRouter, Query
 from PIL import Image
 from pydantic import BaseModel, conset
 
-from ...internal.models.story import Story
+from ...internal.models.relation_database.story import Story
 from . import ResponseModel
 
 

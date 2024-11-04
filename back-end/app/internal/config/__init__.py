@@ -11,6 +11,9 @@ CONFIG_PATH = "config.yaml"
 class Config(BaseModel):
     database_url: str
     log_file: str
+    neo4j_url: str
+    neo4j_auth_name: str
+    neo4j_auth_password: str
     redis_url: Optional[str] = None
     debug: bool
 

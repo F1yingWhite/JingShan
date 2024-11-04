@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from ...internal.models.individual import Individual
+from ...internal.models.relation_database.individual import Individual
 from ...internal.utils.get_time_place import (
     TIME_LIST,
     get_latitude_and_longitude,

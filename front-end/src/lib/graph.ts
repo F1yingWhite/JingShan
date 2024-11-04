@@ -27,6 +27,6 @@ export type Graph = {
 }
 
 
-export function getGraph(id: number) {
-  return get(`/graph?id=${id}`);
+export function getGraph(name: string) {
+  return get(`/graph?name=${name}`);
 }

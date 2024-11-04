@@ -5,7 +5,7 @@ import { Graph, getGraph } from '@/lib/graph';
 
 
 
-export default function page({ params }: { params: { slug: number } }) {
+export default function page({ params }: { params: { slug: string } }) {
   const [graph, setGraph] = useState<Graph>()
   const slug = params.slug;
   useEffect(() => {

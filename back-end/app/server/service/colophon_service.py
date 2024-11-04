@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, conset
 from sqlalchemy import true
 
-from ...internal.models.colophon import Colophon
+from ...internal.models.relation_database.colophon import Colophon
 from ...internal.utils.get_time_place import get_publication_place, get_publication_time
 from . import ResponseModel
 
