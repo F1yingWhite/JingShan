@@ -41,7 +41,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           style={{ position: 'absolute', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
         />
       }
-      {+slug < 9160 &&
+      {+slug < 4777 &&
         <FloatButton
           onClick={() => { router.push(`/colophon/${+slug + 1}`) }}
           icon={<RightOutlined />}
