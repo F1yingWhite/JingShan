@@ -16,7 +16,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState('1');
 
-
   const toggleCollapsed = () => setCollapsed(!collapsed);
 
   return (
