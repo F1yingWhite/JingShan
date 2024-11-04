@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const host = 'http://127.0.0.1:5001/api';
-// const host = "https://jingshanback.cpolar.top/api"
+// const host = 'http://127.0.0.1:5001/api';
+const host = "https://jingshanback.cpolar.top/api"
 
 export function get(url: string, options?: any): Promise<any> {
   return new Promise((resolve, reject) => {
