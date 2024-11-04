@@ -41,7 +41,7 @@ export default function Page() {
   const [showFooter, setShowFooter] = useState(true);
 
   const checkHeight = () => {
-    setShowFooter(window.innerHeight > 400);
+    setShowFooter(window.innerHeight > 450);
   };
 
   useEffect(() => {

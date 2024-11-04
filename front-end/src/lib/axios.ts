@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const host = process.env.REACT_APP_DEPLOY === 'true' ? 'https://jingshan.cpolar.top' : 'http://127.0.0.1:5001/api';
+// const host = 'http://127.0.0.1:5001/api';
+const host = "https://jingshanback.cpolar.top/api"
 
 export function get(url: string, options?: any): Promise<any> {
   return new Promise((resolve, reject) => {

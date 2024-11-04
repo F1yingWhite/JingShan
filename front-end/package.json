@@ -6,7 +6,6 @@
     "dev": "next dev",
     "build": "next build --no-lint",
     "start": "next start",
-    "deploy": "REACT_APP_DEPLOY=true next start",
     "lint": "next lint"
   },
   "dependencies": {
