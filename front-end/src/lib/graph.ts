@@ -16,7 +16,8 @@ export type Graph = {
     value: string;
     label?: {
       show: boolean;
-    }
+    },
+    center?: boolean
   }[],
   "links":
   {
