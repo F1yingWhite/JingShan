@@ -1,3 +1,4 @@
+from typing import Optional
 from unittest import result
 
 from neo4j import GraphDatabase
@@ -14,13 +15,24 @@ def get_relation_ship_by_id(subject_name: str):
         return result.data()
 
 
-def get_list(page: int, page_size: int):
+def get_list(page: int, page_size: int, title: Optional[str]):
     with neo4j_driver.session() as session:
-        result = session.run("MATCH (n) RETURN n SKIP $skip LIMIT $limit", skip=(page - 1) * page_size, limit=page_size)
+        if title:
+            result = session.run(
+                "MATCH (n) WHERE n.姓名 CONTAINS $title RETURN n SKIP $skip LIMIT $limit",
+                title=title,
+                skip=(page - 1) * page_size,
+                limit=page_size,
+            )
+        else:
+            result = session.run("MATCH (n) RETURN n SKIP $skip LIMIT $limit", skip=(page - 1) * page_size, limit=page_size)
         return result.data()
 
 
-def total_num():
+def total_num(title: Optional[str]):
     with neo4j_driver.session() as session:
-        result = session.run("MATCH (n) RETURN count(n)")
+        if title:
+            result = session.run("MATCH (n) WHERE n.姓名 CONTAINS $title RETURN count(n)", title=title)
+        else:
+            result = session.run("MATCH (n) RETURN count(n)")
         return result.data()

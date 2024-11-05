@@ -1,7 +1,9 @@
 import ast
+import string
+from typing import Optional
 
 from fastapi import APIRouter
-from httpx import get
+from pydantic import BaseModel
 
 from ...internal.models.graph_database.graph import (
     get_list,
@@ -78,10 +80,16 @@ def is_literal(s):
         return False
 
 
-@graph_router.get("/list")
-def get_graph_list(page: int, page_size: int):
-    results = get_list(page, page_size)
-    nums = total_num()
+class GraphList(BaseModel):
+    current: int
+    pageSize: int
+    title: Optional[str] = None
+
+
+@graph_router.post("/list")
+def get_graph_list(graph_data: GraphList):
+    results = get_list(graph_data.current, graph_data.pageSize, graph_data.title)
+    nums = total_num(graph_data.title)
     res_dict = []
     for result in results:
         temp_dict = {}

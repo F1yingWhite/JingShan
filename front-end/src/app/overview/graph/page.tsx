@@ -12,13 +12,14 @@ export default function page() {
         rowKey="name"
         headerTitle="人物列表"
         request={async (params = {}) => {
-          const { current = 1, pageSize = 10 } = params;
-          const { data, total, success } = await getGraphList(current, pageSize);
-          console.log(total)
+          const res = await getGraphList(params);
           return {
-            data: data,
-            total: total,
+            data: res.data.data,
+            total: res.data.total,
           };
+        }}
+        search={{
+          filterType: 'light',
         }}
         pagination={{
           pageSizeOptions: ['5', '10', '20', '50'],
@@ -26,6 +27,8 @@ export default function page() {
         }}
         metas={{
           title: {
+            search: true,
+            title: "人物名称",
             render: (text, record) => {
               // 如果record有除了姓名的其他字段则展示Collapse,否则只展示姓名
               const hasOtherFields = Object.keys(record).some(key => key !== '姓名');
@@ -59,9 +62,6 @@ export default function page() {
                 <span className="text-[#c19d50] ml-10" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名}</span>
               );
             },
-          },
-          description: {
-            render: () => null,
           },
         }}
       />

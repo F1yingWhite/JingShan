@@ -1,4 +1,4 @@
-import { get } from "@/lib/axios";
+import { get, post } from "@/lib/axios";
 
 export type Graph = {
   "type": string;
@@ -38,6 +38,6 @@ export type GraphDetail = {
 
 export type GraphLists = GraphDetail[];
 
-export function getGraphList(page: number, pageSize: number) {
-  return get(`/graph/list?page=${page}&page_size=${pageSize}`);
+export function getGraphList(params: any) {
+  return post(`/graph/list`, params);
 }
