@@ -1,5 +1,5 @@
 'use client'
-import { NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, UserOutlined, CommentOutlined, CloseOutlined } from '@ant-design/icons';
+import { NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, UserOutlined, CommentOutlined, CloseOutlined, NodeIndexOutlined } from '@ant-design/icons';
 import { Layout, Menu, FloatButton } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
@@ -49,6 +49,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </Menu.Item>
               ))}
             </Menu.SubMenu>
+            <Menu.Item key="4" icon={<NodeIndexOutlined />}>
+              <Link href={`/search/${slug}/graph`}>径山志</Link>
+            </Menu.Item>
           </Menu>
         </Sider>
         <Content className="p-6">

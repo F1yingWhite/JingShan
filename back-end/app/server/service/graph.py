@@ -7,7 +7,9 @@ from pydantic import BaseModel
 
 from ...internal.models.graph_database.graph import (
     get_list,
-    get_relation_ship_by_id,
+    get_node_by_name,
+    get_relation_ship_by_id_in,
+    get_relation_ship_by_id_out,
     total_num,
 )
 from . import ResponseModel
@@ -16,16 +18,18 @@ graph_router = APIRouter(prefix="/graph")
 
 
 @graph_router.get("/")
-def get_graph_by_id(name: str):
+def get_graph_by_name(name: str):
     res_dict = {
         "type": "force",
         "categories": [],
         "nodes": [],
         "links": [],
     }
-    results = get_relation_ship_by_id(name)
+    results_in = get_relation_ship_by_id_in(name)
+    results_out = get_relation_ship_by_id_out(name)
+    results = results_in + results_out
     category_set = set()
-    node_map = {}  # 统计每个节点的连接数
+    node_map = {}
     node_category_map = {}
     for result in results:
         if result["subject_identity"] != "Not Found":
@@ -50,7 +54,7 @@ def get_graph_by_id(name: str):
             {
                 "name": node,
                 "category": list(category_set).index(node_category_map[node]),
-                "symbolSize": count * 10,
+                "symbolSize": count * 3,
                 "label": {"show": True},
                 "value": count,
             }
@@ -101,3 +105,19 @@ def get_graph_list(graph_data: GraphList):
                 temp_dict[key] = value
         res_dict.append(temp_dict)
     return ResponseModel(data={"success": True, "total": nums[0]["count(n)"], "data": res_dict})
+
+
+@graph_router.get("/detail")
+def get_graph_detail(name: str):
+    results = get_node_by_name(name)
+    res_dict = []
+    for result in results:
+        temp_dict = {}
+        for key in result:
+            value = result[key]
+            if is_literal(value):
+                temp_dict[key] = ast.literal_eval(value)
+            else:
+                temp_dict[key] = value
+        res_dict.append(temp_dict)
+    return ResponseModel(data=res_dict)

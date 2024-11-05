@@ -41,3 +41,7 @@ export type GraphLists = GraphDetail[];
 export function getGraphList(params: any) {
   return post(`/graph/list`, params);
 }
+
+export function getGraphDetailByName(name: string) {
+  return get(`/graph/detail?name=${name}`);
+}

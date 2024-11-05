@@ -40,6 +40,7 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
           color: 'source',
           curveness: 0.3,
         },
+        edgeSymbol: ['none', 'arrow'],
         emphasis: {
           focus: 'adjacency',
           lineStyle: {
@@ -50,9 +51,18 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
     ]
   };
 
+  const onEvents = {
+    'click': (params: any) => {
+      if (params.dataType === 'node') {
+        window.location.href = `/graph/${params.data.name}`;
+      }
+    }
+  };
+
   return <ReactECharts
     option={option}
     style={{ height: '100%', width: '100%' }}
+    onEvents={onEvents}
   />;
 };
 
