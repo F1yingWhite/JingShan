@@ -33,30 +33,26 @@ def get_graph_by_name(name: str):
     category_set = set()
     node_map = {}
     node_category_map = {}
-    main_node_category_exist = False
     for result in results:
         if result["subject_identity"] != "Not Found":
             list_of_strings = ast.literal_eval(result["subject_identity"])
-            if result["subject.姓名"] == name:
-                main_node_category_exist = True
+        elif result["subject.姓名"] == name:
+            list_of_strings = ["查询对象"]
         else:
             list_of_strings = ["Not Found"]
         category_set.add(list_of_strings[0])
         node_category_map[result["subject.姓名"]] = list_of_strings[0]
         if result["object_identity"] != "Not Found":
             list_of_strings = ast.literal_eval(result["object_identity"])
-            if result["object.姓名"] == name:
-                main_node_category_exist = True
+        elif result["object.姓名"] == name:
+            list_of_strings = ["查询对象"]
         else:
             list_of_strings = ["Not Found"]
         category_set.add(list_of_strings[0])
         node_category_map[result["object.姓名"]] = list_of_strings[0]
         node_map[result["subject.姓名"]] = node_map.get(result["subject.姓名"], 0) + 1
         node_map[result["object.姓名"]] = node_map.get(result["object.姓名"], 0) + 1
-    if not main_node_category_exist:
-        category_set.add("查询对象")
-        node_category_map[name] = "查询对象"
-    print(category_set)
+
     for category in category_set:
         res_dict["categories"].append({"name": category, "keyword": {}, "base": category})
     for node, count in node_map.items():
