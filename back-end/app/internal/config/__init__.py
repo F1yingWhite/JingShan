@@ -29,4 +29,6 @@ class Config(BaseModel):
 
 
 config = Config.load(CONFIG_PATH)
+# 删除原有的log
+open(config.log_file, "w").close()
 logging.basicConfig(filename=config.log_file, filemode="a", level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
