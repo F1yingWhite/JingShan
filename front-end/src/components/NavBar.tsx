@@ -1,10 +1,9 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Flex, Input, Layout } from 'antd';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { SearchOutlined } from '@ant-design/icons';
 const { Header } = Layout;
 
 interface NavIconProps {
@@ -53,6 +52,7 @@ const IconList: NavIconProps[] = [
     text: "缘起"
   },
 ]
+
 export default function NavBar() {
   const path = usePathname();
   const headerStyle = {
@@ -65,10 +65,19 @@ export default function NavBar() {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
 
+
+  useEffect(() => {
+    const segments = path.split('/');
+    if (segments[1] === 'search' && segments[2]) {
+      setSearchValue(decodeURIComponent(segments[2]));
+    }else{
+      setSearchValue('');
+    }
+  }, [path]);
+
   const handleSearch = (value: string) => {
     value = encodeURIComponent(value);
     router.push(`/search/${value}/colophon`);
-    setSearchValue('');
   }
 
   return (

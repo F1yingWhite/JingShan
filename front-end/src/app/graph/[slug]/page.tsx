@@ -28,7 +28,6 @@ export default function page({ params }: { params: { slug: string } }) {
 
   }, [slug]);
 
-  console.log(graphDetail);
   const router = useRouter();
   return (
     <div className='w-full h-full overflow-y-auto'>
