@@ -18,6 +18,9 @@ dependencies = [
     "redis>=5.2.0",
     "aioredis>=2.0.1",
     "neo4j>=5.26.0",
+    "spark-ai-python>=0.4.5",
+    "websockets>=13.1",
+    "httpx[socks]>=0.27.2",
 ]
 
 [tool.poetry]

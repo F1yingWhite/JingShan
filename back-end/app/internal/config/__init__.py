@@ -17,6 +17,10 @@ class Config(BaseModel):
     redis_url: Optional[str] = None
     debug: bool
 
+    SPARKAI_URL: str
+    SPARKAI_DOMAIN: str
+    SPARKAI_PASSWORD: str
+
     @classmethod
     def load(cls, file_path: str) -> "Config":
         # 如果加载失败, 抛出异常

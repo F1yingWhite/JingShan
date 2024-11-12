@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { LaptopOutlined, NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, CommentOutlined, NodeIndexOutlined } from '@ant-design/icons';
+import { LaptopOutlined, NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, NodeIndexOutlined } from '@ant-design/icons';
 import { Layout, Menu, FloatButton } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
@@ -52,7 +52,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </Content>
       </Layout>
-
     </section>
   );
 }

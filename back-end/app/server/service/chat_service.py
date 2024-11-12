@@ -1,7 +1,14 @@
+import asyncio
+import json
 from typing import List, Literal
 
-from fastapi import APIRouter
+import requests
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+from sparkai.core.messages import ChatMessage
+from sparkai.llm.llm import ChatSparkLLM, ChunkPrintHandler
+
+from ...internal.config import config
 
 
 class Message(BaseModel):
@@ -16,6 +23,33 @@ class ChatQueryParams(BaseModel):
 chat_router = APIRouter(prefix="/chat")
 
 
-@chat_router.post("/")
-async def get_chat(history: ChatQueryParams):
-    return {"response": "你好，有什么我可以帮助的吗？"}
+@chat_router.websocket("/ws")
+async def chat_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_json()
+            print(data)
+            messages = data["messages"]
+            data = {"model": config.SPARKAI_DOMAIN, "messages": messages, "stream": True}
+            header = {"Authorization": "Bearer " + config.SPARKAI_PASSWORD}
+            response = requests.post(url=config.SPARKAI_URL, headers=header, json=data, stream=True)
+            response.encoding = "utf-8"
+            for line in response.iter_lines(decode_unicode="utf-8"):
+                if line.startswith("data:"):
+                    line = line[len("data:") :].strip()
+                if line:
+                    if line == "[DONE]":
+                        await websocket.close()
+                        return
+                    try:
+                        data = json.loads(line)
+                        content = data["choices"][0]["delta"]["content"]
+                        print(content)
+                        await websocket.send_text(content)
+                        await asyncio.sleep(0)  # 确保每条消息立即发送
+                    except json.JSONDecodeError as e:
+                        print(f"JSONDecodeError: {e} - Line: {line}")
+
+    except WebSocketDisconnect:
+        await websocket.close()
