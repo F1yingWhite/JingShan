@@ -29,7 +29,6 @@ async def chat_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
-            print(data)
             messages = data["messages"]
             data = {"model": config.SPARKAI_DOMAIN, "messages": messages, "stream": True}
             header = {"Authorization": "Bearer " + config.SPARKAI_PASSWORD}
@@ -45,7 +44,6 @@ async def chat_endpoint(websocket: WebSocket):
                     try:
                         data = json.loads(line)
                         content = data["choices"][0]["delta"]["content"]
-                        print(content)
                         await websocket.send_text(content)
                         await asyncio.sleep(0)  # 确保每条消息立即发送
                     except json.JSONDecodeError as e:
