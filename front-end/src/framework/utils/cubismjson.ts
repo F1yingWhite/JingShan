@@ -236,9 +236,9 @@ export class CubismJson {
     this._lineCount = 0;
     this._root = null;
 
-    if (buffer != undefined) {
-      this.parseBytes(buffer, length, this._parseCallback);
-    }
+    // if (buffer != undefined) {
+    //   this.parseBytes(buffer, length, this._parseCallback);
+    // }
   }
 
   /**
@@ -253,7 +253,7 @@ export class CubismJson {
     const succeeded: boolean = json.parseBytes(
       buffer,
       size,
-      json._parseCallback
+      // json._parseCallback
     );
 
     if (!succeeded) {
@@ -751,7 +751,7 @@ export class CubismJson {
     return null;
   }
 
-  _parseCallback: parseJsonObject = CubismJsonExtension.parseJsonObject; // パース時に使う処理のコールバック関数
+  // _parseCallback: parseJsonObject = CubismJsonExtension.parseJsonObject; // パース時に使う処理のコールバック関数
 
   _error: string; // パース時のエラー
   _lineCount: number; // エラー報告に用いる行数カウント
@@ -1283,7 +1283,7 @@ export class JsonMap extends Value {
 
 // Namespace definition for compatibility.
 import * as $ from './cubismjson';
-import { CubismJsonExtension } from './cubismjsonextension';
+// import { CubismJsonExtension } from './cubismjsonextension';
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Live2DCubismFramework {
   export const CubismJson = $.CubismJson;
