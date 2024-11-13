@@ -1,7 +1,7 @@
-from typing import List, Optional
+from typing import Optional
 
 from sqlalchemy.orm import aliased
-from sqlmodel import Field, Relationship, Session, SQLModel, select
+from sqlmodel import Field, Session, SQLModel, select
 
 from . import engine
 

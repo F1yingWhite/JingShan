@@ -59,7 +59,15 @@ class Preface_And_Postscript(SQLModel, table=True):
 
     @classmethod
     def get_preface_and_postscript_total_num(
-        cls, classic: str = None, translator: str = None, title: str = None, category: str = None, dynasty: str = None, author: str = None, copy_id: int = None, page_id: int = None
+        cls,
+        classic: str = None,
+        translator: str = None,
+        title: str = None,
+        category: str = None,
+        dynasty: str = None,
+        author: str = None,
+        copy_id: int = None,
+        page_id: int = None,
     ):
         with Session(engine) as session:
             statement = select(cls)
@@ -91,7 +99,12 @@ class Preface_And_Postscript(SQLModel, table=True):
             page_size = min(page_size, 100)
             offset = (page - 1) * page_size
 
-            statement = select(cls, func.count(cls.id).over().label("total_count")).where(cls.title.like(f"%{keyword}%")).offset(offset).limit(page_size)
+            statement = (
+                select(cls, func.count(cls.id).over().label("total_count"))
+                .where(cls.title.like(f"%{keyword}%"))
+                .offset(offset)
+                .limit(page_size)
+            )
 
             results = session.exec(statement).all()
             data = [result[0] for result in results]  # 提取实际数据

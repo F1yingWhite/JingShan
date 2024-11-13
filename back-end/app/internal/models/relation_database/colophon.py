@@ -1,8 +1,6 @@
 # 牌记
 import json
-from shutil import which
 
-from pydantic import conset
 from sqlalchemy import func
 from sqlmodel import Field, Session, SQLModel, select
 
@@ -20,7 +18,17 @@ class Colophon(SQLModel, table=True):
     page_id: int | None = Field(default=None)
 
     @classmethod
-    def get_colphon(cls, page: int, page_size: int, chapter_id: str = None, content: str = None, id: int = None, qianziwen: str = None, scripture_name: str = None, volume_id: str = None):
+    def get_colphon(
+        cls,
+        page: int,
+        page_size: int,
+        chapter_id: str = None,
+        content: str = None,
+        id: int = None,
+        qianziwen: str = None,
+        scripture_name: str = None,
+        volume_id: str = None,
+    ):
         with Session(engine) as session:
             page_size = min(page_size, 100)  # 限制 page_size 不超过 100
             offset = (page - 1) * page_size
@@ -46,7 +54,15 @@ class Colophon(SQLModel, table=True):
             return results
 
     @classmethod
-    def get_colphon_total_num(cls, chapter_id: str = None, content: str = None, id: int = None, qianziwen: str = None, scripture_name: str = None, volume_id: str = None):
+    def get_colphon_total_num(
+        cls,
+        chapter_id: str = None,
+        content: str = None,
+        id: int = None,
+        qianziwen: str = None,
+        scripture_name: str = None,
+        volume_id: str = None,
+    ):
         with Session(engine) as session:
             statement = select(cls)
 
@@ -108,7 +124,12 @@ class Colophon(SQLModel, table=True):
         from .individual import Individual
 
         with Session(engine) as session:
-            statement = select(cls, Ind_Col, Individual.name).join(Ind_Col, cls.id == Ind_Col.col_id).join(Individual, Individual.id == Ind_Col.ind_id).where(cls.id == colophon_id)
+            statement = (
+                select(cls, Ind_Col, Individual.name)
+                .join(Ind_Col, cls.id == Ind_Col.col_id)
+                .join(Individual, Individual.id == Ind_Col.ind_id)
+                .where(cls.id == colophon_id)
+            )
             result = session.exec(statement).all()
             if not result:
                 statement = select(cls).where(cls.id == colophon_id)

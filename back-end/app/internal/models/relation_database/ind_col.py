@@ -1,6 +1,4 @@
-from sqlmodel import Field, Session, SQLModel, select
-
-from . import engine
+from sqlmodel import Field, SQLModel
 
 
 class Ind_Col(SQLModel, table=True):

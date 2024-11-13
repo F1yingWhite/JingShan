@@ -11,7 +11,6 @@ from .server.service.story_service import story_router
 
 app = FastAPI()
 
-
 main_router = APIRouter(prefix="/api")
 main_router.include_router(colophon_router)
 main_router.include_router(story_router)
