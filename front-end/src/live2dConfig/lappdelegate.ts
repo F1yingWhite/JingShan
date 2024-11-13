@@ -272,9 +272,8 @@ export class LAppDelegate {
   }
 
   private _resizeCanvas(): void {
-    console.log(canvas.clientWidth, canvas.clientHeight, window.devicePixelRatio);
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+    canvas.width = canvas.clientWidth * window.devicePixelRatio;
+    canvas.height = canvas.clientHeight * window.devicePixelRatio;
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
   }
 
