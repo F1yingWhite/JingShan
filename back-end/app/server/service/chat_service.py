@@ -1,5 +1,6 @@
 import asyncio
 import json
+import uuid
 from typing import List, Literal
 
 import requests
@@ -7,6 +8,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 from ...internal.config import config
+from . import ResponseModel
 
 
 class Message(BaseModel):
@@ -19,6 +21,33 @@ class ChatQueryParams(BaseModel):
 
 
 chat_router = APIRouter(prefix="/chat")
+
+
+def get_wav_tts(text: str):
+    header = {"Authorization": f"Bearer;{config.VOLCENGINE_TOKEN}"}
+    request_json = {
+        "app": {"appid": config.VOLCENGINE_APPID, "token": "access_token", "cluster": config.VOLCENGINE_CLUSTER},
+        "user": {"uid": str(uuid.uuid4())},
+        "audio": {
+            "voice_type": config.VOLCENGINE_VOICE_TYPE,
+            "encoding": "wav",
+            "speed_ratio": 1.0,
+            "volume_ratio": 1.0,
+            "pitch_ratio": 1.0,
+        },
+        "request": {
+            "reqid": str(uuid.uuid4()),
+            "text": text,
+            "text_type": "plain",
+            "operation": "query",
+            "with_frontend": 1,
+            "frontend_type": "unitTson",
+        },
+    }
+    resp = requests.post(config.VOLCENGINE_URL, json.dumps(request_json), headers=header)
+    if "data" in resp.json():
+        data = resp.json()["data"]
+        return data
 
 
 @chat_router.websocket("/ws")
@@ -49,3 +78,13 @@ async def chat_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         await websocket.close()
+
+
+class TTSRequest(BaseModel):
+    text: str
+
+
+@chat_router.post("/tts")
+async def tts(request: TTSRequest):
+    data = get_wav_tts(request.text)
+    return ResponseModel(data=data)

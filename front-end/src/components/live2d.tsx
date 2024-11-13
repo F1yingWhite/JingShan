@@ -73,7 +73,6 @@ function Live2d() {
     <>
       <div className='live2d-container h-full w-full'>
       </div>
-      <button onClick={handleVoice}>Play Voice</button>
     </>
   );
 }

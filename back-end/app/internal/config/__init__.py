@@ -20,6 +20,12 @@ class Config(BaseModel):
     SPARKAI_DOMAIN: str
     SPARKAI_PASSWORD: str
 
+    VOLCENGINE_URL: str
+    VOLCENGINE_APPID: str
+    VOLCENGINE_TOKEN: str
+    VOLCENGINE_CLUSTER: str
+    VOLCENGINE_VOICE_TYPE: str
+
     @classmethod
     def load(cls, file_path: str) -> "Config":
         # 如果加载失败, 抛出异常

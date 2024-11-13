@@ -4,7 +4,11 @@ export type Message = {
     content: string;
 }
 
-
 export function postChat(params: Message[]) {
     return post("/chat", { "messages": params })
+}
+
+
+export function postTTS(params: string) {
+    return post("/tts", { "text": params })
 }
