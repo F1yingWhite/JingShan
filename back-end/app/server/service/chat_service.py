@@ -5,8 +5,6 @@ from typing import List, Literal
 import requests
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
-from sparkai.core.messages import ChatMessage
-from sparkai.llm.llm import ChatSparkLLM, ChunkPrintHandler
 
 from ...internal.config import config
 

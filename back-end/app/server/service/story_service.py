@@ -3,8 +3,7 @@ from time import sleep
 from typing import Optional
 
 from fastapi import APIRouter, Query
-from PIL import Image
-from pydantic import BaseModel, conset
+from pydantic import BaseModel
 
 from ...internal.models.relation_database.story import Story
 from . import ResponseModel
@@ -54,7 +53,7 @@ async def get_story_detail(id: int):
 
 @story_router.post("/generate_picture")
 async def generate_picture(content_model: ContentModel):
-    content = content_model.content
+    # content = content_model.content
     img_test_path = "./assets/test.jpg"
     sleep(1)
     with open(img_test_path, "rb") as f:

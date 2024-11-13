@@ -1,9 +1,7 @@
-from re import U
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel, conset
-from sqlalchemy import true
+from pydantic import BaseModel
 
 from ...internal.models.relation_database.colophon import Colophon
 from ...internal.utils.get_time_place import get_publication_place, get_publication_time
