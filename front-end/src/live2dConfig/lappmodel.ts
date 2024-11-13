@@ -565,7 +565,7 @@ export class LAppModel extends CubismUserModel {
       this._physics.evaluate(this._model, deltaTimeSeconds);
     }
 
-    // TODO:在这里更新声音
+    // 在这里更新声音
     if (this._lipsync) {
       let value = 0.0; // 从系统获取音量0~1
 

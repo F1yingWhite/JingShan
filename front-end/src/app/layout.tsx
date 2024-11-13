@@ -4,6 +4,7 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import NavBar from "@/components/NavBar";
 import { Content } from "antd/es/layout/layout";
 import { Noto_Sans_SC } from "next/font/google";
+import Script from "next/script";
 
 const noto_sans_sc = Noto_Sans_SC({
   display: 'swap',
@@ -18,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="cn">
       <body className={noto_sans_sc.className}>
+        <Script src="Core/live2dcubismcore.js" strategy='beforeInteractive' />
         <AntdRegistry>
           <ConfigProvider
             theme={{
