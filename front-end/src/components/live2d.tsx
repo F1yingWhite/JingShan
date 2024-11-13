@@ -61,12 +61,6 @@ function Live2d() {
 
         // 传递给LAppLive2DManager处理
         LAppLive2DManager.getInstance().getModel(0)._wavFileHandler.loadWavFile(arrayBufferCopy)
-          .then(result => {
-            console.log(result);
-          })
-          .catch(error => {
-            console.error('Error processing WAV file:', error);
-          });
       })
       .catch(error => {
         console.error('Error loading WAV file:', error);

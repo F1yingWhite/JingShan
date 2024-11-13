@@ -571,7 +571,7 @@ export class LAppModel extends CubismUserModel {
 
       this._wavFileHandler.update(deltaTimeSeconds);
       value = this._wavFileHandler.getRms();//获得当前的音量值
-
+      // console.log(value)
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
         this._model.addParameterValueById(this._lipSyncIds.at(i), value, 0.8);
       }

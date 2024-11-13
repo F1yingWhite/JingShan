@@ -105,6 +105,9 @@ export class LAppWavFileHandler {
     return new Promise(resolveValue => {
       let ret = false;
 
+      this._sampleOffset = 0;
+      this._userTimeSeconds = 0.0;
+
       if (this._pcmData != null) {
         this.releasePcmData();
       }
