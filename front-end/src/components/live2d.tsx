@@ -1,51 +1,45 @@
-import React, { useEffect, useMemo, useState } from 'react';
+'use client'
+import React, { useEffect } from 'react';
 import { LAppDelegate } from '@/live2dConfig/lappdelegate';
 import { LAppGlManager } from '@/live2dConfig/lappglmanager';
+import * as LAppDefine from '@/live2dConfig/lappdefine';
 import Script from 'next/script';
+
 function Live2d() {
-  const [canvasWidth, setCanvasWidth] = useState(0);
-  const [canvasHeight, setCanvasHeight] = useState(0);
-
   useEffect(() => {
-    if (LAppGlManager.getInstance() && LAppDelegate.getInstance().initialize()) {
-      LAppDelegate.getInstance().run();
-    }
-    // return () => {
-    //   LAppDelegate.releaseInstance();
-    // }
-  }, []);
+    const handleLoad = (): void => {
+      const glManager = LAppGlManager.getInstance();
+      const appDelegate = LAppDelegate.getInstance();
 
-  useEffect(() => {
-    const updateCanvasSize = () => {
-      if (!window.matchMedia("(orientation: landscape)").matches) {
-        setCanvasWidth(document.body.clientWidth);
-        setCanvasHeight(document.body.clientHeight * 0.3);
-      } else {
-        setCanvasWidth(document.body.clientWidth * 0.3);
-        setCanvasHeight(document.body.clientHeight * 0.6);
+      if (!glManager || !appDelegate.initialize()) {
+        return;
+      }
+      appDelegate.run();
+    };
+
+    const handleBeforeUnload = (): void => {
+      LAppDelegate.releaseInstance();
+    };
+
+    const handleResize = (): void => {
+      if (LAppDefine.CanvasSize === 'auto') {
+        LAppDelegate.getInstance().onResize();
       }
     };
 
-    updateCanvasSize();
-    window.addEventListener('resize', updateCanvasSize);
+    handleLoad();
+    window.addEventListener('beforeunload', handleBeforeUnload, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
-      window.removeEventListener('resize', updateCanvasSize);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   return (
-    <div className='live2d-container'>
-      <Script src="Core/live2dcubismcore.js" strategy='beforeInteractive'/>
-      <div className='live2d-canvas'>
-        <canvas
-          id='live2d'
-          className="live2d"
-          color="#f5f5f9"
-          width={canvasWidth}
-          height={canvasHeight}
-        />
-      </div>
+    <div className='live2d-container h-full w-full'>
+      <Script src="Core/live2dcubismcore.js" strategy='beforeInteractive' />
     </div>
   );
 }

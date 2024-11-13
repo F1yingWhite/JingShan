@@ -30,26 +30,26 @@ export const ViewLogicalMaxBottom = -2.0;
 export const ViewLogicalMaxTop = 2.0;
 
 // 相対パス
-export const ResourcesPath = 'Resources/';
+export const ResourcesPath = '../../Resources/';
 
-// モデルの後ろにある背景の画像ファイル
-export const BackImageName = 'back_class_normal.png';
+// // モデルの後ろにある背景の画像ファイル
+// export const BackImageName = 'back_class_normal.png';
 
-// 歯車
-export const GearImageName = 'icon_gear.png';
+// // 歯車
+// export const GearImageName = 'icon_gear.png';
 
-// 終了ボタン
-export const PowerImageName = 'CloseNormal.png';
+// // 終了ボタン
+// export const PowerImageName = 'CloseNormal.png';
 
 // モデル定義---------------------------------------------
 // モデルを配置したディレクトリ名の配列
 // ディレクトリ名とmodel3.jsonの名前を一致させておくこと
 export const ModelDir: string[] = [
-  'Haru',
-  'Hiyori',
-  'Mark',
-  'Natori',
-  'Rice',
+  // 'Haru',
+  // 'Hiyori',
+  // 'Mark',
+  // 'Natori',
+  // 'Rice',
   'Mao',
   'Wanko'
 ];

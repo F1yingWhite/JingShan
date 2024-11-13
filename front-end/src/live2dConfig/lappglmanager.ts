@@ -41,7 +41,9 @@ export class LAppGlManager {
   constructor() {
     // キャンバスの作成
     canvas = document.createElement('canvas');
-
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.display = 'block';
     // glコンテキストを初期化
     // @ts-ignore
     gl = canvas.getContext('webgl2');
@@ -53,11 +55,13 @@ export class LAppGlManager {
 
       document.body.innerHTML =
         'This browser does not support the <code>&lt;canvas&gt;</code> element.';
+    } else {
+      console.log('WebGL initialized.');
     }
   }
 
   /**
    * 解放する。
    */
-  public release(): void {}
+  public release(): void { }
 }

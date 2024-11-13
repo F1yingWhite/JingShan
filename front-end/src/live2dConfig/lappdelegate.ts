@@ -51,8 +51,12 @@ export class LAppDelegate {
    * APPに必要な物を初期化する。
    */
   public initialize(): boolean {
-    // キャンバスを DOM に追加
-    document.body.appendChild(canvas);
+    const container = document.querySelector('.live2d-container');
+    if (container instanceof HTMLElement) {
+      container.appendChild(canvas);
+    } else {
+      console.error('没有找到 classname 为 live2d-container 的 div 元素');
+    }
 
     if (LAppDefine.CanvasSize === 'auto') {
       this._resizeCanvas();
@@ -267,12 +271,10 @@ export class LAppDelegate {
     this._view.initializeSprite();
   }
 
-  /**
-   * Resize the canvas to fill the screen.
-   */
   private _resizeCanvas(): void {
-    canvas.width = canvas.clientWidth * window.devicePixelRatio;
-    canvas.height = canvas.clientHeight * window.devicePixelRatio;
+    console.log(canvas.clientWidth, canvas.clientHeight, window.devicePixelRatio);
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
   }
 
