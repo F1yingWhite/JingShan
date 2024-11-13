@@ -32,14 +32,7 @@ export const ViewLogicalMaxTop = 2.0;
 // 相対パス
 export const ResourcesPath = '../../Resources/';
 
-// // モデルの後ろにある背景の画像ファイル
-// export const BackImageName = 'back_class_normal.png';
 
-// // 歯車
-// export const GearImageName = 'icon_gear.png';
-
-// // 終了ボタン
-// export const PowerImageName = 'CloseNormal.png';
 
 // モデル定義---------------------------------------------
 // モデルを配置したディレクトリ名の配列
@@ -50,6 +43,7 @@ export const ModelDir: string[] = [
   // 'Mark',
   // 'Natori',
   // 'Rice',
+  'xiangzi',
   'Mao',
   'Wanko'
 ];

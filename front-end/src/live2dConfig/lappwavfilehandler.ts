@@ -77,8 +77,8 @@ export class LAppWavFileHandler {
     }
     rms = Math.sqrt(
       rms /
-        (this._wavFileInfo._numberOfChannels *
-          (goalOffset - this._sampleOffset))
+      (this._wavFileInfo._numberOfChannels *
+        (goalOffset - this._sampleOffset))
     );
 
     this._lastRms = rms;
@@ -101,7 +101,7 @@ export class LAppWavFileHandler {
     return this._lastRms;
   }
 
-  public loadWavFile(filePath: string): Promise<boolean> {
+  public loadWavFile(filePathOrBuffer: string | ArrayBuffer): Promise<boolean> {
     return new Promise(resolveValue => {
       let ret = false;
 
@@ -111,9 +111,13 @@ export class LAppWavFileHandler {
 
       // ファイルロード
       const asyncFileLoad = async () => {
-        return fetch(filePath).then(responce => {
-          return responce.arrayBuffer();
-        });
+        if (typeof filePathOrBuffer === 'string') {
+          return fetch(filePathOrBuffer).then(response => {
+            return response.arrayBuffer();
+          });
+        } else {
+          return filePathOrBuffer;
+        }
       };
 
       const asyncWavFileManager = (async () => {
@@ -134,7 +138,7 @@ export class LAppWavFileHandler {
         }
 
         // ファイル名
-        this._wavFileInfo._fileName = filePath;
+        // this._wavFileInfo._fileName = filePath;
 
         try {
           // シグネチャ "RIFF"
