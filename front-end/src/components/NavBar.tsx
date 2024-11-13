@@ -67,10 +67,11 @@ export default function NavBar() {
 
 
   useEffect(() => {
+
     const segments = path.split('/');
     if (segments[1] === 'search' && segments[2]) {
       setSearchValue(decodeURIComponent(segments[2]));
-    }else{
+    } else {
       setSearchValue('');
     }
   }, [path]);

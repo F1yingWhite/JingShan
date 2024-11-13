@@ -20,8 +20,10 @@
     "echarts-for-react": "^3.0.2",
     "next": "14.2.16",
     "pdfjs-dist": "^4.7.76",
+    "pixi-live2d-display": "^0.4.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-live2d": "^1.0.31",
     "react-router-dom": "^6.27.0",
     "recharts": "^2.13.2",
     "sharp": "^0.33.5"

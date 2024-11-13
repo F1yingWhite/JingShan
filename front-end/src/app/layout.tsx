@@ -3,12 +3,12 @@ import "./globals.css";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import NavBar from "@/components/NavBar";
 import { Content } from "antd/es/layout/layout";
-import { Noto_Sans_SC } from "next/font/google"
+import { Noto_Sans_SC } from "next/font/google";
 
 const noto_sans_sc = Noto_Sans_SC({
   display: 'swap',
   subsets: ['vietnamese'],
-})
+});
 
 export default function RootLayout({
   children,
