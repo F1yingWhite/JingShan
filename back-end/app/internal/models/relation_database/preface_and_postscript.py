@@ -118,3 +118,17 @@ class Preface_And_Postscript(SQLModel, table=True):
             statement = select(cls).where(cls.id == id)
             result = session.exec(statement).first()
             return result
+
+    @classmethod
+    def search_preface_and_postscript_classic_no_page(cls, keyword: str):
+        with Session(engine) as session:
+            statement = select(cls.classic).where(cls.title.like(f"%{keyword}%")).distinct()
+            results = session.exec(statement).all()
+            return list(results)
+
+    @classmethod
+    def get_preface_and_postscript_by_classic(cls, classic: str, keyword: str):
+        with Session(engine) as session:
+            statement = select(cls).where(cls.classic == classic).where(cls.title.like(f"%{keyword}%"))
+            results = session.exec(statement).all()
+            return results

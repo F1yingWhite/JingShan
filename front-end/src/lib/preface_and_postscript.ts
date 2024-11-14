@@ -12,6 +12,12 @@ export type PrefaceAndPostscript = {
     dynasty: string;
     copy_id: number;
 }
+
+export type PrefaceAndPostscriptClassic = {
+    name: string,
+    related_data: PrefaceAndPostscript[]
+}
+
 export function getPrefaceAndPostscriptList(page: number, page_size: number, params: any) {
     return post(`/preface_and_postscript/?page=${page}&page_size=${page_size}`, params);
 }

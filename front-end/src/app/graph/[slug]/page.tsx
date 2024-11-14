@@ -62,7 +62,7 @@ export default function page({ params }: { params: { slug: string } }) {
                   ghost
                   items={[
                     {
-                      key: record.name,
+                      key: record.姓名,
                       label: <span className="text-[#c19d50]" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名} {record.身份 && <Space size={0}>
                         <Tag color={colorMap[record.身份]}>{record.身份}</Tag>
                       </Space>}</span>,

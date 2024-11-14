@@ -8,12 +8,12 @@ import { useState, useEffect } from 'react';
 import { useParams, usePathname } from 'next/navigation';
 import ChatButton from '@/components/ChatButton';
 
+
 export default function DashboardLayout({ children }: { children: React.ReactNode; }) {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState('1');
   const { slug } = useParams();
   const pathname = usePathname();
-
   const menuItems = [
     { key: '1', icon: <CreditCardOutlined />, label: '牌记', path: `/search/${slug}/colophon` },
     { key: '2', icon: <NotificationOutlined />, label: '序跋', path: `/search/${slug}/preface_and_postscript` },
@@ -24,6 +24,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const currentItem = menuItems.find(item => item.path === pathname);
     if (currentItem) {
       setSelectedKey(currentItem.key);
+    } else if (pathname.includes('/graph')) {
+      setSelectedKey('4');
+    } else if (pathname.includes('/hybrid')) {
+      setSelectedKey('全局搜索');
     }
   }, [pathname]);
 
@@ -48,7 +52,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             mode="inline"
             selectedKeys={[selectedKey]}
             className="h-full"
-            defaultOpenKeys={['全局搜索']}
+            defaultOpenKeys={['径山藏']}
             onClick={({ key }) => handleMenuClick(key)}
           >
             <Menu.Item key="全局搜索" icon={<SearchOutlined />}>

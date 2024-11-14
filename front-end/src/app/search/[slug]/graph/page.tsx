@@ -1,16 +1,29 @@
 'use client'
-import React from 'react'
-import { getGraphList, GraphDetail } from '@/lib/graph'
+import React, { useEffect, useState } from 'react'
+import { getGraphList, getIdentityList, GraphDetail } from '@/lib/graph'
 import { ProList } from '@ant-design/pro-components'
-import { Collapse } from 'antd';
+import { Collapse, Space, Tag } from 'antd';
 import { useParams, useRouter } from 'next/navigation';
+import { getRandomColor } from '@/utils/randomColor';
 export default function page() {
   let { slug } = useParams();
+  const [colorMap, setColorMap] = useState({})
   if (Array.isArray(slug)) {
     slug = slug.join('');
   }
   const decodedSlug = decodeURIComponent(slug);
   const router = useRouter();
+  useEffect(() => {
+    getIdentityList().then(res => {
+      const map = {};
+      res.forEach(item => {
+        map[item] = getRandomColor();
+      });
+      setColorMap(map);
+    });
+  }, []);
+
+
   return (
     <div className="h-full overflow-y-auto rounded-md">
       <ProList< GraphDetail>
@@ -39,8 +52,10 @@ export default function page() {
                   ghost
                   items={[
                     {
-                      key: record.name,
-                      label: <span className="text-[#c19d50]" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名}</span>,
+                      key: record.姓名,
+                      label: <span className="text-[#c19d50]" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名} {record.身份 && <Space size={0}>
+                        <Tag color={colorMap[record.身份]}>{record.身份}</Tag>
+                      </Space>}</span>,
                       children: (
                         <div>
                           <ul>

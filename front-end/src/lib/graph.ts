@@ -33,9 +33,10 @@ export function getGraph(name: string) {
 }
 
 export type GraphDetail = {
-  name: string;
+  姓名: string;
   [key: string]: any;
 }
+
 
 export type GraphLists = GraphDetail[];
 

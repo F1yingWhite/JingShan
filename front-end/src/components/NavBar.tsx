@@ -83,7 +83,7 @@ export default function NavBar() {
 
   const handleSearch = (value: string) => {
     value = encodeURIComponent(value);
-    router.push(`/search/${value}/colophon`);
+    router.push(`/search/${value}/hybrid`);
   }
 
   return (
