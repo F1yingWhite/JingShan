@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Live2d from '@/components/live2d'
 import { Avatar, Button } from 'antd';
-import { AudioMutedOutlined, ClearOutlined, SendOutlined } from '@ant-design/icons';
+import { AudioMutedOutlined, AudioOutlined, ClearOutlined, SendOutlined } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
 import { Message, postTTS } from '@/lib/chat';
 import { ws_host } from '@/lib/axios';
@@ -110,12 +110,17 @@ export default function Page() {
                 )}
                 <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
                   <ReactMarkdown>{message.content}</ReactMarkdown>
-                  {message.role === 'assistant' && hoveredMessageIndex === index && (
+                  {message.role === 'assistant' && hoveredMessageIndex === index && !isTTSPlaying && (
                     <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => {
                       if (!isTTSPlaying) {
                         setClickIndex(index)
                         beginTTS(message.content)
                       }
+                    }} />
+                  )}
+                  {message.role === 'assistant' && clickIndex == index && isTTSPlaying && (
+                    <AudioOutlined className="absolute -bottom-2 -right-2" onClick={() => {
+                      //  TODO:停止播放
                     }} />
                   )}
                 </div>
