@@ -1,11 +1,24 @@
 'use client'
-import React from 'react'
-import { getGraphList, GraphDetail } from '@/lib/graph'
+import React, { useEffect, useState } from 'react'
+import { getGraphList, GraphDetail, getIdentityList } from '@/lib/graph'
 import { ProList } from '@ant-design/pro-components'
-import { Collapse } from 'antd';
+import { Collapse, Space, Tag } from 'antd';
 import { useRouter } from 'next/navigation';
+import { getRandomColor } from '@/utils/randomColor';
 export default function page() {
   const router = useRouter();
+  const [colorMap, setColorMap] = useState({})
+
+  useEffect(() => {
+    getIdentityList().then(res => {
+      const map = {};
+      res.forEach(item => {
+        map[item] = getRandomColor();
+      });
+      setColorMap(map);
+    });
+  }, []);
+
   return (
     <div className="h-full overflow-y-auto rounded-md">
       <ProList< GraphDetail>
@@ -38,7 +51,9 @@ export default function page() {
                   items={[
                     {
                       key: record.name,
-                      label: <span className="text-[#c19d50]" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名}</span>,
+                      label: <span className="text-[#c19d50]" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名} {record.身份 && <Space size={0}>
+                        <Tag color={colorMap[record.身份]}>{record.身份}</Tag>
+                      </Space>}</span>,
                       children: (
                         <div>
                           <ul>

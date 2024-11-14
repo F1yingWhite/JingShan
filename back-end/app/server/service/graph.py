@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from ...internal.models.graph_database.graph import (
+    get_identity_set,
     get_list,
     get_node_by_name,
     get_relation_ship_by_id_in,
@@ -18,7 +19,7 @@ graph_router = APIRouter(prefix="/graph")
 
 
 @graph_router.get("/")
-def get_graph_by_name(name: str):
+async def get_graph_by_name(name: str):
     res_dict = {
         "type": "force",
         "categories": [],
@@ -96,7 +97,7 @@ class GraphList(BaseModel):
 
 
 @graph_router.post("/list")
-def get_graph_list(graph_data: GraphList):
+async def get_graph_list(graph_data: GraphList):
     results = get_list(graph_data.current, graph_data.pageSize, graph_data.title)
     nums = total_num(graph_data.title)
     res_dict = []
@@ -113,16 +114,26 @@ def get_graph_list(graph_data: GraphList):
 
 
 @graph_router.get("/detail")
-def get_graph_detail(name: str):
+async def get_graph_detail(name: str):
     results = get_node_by_name(name)
     res_dict = []
     for result in results:
         temp_dict = {}
-        for key in result:
-            value = result[key]
+        print(result)
+        for key in result["n"]:
+            value = result["n"][key]
             if is_literal(value):
                 temp_dict[key] = ast.literal_eval(value)
             else:
                 temp_dict[key] = value
         res_dict.append(temp_dict)
+    return ResponseModel(data=res_dict)
+
+
+@graph_router.get("/identity")
+async def get_identity():
+    results = get_identity_set()
+    res_dict = []
+    for result in results:
+        res_dict.append(ast.literal_eval(result["n.身份"]))
     return ResponseModel(data=res_dict)

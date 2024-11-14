@@ -1,14 +1,17 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import RelationChart from '@/components/RelationChart'
-import { Graph, getGraph, getGraphDetailByName, GraphDetail, GraphLists } from '@/lib/graph';
+import { Graph, getGraph, getGraphDetailByName, GraphDetail, GraphLists, getIdentityList } from '@/lib/graph';
 import { ProList } from '@ant-design/pro-components';
-import { Collapse } from 'antd';
+import { Collapse, Space, Tag } from 'antd';
 import { useRouter } from 'next/navigation';
+import { getRandomColor } from '@/utils/randomColor';
 export default function page({ params }: { params: { slug: string } }) {
   const [graph, setGraph] = useState<Graph>()
   const [graphDetail, setGraphDetail] = useState<GraphLists>()
   const slug = decodeURIComponent(params.slug);
+  const [colorMap, setColorMap] = useState({})
+
   useEffect(() => {
     getGraph(slug).then(graph => {
       setGraph(graph);
@@ -17,16 +20,24 @@ export default function page({ params }: { params: { slug: string } }) {
           const details = [];
           for (const node of graph.nodes) {
             const res = await getGraphDetailByName(node.name);
-            details.push(res[0].n);
+            details.push(res[0]);
           }
           setGraphDetail(details);
         };
         fetchGraphDetails();
       }
     });
-
-
   }, [slug]);
+
+  useEffect(() => {
+    getIdentityList().then(res => {
+      const map = {};
+      res.forEach(item => {
+        map[item] = getRandomColor();
+      });
+      setColorMap(map);
+    });
+  }, []);
 
   const router = useRouter();
   return (
@@ -52,7 +63,9 @@ export default function page({ params }: { params: { slug: string } }) {
                   items={[
                     {
                       key: record.name,
-                      label: <span className="text-[#c19d50]" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名}</span>,
+                      label: <span className="text-[#c19d50]" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名} {record.身份 && <Space size={0}>
+                        <Tag color={colorMap[record.身份]}>{record.身份}</Tag>
+                      </Space>}</span>,
                       children: (
                         <div>
                           <ul>

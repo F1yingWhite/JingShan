@@ -46,3 +46,7 @@ export function getGraphList(params: any) {
 export function getGraphDetailByName(name: string) {
   return get(`/graph/detail?name=${name}`);
 }
+
+export function getIdentityList() {
+  return get(`/graph/identity`);
+}
