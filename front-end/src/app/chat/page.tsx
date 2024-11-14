@@ -110,7 +110,7 @@ export default function Page() {
                 )}
                 <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
                   <ReactMarkdown>{message.content}</ReactMarkdown>
-                  {message.role === 'assistant' && hoveredMessageIndex === index && !isTTSPlaying && (
+                  {message.role === 'assistant' && hoveredMessageIndex === index && !isTTSPlaying && !isSending && (
                     <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => {
                       if (!isTTSPlaying) {
                         setClickIndex(index)
@@ -120,7 +120,7 @@ export default function Page() {
                   )}
                   {message.role === 'assistant' && clickIndex == index && isTTSPlaying && (
                     <AudioOutlined className="absolute -bottom-2 -right-2" onClick={() => {
-                      //  TODO:停止播放
+                      setTTSPlaying(false)
                     }} />
                   )}
                 </div>

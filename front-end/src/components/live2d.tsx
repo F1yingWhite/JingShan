@@ -52,13 +52,13 @@ function Live2d({ wavFile, isTTSPlaying, setTTSPlaying }: Live2dProps) {
     }
   }, [wavFile]);
 
-  // useEffect(() => {
-  //   if (!isTTSPlaying && audioSourceRef.current) {
-  //     audioSourceRef.current.stop();
-  //     audioSourceRef.current = null;
-  //   }
-  //   LAppLive2DManager.getInstance().getModel(0)._lipsync = isTTSPlaying;
-  // }, [isTTSPlaying]);
+  useEffect(() => {
+    if (!isTTSPlaying && audioSourceRef.current) {
+      audioSourceRef.current.stop();
+      audioSourceRef.current = null;
+    }
+    LAppLive2DManager.getInstance().getModel(0)._lipsync = isTTSPlaying;
+  }, [isTTSPlaying]);
 
   function handleVoice(base64Wav: string) {
     // 将base64编码的wav文件转换为ArrayBuffer
