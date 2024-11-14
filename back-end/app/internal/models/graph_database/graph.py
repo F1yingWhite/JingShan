@@ -54,6 +54,21 @@ def get_list(page: int, page_size: int, title: Optional[str]):
         return result.data()
 
 
+def get_list_no_page(title: str):
+    with neo4j_driver.session() as session:
+        result = session.run(
+            """
+            MATCH (n)
+            WHERE n.姓名 CONTAINS $title
+            RETURN n
+            ORDER BY CASE WHEN n.身份 IS
+            NOT NULL THEN 1 ELSE 0 END DESC
+            """,
+            title=title,
+        )
+        return result.data()
+
+
 def get_identity_set():
     with neo4j_driver.session() as session:
         result = session.run("MATCH (n) WHERE n.身份 IS NOT NULL RETURN DISTINCT n.身份")

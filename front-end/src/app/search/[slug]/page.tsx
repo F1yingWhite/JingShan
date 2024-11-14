@@ -7,7 +7,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const slug = params.slug;
   useEffect(() => {
-    router.push(`/search/${slug}/colophon`);
+    router.push(`/search/${slug}/hybrid`);
   }, [router]);
 
   return null;

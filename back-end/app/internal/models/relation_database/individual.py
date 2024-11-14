@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlmodel import Field, Session, SQLModel, select
 
 from . import engine
@@ -40,3 +41,19 @@ class Individual(SQLModel, table=True):
                 stmt = stmt.where(cls.name.like(f"%{name}%"))
             individuals = session.exec(stmt).all()
             return individuals
+
+    @classmethod
+    def search_individuals_with_page(cls, name: str, current: int, pageSize: int):
+        with Session(engine) as session:
+            offset = (current - 1) * pageSize
+
+            # 使用窗口函数获取总数并进行分页
+            statement = (
+                select(cls, func.count().over().label("total_count")).where(cls.name.like(f"%{name}%")).offset(offset).limit(pageSize)
+            )
+
+            results = session.exec(statement).all()
+            individuals = [result[0] for result in results]
+            # 提取总数
+            total_count = results[0].total_count if results else 0
+            return individuals, total_count

@@ -1,5 +1,5 @@
 'use client'
-import { NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, UserOutlined, NodeIndexOutlined } from '@ant-design/icons';
+import { NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, UserOutlined, NodeIndexOutlined, SearchOutlined } from '@ant-design/icons';
 import { Layout, Menu, FloatButton } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
@@ -18,7 +18,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { key: '1', icon: <CreditCardOutlined />, label: '牌记', path: `/search/${slug}/colophon` },
     { key: '2', icon: <NotificationOutlined />, label: '序跋', path: `/search/${slug}/preface_and_postscript` },
     { key: '3', icon: <UserOutlined />, label: '人物', path: `/search/${slug}/individual` },
-    { key: '4', icon: <NodeIndexOutlined />, label: '径山志', path: `/search/${slug}/graph` },
   ];
 
   useEffect(() => {
@@ -49,9 +48,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             mode="inline"
             selectedKeys={[selectedKey]}
             className="h-full"
-            defaultOpenKeys={['径山藏']}
+            defaultOpenKeys={['全局搜索']}
             onClick={({ key }) => handleMenuClick(key)}
           >
+            <Menu.Item key="全局搜索" icon={<SearchOutlined />}>
+              <Link href={`/search/${slug}/hybrid`}>全局搜索</Link>
+            </Menu.Item>
             <Menu.SubMenu key="径山藏" title="径山藏" icon={<CreditCardOutlined />}>
               {menuItems.slice(0, 3).map(item => (
                 <Menu.Item key={item.key} icon={item.icon}>

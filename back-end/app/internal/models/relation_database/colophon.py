@@ -105,6 +105,14 @@ class Colophon(SQLModel, table=True):
             return scripture_names, total_count
 
     @classmethod
+    def search_colophon_no_page(cls, keyword: str):
+        with Session(engine) as session:
+            statement = select(cls.scripture_name).where(cls.content.like(f"%{keyword}%")).group_by(cls.scripture_name)
+
+            results = session.exec(statement).all()
+            return results
+
+    @classmethod
     def search_colophon_total_num(cls, keyword: str):
         with Session(engine) as session:
             statement = select(cls.scripture_name).where(cls.content.like(f"%{keyword}%")).group_by(cls.scripture_name)
