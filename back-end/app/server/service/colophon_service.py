@@ -71,5 +71,7 @@ async def search_colophon(keyword: str, page: int = 1, page_size: int = 20):
     colophons = {}
     colophons["content"] = []
     for name in scripture_names:
-        colophons["content"].append({"name": name, "related_data": Colophon.get_results_by_scripture_name(scripture_name=name)})
+        colophons["content"].append(
+            {"name": name, "related_data": Colophon.get_results_by_scripture_name_and_keyword(scripture_name=name, keyword=keyword)}
+        )
     return ResponseModel(data={"data": colophons, "total": total_num, "success": True})

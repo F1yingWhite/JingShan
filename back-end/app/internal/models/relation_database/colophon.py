@@ -112,9 +112,9 @@ class Colophon(SQLModel, table=True):
             return len(results)
 
     @classmethod
-    def get_results_by_scripture_name(cls, scripture_name: str):
+    def get_results_by_scripture_name_and_keyword(cls, scripture_name: str, keyword: str):
         with Session(engine) as session:
-            statement = select(cls).where(cls.scripture_name == scripture_name)
+            statement = select(cls).where(cls.scripture_name == scripture_name).where(cls.content.like(f"%{keyword}%"))
             results = session.exec(statement).all()
             return results
 

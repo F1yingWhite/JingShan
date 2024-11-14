@@ -10,7 +10,7 @@ export function get(url: string, options?: any): Promise<any> {
     axios
       .get(`${host}${url}`, {
         ...options,
-        timeout: 20000,
+        timeout: 30000,
         headers: {
           // Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
           'Content-Type': 'application/json',

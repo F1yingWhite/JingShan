@@ -31,6 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             selectedKeys={[selectedKey]}
             className="h-full"
             onClick={({ key }) => setSelectedKey(key)}
+            defaultOpenKeys={['径山藏']}
           >
             <Menu.SubMenu key="径山藏" title="径山藏" icon={<CreditCardOutlined />}>
               {menuItems.map(item => (
