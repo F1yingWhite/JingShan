@@ -47,11 +47,10 @@ function Live2d({ wavFile, isTTSPlaying, setTTSPlaying }: Live2dProps) {
 
   useEffect(() => {
     if (wavFile && !isTTSPlaying) {
-      console.log('wavFile:', wavFile);
-      console.log('isTTSPlaying:', isTTSPlaying);
+      setTTSPlaying(true);
       handleVoice(wavFile);
     }
-  }, [wavFile, isTTSPlaying]);
+  }, [wavFile]);
 
   // useEffect(() => {
   //   if (!isTTSPlaying && audioSourceRef.current) {
@@ -63,7 +62,6 @@ function Live2d({ wavFile, isTTSPlaying, setTTSPlaying }: Live2dProps) {
 
   function handleVoice(base64Wav: string) {
     // 将base64编码的wav文件转换为ArrayBuffer
-    setTTSPlaying(true);
     const binaryString = window.atob(base64Wav);
     const len = binaryString.length;
     const bytes = new Uint8Array(len);
@@ -80,7 +78,7 @@ function Live2d({ wavFile, isTTSPlaying, setTTSPlaying }: Live2dProps) {
       source.connect(audioContext.destination);
       source.start(0);
       source.onended = () => {
-        // setTTSPlaying(false);
+        setTTSPlaying(false);
         audioSourceRef.current = null;
       };
     });

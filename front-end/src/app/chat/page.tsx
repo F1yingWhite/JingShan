@@ -12,8 +12,10 @@ export default function Page() {
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false); // 添加状态来跟踪是否正在发送消息
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isTTSPlaying, setTTSPlaying] = useState(true);
+  const [isTTSPlaying, setTTSPlaying] = useState(false);
   const [wavFile, setWavFile] = useState<string>();
+  const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
+  const [clickIndex, setClickIndex] = useState<number | null>(null);
 
   const handleSend = async () => {
     if (inputValue.trim() && !isSending) { // 确保发送的内容不能为空并且没有正在发送的消息
@@ -75,7 +77,6 @@ export default function Page() {
 
   const beginTTS = async (text: string) => {
     postTTS(text).then((res) => {
-      setTTSPlaying(false)
       setWavFile(res.data);
     })
   }
@@ -95,18 +96,27 @@ export default function Page() {
       </div>
       <div className='flex flex-col flex-1 w-3/4'>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {chatHistory.map((message) => (
+          {chatHistory.map((message, index) => (
             <div
+              key={index}
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className="flex items-start space-x-2 max-w-xl relative">
+              <div className="flex items-start space-x-2 max-w-xl relative"
+                onMouseEnter={() => setHoveredMessageIndex(index)}
+                onMouseLeave={() => setHoveredMessageIndex(null)}
+              >
                 {message.role === 'assistant' && (
                   <Avatar className="flex-shrink-0 w-8 h-8">径</Avatar>
                 )}
                 <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
                   <ReactMarkdown>{message.content}</ReactMarkdown>
-                  {message.role === 'assistant' && (
-                    <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => { beginTTS(message.content) }} />
+                  {message.role === 'assistant' && hoveredMessageIndex === index && (
+                    <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => {
+                      if (!isTTSPlaying) {
+                        setClickIndex(index)
+                        beginTTS(message.content)
+                      }
+                    }} />
                   )}
                 </div>
                 {message.role === 'user' && (
