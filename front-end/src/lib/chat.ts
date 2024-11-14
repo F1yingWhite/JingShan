@@ -10,5 +10,5 @@ export function postChat(params: Message[]) {
 
 
 export function postTTS(params: string) {
-  return post("/tts", { "text": params })
+  return post("/chat/tts", { "text": params })
 }

@@ -1,12 +1,18 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { LAppDelegate } from '@/live2dConfig/lappdelegate';
 import { LAppGlManager } from '@/live2dConfig/lappglmanager';
 import * as LAppDefine from '@/live2dConfig/lappdefine';
 import { LAppLive2DManager } from '@/live2dConfig/lapplive2dmanager';
 
-function Live2d() {
-  const [isTTSPlaying, setTTSPlaying] = useState(false);
+interface Live2dProps {
+  wavFile: string;
+  isTTSPlaying: boolean;
+  setTTSPlaying: (isPlaying: boolean) => void;
+}
+
+function Live2d({ wavFile, isTTSPlaying, setTTSPlaying }: Live2dProps) {
+  const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
   useEffect(() => {
     const handleLoad = (): void => {
@@ -39,41 +45,53 @@ function Live2d() {
     };
   }, []);
 
-  function handleVoice() {
-    if (isTTSPlaying) {
-      return;
+  useEffect(() => {
+    if (wavFile && !isTTSPlaying) {
+      console.log('wavFile:', wavFile);
+      console.log('isTTSPlaying:', isTTSPlaying);
+      handleVoice(wavFile);
     }
-    const file_path: string = "test.wav";
-    setTTSPlaying(true);
-    // 读取wav文件为ArrayBuffer
-    fetch(file_path)
-      .then(response => response.arrayBuffer())
-      .then(arrayBuffer => {
-        const arrayBufferCopy = arrayBuffer.slice(0);
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        audioContext.decodeAudioData(arrayBuffer, (buffer: AudioBuffer) => {
-          const source: AudioBufferSourceNode = audioContext.createBufferSource();
-          source.buffer = buffer;
-          source.connect(audioContext.destination);
-          source.start(0);
-          source.onended = () => {
-            setTTSPlaying(false);
-          };
-        });
+  }, [wavFile, isTTSPlaying]);
 
-        // 传递给LAppLive2DManager处理
-        LAppLive2DManager.getInstance().getModel(0)._wavFileHandler.loadWavFile(arrayBufferCopy)
-      })
-      .catch(error => {
-        console.error('Error loading WAV file:', error);
-      });
+  // useEffect(() => {
+  //   if (!isTTSPlaying && audioSourceRef.current) {
+  //     audioSourceRef.current.stop();
+  //     audioSourceRef.current = null;
+  //   }
+  //   LAppLive2DManager.getInstance().getModel(0)._lipsync = isTTSPlaying;
+  // }, [isTTSPlaying]);
+
+  function handleVoice(base64Wav: string) {
+    // 将base64编码的wav文件转换为ArrayBuffer
+    setTTSPlaying(true);
+    const binaryString = window.atob(base64Wav);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const arrayBuffer = bytes.buffer;
+    const arrayBufferCopy = arrayBuffer.slice(0);
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioContext.decodeAudioData(arrayBuffer, (buffer: AudioBuffer) => {
+      const source: AudioBufferSourceNode = audioContext.createBufferSource();
+      audioSourceRef.current = source;
+      source.buffer = buffer;
+      source.connect(audioContext.destination);
+      source.start(0);
+      source.onended = () => {
+        // setTTSPlaying(false);
+        audioSourceRef.current = null;
+      };
+    });
+    // 传递给LAppLive2DManager处理
+    LAppLive2DManager.getInstance().getModel(0)._wavFileHandler.loadWavFile(arrayBufferCopy);
   }
 
   return (
-    <>
-      <div className='live2d-container h-full w-full'>
-      </div>
-    </>
+    <div className='live2d-container h-full w-full'>
+    </div>
   );
 }
+
 export default Live2d;

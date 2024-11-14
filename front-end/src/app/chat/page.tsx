@@ -2,9 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Live2d from '@/components/live2d'
 import { Avatar, Button } from 'antd';
-import { ClearOutlined, SendOutlined } from '@ant-design/icons';
+import { AudioMutedOutlined, ClearOutlined, SendOutlined } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
-import { Message } from '@/lib/chat';
+import { Message, postTTS } from '@/lib/chat';
 import { ws_host } from '@/lib/axios';
 import ReactMarkdown from 'react-markdown';
 export default function Page() {
@@ -12,6 +12,8 @@ export default function Page() {
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false); // 添加状态来跟踪是否正在发送消息
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isTTSPlaying, setTTSPlaying] = useState(true);
+  const [wavFile, setWavFile] = useState<string>();
 
   const handleSend = async () => {
     if (inputValue.trim() && !isSending) { // 确保发送的内容不能为空并且没有正在发送的消息
@@ -26,16 +28,14 @@ export default function Page() {
 
       websocket.onopen = () => {
         websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1) }));
-        console.log(updatedChatHistory)
       };
 
       websocket.onmessage = (event) => {
         const data = event.data;
         if (data === "[DONE]") {
           websocket.close();
-          setIsSending(false); // 设置状态为未发送
+          setIsSending(false);
         } else {
-          // 确保消息仅在上一次的 assistant 消息基础上追加
           setChatHistory((prevHistory) => {
             const lastMessageIndex = prevHistory.length - 1;
             const lastMessage = prevHistory[lastMessageIndex];
@@ -43,7 +43,7 @@ export default function Page() {
             if (lastMessage.role === 'assistant') {
               const updatedLastMessage = {
                 ...lastMessage,
-                content: lastMessage.content + data, // 追加新内容
+                content: lastMessage.content + data,
               };
 
               return [
@@ -72,6 +72,14 @@ export default function Page() {
     }
   };
 
+
+  const beginTTS = async (text: string) => {
+    postTTS(text).then((res) => {
+      setTTSPlaying(false)
+      setWavFile(res.data);
+    })
+  }
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -81,8 +89,8 @@ export default function Page() {
   return (
     <div className='w-full h-full flex'>
       <div className='flex-shrink-0 w-1/4 flex items-center justify-center'>
-        <div style={{ width: '100%', aspectRatio: '1 / 2', maxHeight: '200%' }}>
-          <Live2d />
+        <div style={{ width: '100%', maxWidth: '100%', maxHeight: '100%', aspectRatio: '1 / 2', overflow: 'hidden' }}>
+          <Live2d isTTSPlaying={isTTSPlaying} setTTSPlaying={setTTSPlaying} wavFile={wavFile} />
         </div>
       </div>
       <div className='flex flex-col flex-1 w-3/4'>
@@ -91,12 +99,15 @@ export default function Page() {
             <div
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className="flex items-start space-x-2 max-w-xl">
+              <div className="flex items-start space-x-2 max-w-xl relative">
                 {message.role === 'assistant' && (
                   <Avatar className="flex-shrink-0 w-8 h-8">径</Avatar>
                 )}
-                <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md">
+                <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
                   <ReactMarkdown>{message.content}</ReactMarkdown>
+                  {message.role === 'assistant' && (
+                    <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => { beginTTS(message.content) }} />
+                  )}
                 </div>
                 {message.role === 'user' && (
                   <Avatar className="flex-shrink-0 w-8 h-8">我</Avatar>
