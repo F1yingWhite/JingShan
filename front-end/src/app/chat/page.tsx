@@ -1,14 +1,12 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import Live2d from '@/components/live2d'
-import { Avatar, Button, Input } from 'antd';
-import { SendOutlined } from '@ant-design/icons';
+import { Avatar, Button } from 'antd';
+import { ClearOutlined, SendOutlined } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
-import { postChat, Message } from '@/lib/chat';
-import { CommentOutlined } from '@ant-design/icons';
+import { Message } from '@/lib/chat';
 import { ws_host } from '@/lib/axios';
 import ReactMarkdown from 'react-markdown';
-
 export default function Page() {
   const [chatHistory, setChatHistory] = useState<Message[]>([{ role: "assistant", content: "您好,有什么可以帮助你的吗?" }]);
   const [inputValue, setInputValue] = useState('');
@@ -117,12 +115,22 @@ export default function Page() {
             style={{ resize: 'none', height: '100%' }}
             className="flex-1 mr-2"
           />
-          <Button
-            icon={<SendOutlined />}
-            onClick={handleSend}
-            type="primary"
-            shape="circle"
-          />
+          <div className="flex flex-col space-y-2">
+            <Button
+              icon={<SendOutlined />}
+              onClick={handleSend}
+              type="primary"
+              shape="circle"
+            />
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<ClearOutlined />}
+              onClick={() => {
+                setChatHistory([{ role: "assistant", content: "您好,有什么可以帮助你的吗?" }]);
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

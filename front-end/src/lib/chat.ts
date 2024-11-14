@@ -1,14 +1,14 @@
 import { post } from "./axios";
 export type Message = {
-    role: "user" | "assistant";
-    content: string;
+  role: "user" | "assistant";
+  content: string;
 }
 
 export function postChat(params: Message[]) {
-    return post("/chat", { "messages": params })
+  return post("/chat", { "messages": params })
 }
 
 
 export function postTTS(params: string) {
-    return post("/tts", { "text": params })
+  return post("/tts", { "text": params })
 }
