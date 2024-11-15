@@ -37,7 +37,7 @@ export default function Page() {
             title: '姓名',
             dataIndex: 'name',
             render: (text, record) => (
-              <IndividualListItem record={record} showTag={false} />
+              <IndividualListItem record={record} showTag={false} paddingLeft={false} />
             ),
           },
         ]}

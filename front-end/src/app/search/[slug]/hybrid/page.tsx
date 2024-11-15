@@ -86,7 +86,7 @@ export default function page() {
                 }
                 {
                   record.type === '人物' && (
-                    <IndividualListItem record={record.data} showTag={true} ></IndividualListItem>
+                    <IndividualListItem record={record.data} showTag={true} paddingLeft={true}></IndividualListItem>
                   )
                 }
                 {
