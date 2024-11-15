@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import Live2d from '@/components/live2d'
-import { Avatar, Button } from 'antd';
-import { AudioMutedOutlined, AudioOutlined, ClearOutlined, SendOutlined } from '@ant-design/icons';
+import { Avatar, Button, Spin } from 'antd';
+import { AudioMutedOutlined, AudioOutlined, ClearOutlined, LoadingOutlined, SendOutlined } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
 import { Message, postTTS } from '@/lib/chat';
 import { ws_host } from '@/lib/axios';
@@ -13,6 +13,7 @@ export default function Page() {
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isTTSPlaying, setTTSPlaying] = useState(false);
+  const [ttsLoading, setTTSLoading] = useState(false);
   const [wavFile, setWavFile] = useState<string>();
   const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
   const [clickIndex, setClickIndex] = useState<number | null>(null);
@@ -75,8 +76,10 @@ export default function Page() {
   };
 
   const beginTTS = async (text: string) => {
+    setTTSLoading(true);
     postTTS(text).then((res) => {
       setWavFile(res.data);
+      setTTSLoading(false);
     })
   }
 
@@ -119,7 +122,7 @@ export default function Page() {
                   <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
                     <ReactMarkdown>{message.content}</ReactMarkdown>
                     {
-                      message.role === 'assistant' && hoveredMessageIndex === index && !isTTSPlaying && !isSending && (
+                      message.role === 'assistant' && hoveredMessageIndex === index && !isTTSPlaying && !isSending && !ttsLoading && (
                         <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => {
                           if (!isTTSPlaying) {
                             setClickIndex(index)
@@ -129,7 +132,12 @@ export default function Page() {
                       )
                     }
                     {
-                      message.role === 'assistant' && clickIndex == index && isTTSPlaying && (
+                      message.role === 'assistant' && clickIndex == index && ttsLoading && (
+                        <LoadingOutlined className="absolute -bottom-2 -right-2" />
+                      )
+                    }
+                    {
+                      message.role === 'assistant' && clickIndex == index && isTTSPlaying && !ttsLoading && (
                         <AudioOutlined className="absolute -bottom-2 -right-2" onClick={() => {
                           setTTSPlaying(false)
                         }} />
