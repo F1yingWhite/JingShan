@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { Person, searchIndividuals } from '@/lib/individual';
 import { ProTable } from '@ant-design/pro-components';
 import Link from 'next/link';
+import IndividualListItem from '@/components/list_item/IndividualListItem';
 
 export default function Page() {
   let { slug } = useParams();
@@ -18,7 +19,6 @@ export default function Page() {
   useEffect(() => {
     searchIndividuals(slug).then(setIndividuals);
   }, [slug]);
-
 
   return (
     <div className="h-full overflow-y-auto rounded-md">
@@ -37,7 +37,7 @@ export default function Page() {
             title: '姓名',
             dataIndex: 'name',
             render: (text, record) => (
-              <Link className="text-[#c19d50]" href={`/individual/${record.id}`} >{record.name}</Link>
+              <IndividualListItem record={record} showTag={false} />
             ),
           },
         ]}

@@ -4,7 +4,7 @@ import { getGraphList, GraphDetail, getIdentityList } from '@/lib/graph'
 import { ProList } from '@ant-design/pro-components'
 import { Collapse, Space, Tag } from 'antd';
 import { useRouter } from 'next/navigation';
-import { getRandomColor } from '@/utils/randomColor';
+import { identityColorList } from '@/utils/getColor';
 export default function page() {
   const router = useRouter();
   const [colorMap, setColorMap] = useState({})
@@ -12,8 +12,8 @@ export default function page() {
   useEffect(() => {
     getIdentityList().then(res => {
       const map = {};
-      res.forEach(item => {
-        map[item] = getRandomColor();
+      res.forEach((item, index) => {
+        map[item] = identityColorList[index % identityColorList.length];
       });
       setColorMap(map);
     });

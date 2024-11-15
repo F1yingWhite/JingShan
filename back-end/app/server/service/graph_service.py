@@ -119,7 +119,6 @@ async def get_graph_detail(name: str):
     res_dict = []
     for result in results:
         temp_dict = {}
-        print(result)
         for key in result["n"]:
             value = result["n"][key]
             if is_literal(value):
