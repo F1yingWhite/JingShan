@@ -8,9 +8,11 @@ interface GraphListItemProps {
   record: GraphDetail;
   showTag: boolean;
   router: AppRouterInstance;
+  graph_colorMap: Record<string, string>
 }
 
-export default function GraphListItem({ record, showTag, router }: GraphListItemProps) {
+export default function GraphListItem({ record, showTag, router, graph_colorMap }: GraphListItemProps) {
+
   return (
     <div>
       {Object.keys(record).some(key => key !== '姓名') ? (
@@ -28,7 +30,7 @@ export default function GraphListItem({ record, showTag, router }: GraphListItem
                 >
                   {record.姓名 + ' '}
                   {showTag && <Tag color={colorMap['径山志']}>径山志</Tag>}
-                  <Tag color={colorMap[record.身份]}>{record.身份}</Tag>
+                  <Tag color={graph_colorMap[record.身份]}>{record.身份}</Tag>
                 </span>
               ),
               children: (

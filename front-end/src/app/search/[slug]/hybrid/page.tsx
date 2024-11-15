@@ -2,15 +2,16 @@
 import { searchHybrid } from '@/lib/hybrid';
 import { ProList } from '@ant-design/pro-components';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Person } from '@/lib/individual';
-import { GraphDetail } from '@/lib/graph'
+import { getIdentityList, GraphDetail } from '@/lib/graph'
 import { ContentItem, } from '@/lib/colophon';
 import { PrefaceAndPostscriptClassic } from '@/lib/preface_and_postscript'
 import IndividualListItem from '@/components/list_item/IndividualListItem';
 import ColophonListItem from '@/components/list_item/ColophonListItem';
 import PrefaceAndPostscriptListItem from '@/components/list_item/PrefaceAndPostscriptListItem';
 import GraphListItem from '@/components/list_item/GraphListItem';
+import { identityColorList } from '@/utils/getColor';
 
 type CombinedItem =
   | { type: '人物'; data: Person }
@@ -19,13 +20,24 @@ type CombinedItem =
   | { type: '径山志'; data: GraphDetail };
 
 export default function page() {
-
+  const [colorMap, setColorMap] = useState({})
   const [combinedList, setCombinedList] = useState<CombinedItem[]>([]);
   let { slug } = useParams();
   if (Array.isArray(slug)) {
     slug = slug.join('');
   }
   const router = useRouter();
+
+  useEffect(() => {
+    getIdentityList().then(res => {
+      const map = {};
+      res.forEach((item, index) => {
+        map[item] = identityColorList[index % identityColorList.length];
+      });
+      setColorMap(map);
+    });
+  }, []);
+
 
   return (
     <div className="h-full overflow-y-auto rounded-md">
@@ -79,7 +91,7 @@ export default function page() {
                 }
                 {
                   record.type === "径山志" && (
-                    <GraphListItem record={record.data} router={router} showTag={true} />
+                    <GraphListItem record={record.data} router={router} showTag={true} graph_colorMap={colorMap} />
                   )
                 }
               </div>

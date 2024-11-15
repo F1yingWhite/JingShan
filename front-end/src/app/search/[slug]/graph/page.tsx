@@ -46,7 +46,7 @@ export default function page() {
           title: {
             title: "人物名称",
             render: (text, record) => {
-              return <GraphListItem showTag={false} record={record} router={router} />
+              return <GraphListItem showTag={false} record={record} router={router} graph_colorMap={colorMap} />
             },
           },
         }}

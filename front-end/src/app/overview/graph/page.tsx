@@ -1,14 +1,14 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { getGraphList, GraphDetail, getIdentityList } from '@/lib/graph'
+import { getGraphList, getIdentityList, GraphDetail } from '@/lib/graph'
 import { ProList } from '@ant-design/pro-components'
-import { Collapse, Space, Tag } from 'antd';
 import { useRouter } from 'next/navigation';
+import GraphListItem from '@/components/list_item/GraphListItem';
 import { identityColorList } from '@/utils/getColor';
 export default function page() {
   const router = useRouter();
-  const [colorMap, setColorMap] = useState({})
 
+  const [colorMap, setColorMap] = useState({})
   useEffect(() => {
     getIdentityList().then(res => {
       const map = {};
@@ -18,6 +18,7 @@ export default function page() {
       setColorMap(map);
     });
   }, []);
+
 
   return (
     <div className="h-full overflow-y-auto rounded-md">
@@ -43,39 +44,7 @@ export default function page() {
             search: true,
             title: "人物名称",
             render: (text, record) => {
-              // 如果record有除了姓名的其他字段则展示Collapse,否则只展示姓名
-              const hasOtherFields = Object.keys(record).some(key => key !== '姓名');
-              return hasOtherFields ? (
-                <Collapse
-                  ghost
-                  items={[
-                    {
-                      key: record.姓名,
-                      label: <span className="text-[#c19d50]" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名} {record.身份 && <Space size={0}>
-                        <Tag color={colorMap[record.身份]}>{record.身份}</Tag>
-                      </Space>}</span>,
-                      children: (
-                        <div>
-                          <ul>
-                            {Object.keys(record).map((key) => {
-                              if (key !== '姓名') {
-                                return (
-                                  <li key={key}>
-                                    <span className="text-[#c19d50]">{key}</span>: {record[key]}
-                                  </li>
-                                );
-                              }
-                              return null;
-                            })}
-                          </ul>
-                        </div>
-                      ),
-                    },
-                  ]}
-                />
-              ) : (
-                <span className="text-[#c19d50] ml-10" onClick={() => { router.push(`/graph/${encodeURIComponent(record.姓名)}`) }}>{record.姓名}</span>
-              );
+              return <GraphListItem record={record} showTag={false} router={router} graph_colorMap={colorMap} />
             },
           },
         }}
