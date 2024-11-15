@@ -38,10 +38,16 @@ function Live2d({ wavFile, isTTSPlaying, setTTSPlaying }: Live2dProps) {
     handleLoad();
     window.addEventListener('beforeunload', handleBeforeUnload, { passive: true });
     window.addEventListener('resize', handleResize, { passive: true });
-
+    window.addEventListener(
+      'beforeunload',
+      (): void => LAppDelegate.releaseInstance(),
+      { passive: true }
+    );
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('resize', handleResize);
+      if (!isTTSPlaying && audioSourceRef.current) {
+        audioSourceRef.current.stop();
+        audioSourceRef.current = null;
+      }
     };
   }, []);
 

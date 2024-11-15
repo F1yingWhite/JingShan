@@ -10,7 +10,7 @@ import ReactMarkdown from 'react-markdown';
 export default function Page() {
   const [chatHistory, setChatHistory] = useState<Message[]>([{ role: "assistant", content: "您好,有什么可以帮助你的吗?" }]);
   const [inputValue, setInputValue] = useState('');
-  const [isSending, setIsSending] = useState(false); // 添加状态来跟踪是否正在发送消息
+  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isTTSPlaying, setTTSPlaying] = useState(false);
   const [wavFile, setWavFile] = useState<string>();
@@ -74,7 +74,6 @@ export default function Page() {
     }
   };
 
-
   const beginTTS = async (text: string) => {
     postTTS(text).then((res) => {
       setWavFile(res.data);
@@ -86,6 +85,12 @@ export default function Page() {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [chatHistory]);
+
+  useEffect(() => {
+    return () => {
+      setTTSPlaying(false);
+    };
+  }, []);
 
   return (
     <div className='w-full h-full flex'>

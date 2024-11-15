@@ -80,7 +80,10 @@ export class LAppWavFileHandler {
       (this._wavFileInfo._numberOfChannels *
         (goalOffset - this._sampleOffset))
     );
-
+    //这里有时候goalOffset和sampleOffset相等，导致rms为NaN
+    if (isNaN(rms)) {
+      return true
+    }
     this._lastRms = rms;
     this._sampleOffset = goalOffset;
     return true;

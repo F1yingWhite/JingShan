@@ -156,7 +156,10 @@ export class LAppDelegate {
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
       // 描画更新
-      this._view.render();
+      if (this._view) {
+        this._view.render();
+      }
+      // console.log(this._view);
 
       // ループのために再帰呼び出し
       requestAnimationFrame(loop);
