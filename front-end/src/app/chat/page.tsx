@@ -64,7 +64,7 @@ export default function Page() {
         } else {
           console.error("WebSocket connection closed unexpectedly");
         }
-        setIsSending(false); // 确保在连接关闭时重置状态
+        setIsSending(false);
       };
 
       websocket.onerror = (error) => {
@@ -101,40 +101,50 @@ export default function Page() {
       </div>
       <div className='flex flex-col flex-1 w-3/4'>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {chatHistory.map((message, index) => (
-            <div
-              key={index}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className="flex items-start space-x-2 max-w-xl relative"
-                onMouseEnter={() => setHoveredMessageIndex(index)}
-                onMouseLeave={() => setHoveredMessageIndex(null)}
+          {
+            chatHistory.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {message.role === 'assistant' && (
-                  <Avatar className="flex-shrink-0 w-8 h-8">径</Avatar>
-                )}
-                <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
-                  <ReactMarkdown>{message.content}</ReactMarkdown>
-                  {message.role === 'assistant' && hoveredMessageIndex === index && !isTTSPlaying && !isSending && (
-                    <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => {
-                      if (!isTTSPlaying) {
-                        setClickIndex(index)
-                        beginTTS(message.content)
-                      }
-                    }} />
-                  )}
-                  {message.role === 'assistant' && clickIndex == index && isTTSPlaying && (
-                    <AudioOutlined className="absolute -bottom-2 -right-2" onClick={() => {
-                      setTTSPlaying(false)
-                    }} />
-                  )}
+                <div className="flex items-start space-x-2 max-w-xl relative"
+                  onMouseEnter={() => setHoveredMessageIndex(index)}
+                  onMouseLeave={() => setHoveredMessageIndex(null)}
+                >
+                  {
+                    message.role === 'assistant' && (
+                      <Avatar className="flex-shrink-0 w-8 h-8">径</Avatar>
+                    )
+                  }
+                  <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
+                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                    {
+                      message.role === 'assistant' && hoveredMessageIndex === index && !isTTSPlaying && !isSending && (
+                        <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => {
+                          if (!isTTSPlaying) {
+                            setClickIndex(index)
+                            beginTTS(message.content)
+                          }
+                        }} />
+                      )
+                    }
+                    {
+                      message.role === 'assistant' && clickIndex == index && isTTSPlaying && (
+                        <AudioOutlined className="absolute -bottom-2 -right-2" onClick={() => {
+                          setTTSPlaying(false)
+                        }} />
+                      )
+                    }
+                  </div>
+                  {
+                    message.role === 'user' && (
+                      <Avatar className="flex-shrink-0 w-8 h-8">我</Avatar>
+                    )
+                  }
                 </div>
-                {message.role === 'user' && (
-                  <Avatar className="flex-shrink-0 w-8 h-8">我</Avatar>
-                )}
               </div>
-            </div>
-          ))}
+            ))
+          }
           <div ref={messagesEndRef} />
         </div>
         <div className="p-4 border-t border-gray-200 bg-gray-100 flex items-center h-1/4">
