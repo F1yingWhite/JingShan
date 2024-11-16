@@ -40,7 +40,7 @@ export default function GraphListItem({ record, showTag, router, graph_colorMap 
                       if (key !== '姓名') {
                         return (
                           <li key={key}>
-                            <span className="text-[#c19d50]">{key}</span>: {record[key]}
+                            <span className="text-[#c19d50]">{key}</span>: {Array.isArray(record[key]) ? record[key].join(', ') : record[key]}
                           </li>
                         );
                       }

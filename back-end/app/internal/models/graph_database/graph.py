@@ -1,6 +1,24 @@
 from typing import Optional
 
+from neo4j import exceptions
+
 from . import neo4j_driver
+
+
+def execute_cypher(cypher: str):
+    try:
+        with neo4j_driver.session() as session:
+            result = session.run(cypher)
+            return result.data()
+    except exceptions.CypherError as e:
+        print(f"CypherError: {e}")
+        raise
+    except exceptions.ServiceUnavailable as e:
+        print(f"ServiceUnavailable: {e}")
+        raise
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        raise
 
 
 def get_relation_ship_by_id_in(subject_name: str):
