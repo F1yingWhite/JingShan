@@ -1,4 +1,3 @@
-import ast
 from math import sqrt
 from typing import Optional
 
@@ -34,7 +33,7 @@ async def get_graph_by_name(name: str):
     node_category_map = {}
     for result in results:
         if result["subject_identity"] != "Not Found":
-            list_of_strings = ast.literal_eval(result["subject_identity"])
+            list_of_strings = result["subject_identity"]
         elif result["subject.姓名"] == name:
             list_of_strings = ["查询对象"]
         else:
@@ -42,7 +41,7 @@ async def get_graph_by_name(name: str):
         category_set.add(list_of_strings[0])
         node_category_map[result["subject.姓名"]] = list_of_strings[0]
         if result["object_identity"] != "Not Found":
-            list_of_strings = ast.literal_eval(result["object_identity"])
+            list_of_strings = result["object_identity"]
         elif result["object.姓名"] == name:
             list_of_strings = ["查询对象"]
         else:
@@ -82,14 +81,6 @@ async def get_graph_by_name(name: str):
     return ResponseModel(data=res_dict)
 
 
-def is_literal(s):
-    try:
-        ast.literal_eval(s)
-        return True
-    except (ValueError, SyntaxError):
-        return False
-
-
 class GraphList(BaseModel):
     current: int
     pageSize: int
@@ -104,11 +95,7 @@ async def get_graph_list(graph_data: GraphList):
     for result in results:
         temp_dict = {}
         for key in result["n"]:
-            value = result["n"][key]
-            if is_literal(value):
-                temp_dict[key] = ast.literal_eval(value)
-            else:
-                temp_dict[key] = value
+            temp_dict[key] = result["n"][key]
         res_dict.append(temp_dict)
     return ResponseModel(data={"success": True, "total": nums[0]["count(n)"], "data": res_dict})
 
@@ -120,11 +107,7 @@ async def get_graph_detail(name: str):
     for result in results:
         temp_dict = {}
         for key in result["n"]:
-            value = result["n"][key]
-            if is_literal(value):
-                temp_dict[key] = ast.literal_eval(value)
-            else:
-                temp_dict[key] = value
+            temp_dict[key] = result["n"][key]
         res_dict.append(temp_dict)
     return ResponseModel(data=res_dict)
 
@@ -134,5 +117,5 @@ async def get_identity():
     results = get_identity_set()
     res_dict = []
     for result in results:
-        res_dict.append(ast.literal_eval(result["n.身份"]))
+        res_dict.append(result["n.身份"])
     return ResponseModel(data=res_dict)

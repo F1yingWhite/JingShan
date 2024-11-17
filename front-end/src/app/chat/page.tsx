@@ -8,7 +8,7 @@ import { Message, postTTS } from '@/lib/chat';
 import { ws_host } from '@/lib/axios';
 import ReactMarkdown from 'react-markdown';
 export default function Page() {
-  const [chatHistory, setChatHistory] = useState<Message[]>([{ role: "assistant", content: "您好,有什么可以帮助你的吗?" }]);
+  const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);

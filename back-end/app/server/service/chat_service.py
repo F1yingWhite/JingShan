@@ -5,7 +5,7 @@ import json
 import re
 import uuid
 import wave
-from typing import List, Literal
+from typing import Any, List, Literal
 
 import requests
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -27,7 +27,7 @@ class ChatQueryParams(BaseModel):
 
 chat_router = APIRouter(prefix="/chat")
 
-SYSTEM_MESSAGE = {"role": "system", "content": "现在你是一个小和尚,能够根据知识图谱返回的信息专门为外人介绍径山寺"}
+SYSTEM_MESSAGE = {"role": "system", "content": "现在你是一个在径山寺修行的小和尚"}
 GRAPH_MESSAGE = {
     "role": "system",
     "content": """
@@ -38,20 +38,26 @@ GRAPH_MESSAGE = {
 ```
 注意,除了姓名字段其他都不一定有,一个实例如下:
 ```
-人名规范资料库	["http://authority.dila.edu.tw/person/?fromInner=A008721"]
-具戒时间	["二十一岁于荆州果愿寺受戒"]
-别名	["道林", "香光", "鸟窠禅师", "鹊巢和尚", "圆修禅师"]
-卒年	[8240318]
-姓名	鸟窼道林禅师
-开悟记述	["诣长安属代宗，诏国一禅师，至阙师乃谒之，遂得正法。"]
-报龄	[84]
-朝代	["唐"]
-法语	["元和中，白居易侍郎出守杭州，因入山谒师，问：「口禅师住处甚危险。」师曰：「太守危险尤甚。」白曰：「弟子位镇江山，何险之有？」师曰：「薪火相交，识性不停，得非险乎！」又问：「如何是佛法大意？」师曰：「诸恶莫作，众善奉行。」白曰：「三岁孩儿也解，恁么道？」师曰：「三岁孩儿虽道得，八十岁老人行不得。」白作礼而退。"]
-生年	[741]
-籍贯	["本郡富阳人"]
-资料出处	["《径山志》卷三"]
-身份	["法侣"]
+  "labels": [
+    "人物"
+  ],
+  "properties": {
+    "资料出处": ["《径山志》卷三"],
+    "身份": ["法侣"],
+    "卒年": [8240318],
+    "别名": ["道林", "香光", "鸟窠禅师", "鹊巢和尚", "圆修禅师"],
+    "朝代": ["唐"],
+    "籍贯": ["本郡富阳人"],
+    "人名规范资料库": "["http://authority.dila.edu.tw/person/?fromInner=A008721"],
+    "姓名": "鸟窼道林禅师",
+    "报龄": [84],
+    "开悟记述": ["诣长安属代宗，诏国一禅师，至阙师乃谒之，遂得正法。"],
+    "法语": ["元和中，白居易侍郎出守杭州，因入山谒师，问：「口禅师住处甚危险。」师曰：「太守危险尤甚。」白曰：「弟子位镇江山，何险之有？」师曰：「薪火相交，识性不停，得非险乎！」又问：「如何是佛法大意？」师曰：「诸恶莫作，众善奉行。」白曰：「三岁孩儿也解，恁么道？」师曰：「三岁孩儿虽道得，八十岁老人行不得。」白作礼而退。"],
+    "生年": [741],
+    "具戒时间": ["二十一岁于荆州果愿寺受戒"]
+  },
 ```
+
 
 # 关系三元组
 [人物 关系类型 人物]
@@ -63,7 +69,13 @@ GRAPH_MESSAGE = {
 
 
 def get_spark_once(message: List[Message]):
-    data = {"model": config.SPARKAI_DOMAIN, "messages": message, "stream": True}
+    data = {
+        "model": config.SPARKAI_DOMAIN,
+        "messages": message,
+        "stream": True,
+        "max_tokens": 8192,
+        "tools.web_search": {"enable": False},
+    }
     header = {"Authorization": "Bearer " + config.SPARKAI_PASSWORD}
     response = requests.post(url=config.SPARKAI_URL, headers=header, json=data, stream=True)
     response.encoding = "utf-8"
@@ -81,25 +93,19 @@ def get_spark_once(message: List[Message]):
                 print(f"JSONDecodeError: {e} - Line: {line}")
 
 
-def get_query(messages: ChatQueryParams):
-    messages = [GRAPH_MESSAGE] + [message.model_dump() for message in messages.messages]
+def get_query(messages: List[Message]):
+    messages = [GRAPH_MESSAGE] + messages
     response = get_spark_once(messages)
+    print(response)
     # 使用正则匹配出cypher语句
     cypher_pattern = re.compile(r"```cypher(.*?)```", re.DOTALL)
     match = cypher_pattern.search(response)
 
     if match:
         cypher = match.group(1).strip()
-        print(cypher)
         return execute_cypher(cypher)
     else:
         return None
-
-
-@chat_router.post("/query")
-async def query(messages: ChatQueryParams):
-    response = get_query(messages)
-    return ResponseModel(data=response)
 
 
 @chat_router.websocket("/ws")
@@ -109,8 +115,24 @@ async def chat_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_json()
             messages = data["messages"]
-            messages = [SYSTEM_MESSAGE] + messages
-            data = {"model": config.SPARKAI_DOMAIN, "messages": messages, "stream": True}
+            messages_with_system = [SYSTEM_MESSAGE] + messages
+            cypher_data: List[dict[str, Any]] | None = get_query(messages)
+            if cypher_data is not None:
+                cypher_data = json.dumps(cypher_data, ensure_ascii=False)
+                messages_with_system.append(
+                    {
+                        "role": "user",
+                        "content": "上面的问题从数据库中查询得到的结果如下,请你将他组织为一段话"
+                        "(如果查询得到的数据是None,那么说未查询到相关信息即可):" + cypher_data,
+                    }
+                )
+            data = {
+                "model": config.SPARKAI_DOMAIN,
+                "messages": messages_with_system,
+                "stream": True,
+                "presence_penalty": 1,
+                "max_tokens": 8192,
+            }
             header = {"Authorization": "Bearer " + config.SPARKAI_PASSWORD}
             response = requests.post(url=config.SPARKAI_URL, headers=header, json=data, stream=True)
             response.encoding = "utf-8"
