@@ -19,8 +19,8 @@ export default function Page() {
   const [clickIndex, setClickIndex] = useState<number | null>(null);
 
   const handleSend = async () => {
-    if (inputValue.trim() && !isSending) { // 确保发送的内容不能为空并且没有正在发送的消息
-      setIsSending(true); // 设置状态为正在发送
+    if (inputValue.trim() && !isSending) {
+      setIsSending(true);
       const newMessage: Message = { role: 'user', content: inputValue };
       const updatedChatHistory = [...chatHistory, newMessage, { role: 'assistant' as 'assistant', content: '' }];
       setChatHistory(updatedChatHistory);
