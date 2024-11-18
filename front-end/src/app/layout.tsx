@@ -19,7 +19,6 @@ export default function RootLayout({
   return (
     <html lang="cn">
       <body className={noto_sans_sc.className}>
-        <Script src="Core/live2dcubismcore.js" strategy='beforeInteractive' />
         <AntdRegistry>
           <ConfigProvider
             theme={{
@@ -39,6 +38,7 @@ export default function RootLayout({
             </Layout>
           </ConfigProvider>
         </AntdRegistry>
+        <Script src="/Core/live2dcubismcore.js" strategy='beforeInteractive' />
       </body>
     </html>
   );

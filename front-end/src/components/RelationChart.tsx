@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { Graph } from '@/lib/graph';
 
@@ -10,6 +10,12 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
   if (!graph) {
     return null;
   }
+  const [layoutType, setLayoutType] = useState('force');
+  useEffect(() => {
+    if (graph.nodes.length > 3) {
+      setLayoutType('circular');
+    }
+  }, [graph])
   const option = {
     title: {
 
@@ -27,7 +33,11 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
     series: [
       {
         type: 'graph',
-        layout: 'circular',
+        layout: layoutType,
+        force: layoutType === 'force' ? {
+          repulsion: 1000,
+          edgeLength: 200
+        } : undefined,
         circular: {
           rotateLabel: true
         },
@@ -41,7 +51,7 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
         },
         lineStyle: {
           color: 'source',
-          curveness: 0.3,
+          curveness: layoutType === 'force' ? 0 : 0.3,
         },
         edgeSymbol: ['none', 'arrow'],
         emphasis: {
