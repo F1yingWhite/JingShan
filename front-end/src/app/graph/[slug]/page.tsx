@@ -53,7 +53,7 @@ export default function page({ params }: { params: { slug: string } }) {
   return (
     <div className='w-full h-full overflow-y-auto'>
       <div className="text-2xl font-bold text-center my-4 text-[#c19d50]">人物关系图</div>
-      {graph && <div className="h-2/3"><RelationChart graph={graph} /></div>}
+      <div className="h-2/3"><RelationChart graph={graph} /></div>
       <ProList< GraphDetail>
         rowKey="name"
         headerTitle="人物列表"

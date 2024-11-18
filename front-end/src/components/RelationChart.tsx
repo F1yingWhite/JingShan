@@ -7,6 +7,9 @@ type RelationChartProps = {
 };
 
 const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
+  if (!graph) {
+    return null;
+  }
   const option = {
     title: {
 
