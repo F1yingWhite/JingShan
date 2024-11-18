@@ -122,8 +122,7 @@ async def chat_endpoint(websocket: WebSocket):
                 messages_with_system.append(
                     {
                         "role": "user",
-                        "content": "上面的问题从数据库中查询得到的结果如下,请你将他组织为一段话"
-                        "(如果查询得到的数据是None,那么说未查询到相关信息即可):" + cypher_data,
+                        "content": "上面的问题从数据库中查询得到的结果如下,请你将他组织为一段话" + cypher_data,
                     }
                 )
             data = {

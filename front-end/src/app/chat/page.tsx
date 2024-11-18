@@ -120,7 +120,7 @@ export default function Page() {
                     )
                   }
                   <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
-                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                    {message.content == "" ? <Spin /> : <ReactMarkdown>{message.content}</ReactMarkdown>}
                     {
                       message.role === 'assistant' && hoveredMessageIndex === index && !isTTSPlaying && !isSending && !ttsLoading && (
                         <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => {
