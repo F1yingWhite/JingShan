@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { Graph } from '@/lib/graph';
 
@@ -54,6 +54,8 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
     ]
   };
 
+  useEffect(() => {
+  }, [graph])
   const onEvents = {
     'click': (params: any) => {
       if (params.dataType === 'node') {

@@ -24,7 +24,6 @@ export default function page({ params }: { params: { slug: string } }) {
 
   useEffect(() => {
     getGraph(slug).then(graph => {
-      setGraph(graph);
       if (graph) {
         const fetchGraphDetails = async () => {
           const details = [];
@@ -34,7 +33,9 @@ export default function page({ params }: { params: { slug: string } }) {
           }
           setGraphDetail(details);
         };
-        fetchGraphDetails();
+        fetchGraphDetails().then(()=>{
+          setGraph(graph);
+        });
       }
     });
   }, [slug]);
