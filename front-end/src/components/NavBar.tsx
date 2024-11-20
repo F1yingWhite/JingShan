@@ -20,10 +20,9 @@ const NavIcon: React.FC<NavIconProps> = ({ href, svgPath, text }) => {
   const hoverColor = 'hover:text-[#a69e56]';
 
   return (
-    <Link href={href} className={`mx-4 flex flex-col items-center justify-center text-xs pt-1 ${textColor} ${hoverColor}`}>
+    <Link href={href} className={`mx-4 flex flex-col items-center justify-center text-xs sm:text-xs md:text-sm lg:text-base pt-1 ${textColor} ${hoverColor}`}>
       <svg
-        width="25"
-        height="25"
+        className="sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7" // 调整图标大小
         fill="currentColor"
         viewBox="0 0 1186 1024"
         xmlns="http://www.w3.org/2000/svg"
@@ -93,23 +92,25 @@ export default function NavBar() {
         <span className='ml-2 text-base sm:text-lg md:text-xl lg:text-2xl'>求是佛典</span>
       </Flex>
 
-      <Flex justify="center">
-        <div className="w-2/5 max-w-[300px] hidden sm:flex mt-2">
-          <Flex >
-            {path !== '/' && (
-              <Input.Search
-                placeholder="搜索..."
-                value={searchValue}
-                onSearch={(value) => handleSearch(value)}
-                onChange={(e) => setSearchValue(e.target.value)}
-              />
-            )}
-          </Flex>
+      <Flex justify="center" className="flex-1">
+        <div className="w-2/5 max-w-[300px] hidden sm:flex justify-center">
+          {path !== '/' && (
+            <Input.Search
+              className="w-full"
+              placeholder="搜索..."
+              value={searchValue}
+              onSearch={(value) => handleSearch(value)}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+          )}
         </div>
+      </Flex>
+
+      <Flex justify="center">
         {IconList.map((icon, index) => (
           <NavIcon key={index} href={icon.href} svgPath={icon.svgPath} text={icon.text} />
         ))}
       </Flex>
-    </Header >
+    </Header>
   );
 }
