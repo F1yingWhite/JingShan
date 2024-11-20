@@ -5,7 +5,7 @@ import { Avatar, Button, Spin } from 'antd';
 import { AudioMutedOutlined, AudioOutlined, ClearOutlined, LoadingOutlined, SendOutlined } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
 import { Message, postTTS } from '@/lib/chat';
-import { ws_host } from '@/lib/axios';
+import { wss_host } from '@/lib/axios';
 import ReactMarkdown from 'react-markdown';
 export default function Page() {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -26,7 +26,7 @@ export default function Page() {
       setChatHistory(updatedChatHistory);
       setInputValue('');
 
-      const uri = `${ws_host}/chat/ws`;
+      const uri = `${wss_host}/chat/ws`;
       const websocket = new WebSocket(uri);
 
       websocket.onopen = () => {

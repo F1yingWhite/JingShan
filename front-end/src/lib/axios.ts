@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const ip = "localhost:5001"
 export const host = `http://${ip}/api`;
-export const ws_host = `ws://${ip}/api`;
+export const wss_host = `wss://${ip}/api`;
 // const host = "https://jingshanback.cpolar.top/api"
 
 export function get(url: string, options?: any): Promise<any> {

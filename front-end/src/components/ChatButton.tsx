@@ -2,7 +2,7 @@ import { postChat, Message } from '@/lib/chat';
 import { CommentOutlined } from '@ant-design/icons';
 import { Button, FloatButton, Input, List, Modal } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import { ws_host } from '@/lib/axios';
+import { wss_host } from '@/lib/axios';
 
 export default function ChatButton() {
   const [chatHistory, setChatHistory] = useState<Message[]>([{ role: "assistant", content: "您好,有什么可以帮助你的吗?" }]);
@@ -19,7 +19,7 @@ export default function ChatButton() {
       setChatHistory(updatedChatHistory);
       setInputValue('');
 
-      const uri = `${ws_host}/chat/ws`;
+      const uri = `${wss_host}/chat/ws`;
       const websocket = new WebSocket(uri);
 
       websocket.onopen = () => {
