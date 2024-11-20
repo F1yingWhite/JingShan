@@ -7,25 +7,22 @@ import Link from 'next/link';
 
 const columns = [
   {
-    title: "ID",
-    dataIndex: "id",
-    key: "id",
-    width: "10%"
-  },
-  {
     title: "典籍",
     dataIndex: "classic",
-    key: "classic"
+    key: "classic",
+    width: "20%",
   },
   {
     title: "经译者",
     dataIndex: "translator",
-    key: "translator"
+    key: "translator",
+    width: "20%",
   },
   {
     title: "序跋篇名",
     dataIndex: "title",
     key: "title",
+    width: "20%",
     render: (text: any, record: any) => (
       <Link className="text-[#c19d50]" href={`/preface_and_postscript/${record.id}`}>{record.title}</Link>
     ),
@@ -33,28 +30,29 @@ const columns = [
   {
     title: "类别",
     dataIndex: "category",
-    key: "category"
+    key: "category",
   },
   {
     title: "朝代",
     dataIndex: "dynasty",
-    key: "dynasty"
+    key: "dynasty",
   },
   {
     title: "作者",
     dataIndex: "author",
-    key: "author"
+    key: "author",
+    width: "20%",
   },
-  {
-    title: "册",
-    dataIndex: "copy_id",
-    key: "copy_id"
-  },
-  {
-    title: "页",
-    dataIndex: "page_id",
-    key: "page_id"
-  }
+  // {
+  //   title: "册",
+  //   dataIndex: "copy_id",
+  //   key: "copy_id",
+  // },
+  // {
+  //   title: "页",
+  //   dataIndex: "page_id",
+  //   key: "page_id",
+  // }
 ];
 
 export default function Page() {

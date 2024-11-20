@@ -88,7 +88,6 @@ function Live2d({ wavFile, isTTSPlaying, setTTSPlaying }: Live2dProps) {
         audioSourceRef.current = null;
       };
     });
-    // 传递给LAppLive2DManager处理
     LAppLive2DManager.getInstance().getModel(0)._wavFileHandler.loadWavFile(arrayBufferCopy);
   }
 

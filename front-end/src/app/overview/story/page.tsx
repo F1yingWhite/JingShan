@@ -7,12 +7,6 @@ import Link from 'next/link';
 
 const columns = [
   {
-    title: "ID",
-    dataIndex: "id",
-    key: "id",
-    width: "10%"
-  },
-  {
     title: "故事名称",
     dataIndex: "title",
     key: "title",
@@ -24,7 +18,7 @@ const columns = [
     title: "故事内容",
     dataIndex: "content",
     key: "content",
-    width: "60%",
+    width: "80%",
     ellipsis: true,
   },
 ];
