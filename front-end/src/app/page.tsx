@@ -60,7 +60,13 @@ export default function Page() {
       {contextHolder}
       <Content className={centerCol}>
         <div className="w-1/2 flex flex-col items-center mt-20">
-          <Image src="/天下径山.png" alt='天下径山' width={400} height={100} />
+          <Image
+            src="/天下径山.png"
+            alt='天下径山'
+            width={400}
+            height={100}
+            className="h-24 sm:h-28 md:h-32 lg:h-36 object-contain"
+          />
           <Search
             allowClear
             enterButton="搜索"
