@@ -66,6 +66,7 @@ export default function NavBar() {
     backgroundPosition: 'center',
     padding: 0,
   };
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
 
@@ -80,6 +81,17 @@ export default function NavBar() {
     }
   }, [path]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 400);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleSearch = (value: string) => {
     value = encodeURIComponent(value);
     router.push(`/search/${value}/hybrid`);
@@ -89,7 +101,12 @@ export default function NavBar() {
     <Header style={headerStyle} className={`flex items-center justify-between ${path === '/' ? '' : 'shadow-md'}`}>
       <Flex justify="start" className='items-center text-2xl font-bold text-black ml-0'>
         <Image src="/佛经.svg" alt='佛经' width={50} height={50} />
-        <span className='ml-2 text-base sm:text-lg md:text-xl lg:text-2xl'>求是佛典</span>
+        <span
+          className='ml-2 text-base sm:text-lg md:text-xl lg:text-2xl'
+          style={{ display: window.innerWidth < 400 ? 'none' : 'inline' }}
+        >
+          求是佛典
+        </span>
       </Flex>
 
       <Flex justify="center" className="flex-1">
