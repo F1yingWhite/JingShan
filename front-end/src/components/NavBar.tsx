@@ -72,7 +72,6 @@ export default function NavBar() {
 
 
   useEffect(() => {
-
     const segments = path.split('/');
     if (segments[1] === 'search' && segments[2]) {
       setSearchValue(decodeURIComponent(segments[2]));
@@ -81,16 +80,6 @@ export default function NavBar() {
     }
   }, [path]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsSmallScreen(window.innerWidth < 400);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const handleSearch = (value: string) => {
     value = encodeURIComponent(value);
@@ -103,7 +92,6 @@ export default function NavBar() {
         <Image src="/佛经.svg" alt='佛经' width={50} height={50} />
         <span
           className='ml-2 text-base sm:text-lg md:text-xl lg:text-2xl'
-          style={{ display: window.innerWidth < 400 ? 'none' : 'inline' }}
         >
           求是佛典
         </span>
