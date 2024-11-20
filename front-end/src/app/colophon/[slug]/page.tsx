@@ -38,31 +38,24 @@ export default function Page({ params }: { params: { slug: string } }) {
 
 
   return (
-    <div className="flex h-full">
+    <div
+      className="flex h-full flex-wrap md:flex-nowrap"
+    >
       {+slug > 1 &&
         <FloatButton
           onClick={() => { router.push(`/colophon/${+slug - 1}`) }}
           icon={<LeftOutlined />}
-          style={{ position: 'absolute', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
+          style={{ position: 'fixed', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
         />
       }
       {+slug < 9160 &&
         <FloatButton
           onClick={() => { router.push(`/colophon/${+slug + 1}`) }}
           icon={<RightOutlined />}
-          style={{ position: 'absolute', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
+          style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
         />
       }
-      <div className="w-1/3 flex items-center justify-center overflow-auto" ref={containerRef}>
-        {pdfPage ? (
-          <Image src={pdfPage} alt={`Page ${slug}`} style={{ maxHeight: '100%', maxWidth: '100%' }} />
-        ) : (
-          <div className="flex justify-center items-center" style={{ height: 'auto', width: '100%' }}>
-            <Spin />
-          </div>
-        )}
-      </div>
-      <div className="w-2/3 p-8 bg-[#F8F5ED] overflow-y-auto">
+      <div className="w-full md:w-2/3 p-8 bg-[#F8F5ED] overflow-y-auto">
         {colophon && (
           <div>
             <h2 className="text-2xl font-bold mb-6 text-[#A48F6A]">碑记内容</h2>
@@ -76,7 +69,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                 <strong className="font-semibold text-[#A48F6A]">卷数：</strong> {colophon.volume_id}
               </div>
               <div>
-                <strong className="font-semibold text-[#A48F6A]">册数：</strong>{colophon.chapter_id}
+                <strong className="font-semibold text-[#A48F6A]">册数：</strong> {colophon.chapter_id}
               </div>
               <div>
                 <strong className="font-semibold text-[#A48F6A]">千字文：</strong> {colophon.qianziwen || "Not found"}
@@ -125,6 +118,16 @@ export default function Page({ params }: { params: { slug: string } }) {
           }}
         />
       </div>
+      <div className="w-full md:w-1/3 flex items-center justify-center overflow-auto" ref={containerRef}>
+        {pdfPage ? (
+          <Image src={pdfPage} alt={`Page ${slug}`} style={{ maxHeight: '100%', maxWidth: '100%' }} />
+        ) : (
+          <div className="flex justify-center items-center" style={{ height: 'auto', width: '100%' }}>
+            <Spin />
+          </div>
+        )}
+      </div>
     </div>
   );
+
 }
