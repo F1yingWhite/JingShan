@@ -90,23 +90,26 @@ export default function NavBar() {
     <Header style={headerStyle} className={`flex items-center justify-between ${path === '/' ? '' : 'shadow-md'}`}>
       <Flex justify="start" className='items-center text-2xl font-bold text-black ml-0'>
         <Image src="/佛经.svg" alt='佛经' width={50} height={50} />
-        <span className='ml-2'>求是佛典</span>
+        <span className='ml-2 text-base sm:text-lg md:text-xl lg:text-2xl'>求是佛典</span>
       </Flex>
-      <Flex>
-        {path !== '/' && (
-          <Input.Search
-            placeholder="搜索..."
-            value={searchValue}
-            onSearch={(value) => handleSearch(value)}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
-        )}
-      </Flex>
+
       <Flex justify="center">
+        <div className="w-2/5 max-w-[300px] hidden sm:flex mt-2">
+          <Flex >
+            {path !== '/' && (
+              <Input.Search
+                placeholder="搜索..."
+                value={searchValue}
+                onSearch={(value) => handleSearch(value)}
+                onChange={(e) => setSearchValue(e.target.value)}
+              />
+            )}
+          </Flex>
+        </div>
         {IconList.map((icon, index) => (
           <NavIcon key={index} href={icon.href} svgPath={icon.svgPath} text={icon.text} />
         ))}
       </Flex>
-    </Header>
+    </Header >
   );
 }
