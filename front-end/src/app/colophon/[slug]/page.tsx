@@ -30,10 +30,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
-
-
   }, [slug]);
 
 
@@ -129,5 +126,4 @@ export default function Page({ params }: { params: { slug: string } }) {
       </div>
     </div>
   );
-
 }

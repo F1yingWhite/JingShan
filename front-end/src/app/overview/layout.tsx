@@ -18,6 +18,7 @@ const menuItems = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState('1');
+  const [showSider, setShowSider] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -28,16 +29,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [pathname]);
 
   const toggleCollapsed = () => setCollapsed(!collapsed);
+  const toggleSider = () => setShowSider(!showSider);
+
+  const handleFloatButtonClick = () => {
+    if (window.innerWidth >= 768) {
+      toggleCollapsed();
+    } else {
+      toggleSider();
+    }
+  };
 
   return (
     <section className="h-full">
       <Layout className="h-full">
-        <Sider className="h-full relative" collapsed={collapsed}>
-          <FloatButton
-            onClick={toggleCollapsed}
-            icon={collapsed ? <RightOutlined /> : <LeftOutlined />}
-            style={{ position: 'absolute', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
-          />
+        <Sider className={`h-full relative ${showSider ? 'block' : 'hidden'} md:block`} collapsed={collapsed}>
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
@@ -59,6 +64,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             ))}
           </Menu>
         </Sider>
+        <FloatButton
+          onClick={handleFloatButtonClick}
+          icon={showSider || collapsed ? <RightOutlined /> : <LeftOutlined />}
+          style={{ position: 'absolute', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
+        />
         <Content className="p-6">
           <ChatButton />
           {children}

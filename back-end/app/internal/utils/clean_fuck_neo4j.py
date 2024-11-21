@@ -30,7 +30,7 @@ def clean():
                     except json.JSONDecodeError:
                         print(f"Failed to parse value for key {key}: {value}")
 
-            # 如果有更新的属性，更新回数据库
+                # 如果有更新的属性，更新回数据库
             if updates:
                 update_query = """
                     MATCH (n)

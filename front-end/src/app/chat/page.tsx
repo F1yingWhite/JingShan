@@ -98,7 +98,7 @@ export default function Page() {
   return (
     <div className='w-full h-full flex flex-col items-center'>
       <div className='flex flex-col flex-1 w-full'>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 "> {/* 添加 relative 和 z-10 */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 ">
           {
             chatHistory.map((message, index) => (
               <div
@@ -115,17 +115,22 @@ export default function Page() {
                     )
                   }
                   <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
-                    {message.content == "" ? <Spin /> : <ReactMarkdown>{message.content}</ReactMarkdown>}
-                    {
-                      message.role === 'assistant' && hoveredMessageIndex === index && !isTTSPlaying && !isSending && !ttsLoading && (
-                        <AudioMutedOutlined className="absolute -bottom-2 -right-2" onClick={() => {
-                          if (!isTTSPlaying) {
-                            setClickIndex(index)
-                            beginTTS(message.content)
+                    {message.content === "" ? (
+                      <Spin />
+                    ) : (
+                      <div
+                        onClick={() => {
+                          if (message.role === 'assistant' && !isTTSPlaying && !isSending && !ttsLoading) {
+                            setClickIndex(index);
+                            beginTTS(message.content);
                           }
-                        }} />
-                      )
-                    }
+                        }}
+                      >
+                        <ReactMarkdown>
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+                    )}
                     {
                       message.role === 'assistant' && clickIndex == index && ttsLoading && (
                         <LoadingOutlined className="absolute -bottom-2 -right-2" />
