@@ -70,7 +70,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           style={{ position: 'absolute', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
         />
         <Content className="p-6">
-          <ChatButton />
+          <div className='hidden md:block'>
+            <ChatButton />
+          </div>
           {children}
         </Content>
       </Layout>

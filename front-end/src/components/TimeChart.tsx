@@ -52,9 +52,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ chartData }) => {
   };
 
   return (
-    <div className="w-full h-full">
-      <ReactECharts option={getOption()} style={{ height: '100%', width: '100%' }} />
-    </div>
+    <ReactECharts option={getOption()} style={{ height: '100%', width: '100%' }} />
   );
 };
 

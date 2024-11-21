@@ -58,7 +58,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <div className="flex flex-col-reverse md:flex-row h-full overflow-auto">
-      <div className="md:flex-1 p-4 border-r border-gray-300 lg:overflow-y-auto">
+      <div className="md:flex-1 p-4 border-r border-gray-300 md:overflow-y-auto">
         <h2 className="text-4xl font-semibold text-[#c19d50] text-center p-5 hidden md:block">{name}</h2>
         <ProList
           rowKey="title"
@@ -122,18 +122,22 @@ export default function Page({ params }: { params: { slug: string } }) {
         />
       </div>
 
-      <div className="md:flex-2 flex flex-col w-full md:w-1/2 h-full lg:h-auto">
+      <div className="md:flex-2 flex flex-col w-full md:w-1/2 h-auto lg:overflow-y-auto">
         <h2 className="text-4xl font-semibold text-[#c19d50] text-center p-5 block md:hidden">{name}</h2>
-        <div className="md:h-full lg:h-1/2 p-4">
+        <div className="h-auto p-4">
           <h2 className="text-lg font-semibold text-[#c19d50] text-center">刻经时间</h2>
-          {time && <TimeChart chartData={time}></TimeChart>}
+          <div className="h-[50vh]">
+            {time && <TimeChart chartData={time}></TimeChart>}
+          </div>
         </div>
         <hr className="my-4 border-t border-[#c19d50]" />
-        <div className="md:h-full lg:h-1/2 p-4">
+        <div className="h-auto p-4">
           <h2 className="text-lg font-semibold text-[#c19d50] text-center">相关藏经地点</h2>
-          <Mapbox id={+slug} />
+          <div className="h-[50vh]">
+            <Mapbox id={+slug} />
+          </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
