@@ -21,10 +21,16 @@ def execute_cypher(cypher: str):
         raise
 
 
-def get_relation_ship_by_id_in(subject_name: str):
+def person_get_all_node_and_relation():
+    with neo4j_driver.session() as session:
+        result = session.run("MATCH (n:人物)-[r]->(m:人物) RETURN n, r, m")
+        return result.data()
+
+
+def person_get_relation_ship_by_id_in(subject_name: str):
     with neo4j_driver.session() as session:
         result = session.run(
-            "MATCH (subject {姓名: $subject_name})-[r]->(object) "
+            "MATCH (subject:人物 {姓名: $subject_name})-[r]->(object:人物) "
             "RETURN subject.姓名, COALESCE(subject.身份, 'Not Found') AS subject_identity, "
             "type(r) AS relationship, object.姓名, COALESCE(object.身份, 'Not Found') AS object_identity",
             subject_name=subject_name,
@@ -32,10 +38,10 @@ def get_relation_ship_by_id_in(subject_name: str):
         return result.data()
 
 
-def get_relation_ship_by_id_out(object_name: str):
+def person_get_relation_ship_by_id_out(object_name: str):
     with neo4j_driver.session() as session:
         result = session.run(
-            "MATCH (subject)-[r]->(object {姓名: $object_name}) "
+            "MATCH (subject:人物)-[r]->(object:人物 {姓名: $object_name}) "
             "RETURN subject.姓名, COALESCE(subject.身份, 'Not Found') AS subject_identity, "
             "type(r) AS relationship, object.姓名, COALESCE(object.身份, 'Not Found') AS object_identity",
             object_name=object_name,
@@ -43,12 +49,12 @@ def get_relation_ship_by_id_out(object_name: str):
         return result.data()
 
 
-def get_list(page: int, page_size: int, title: Optional[str]):
+def person_get_list(page: int, page_size: int, title: Optional[str]):
     with neo4j_driver.session() as session:
         if title:
             result = session.run(
                 """
-                MATCH (n)
+                MATCH (n:人物)
                 WHERE n.姓名 CONTAINS $title
                 RETURN n
                 ORDER BY CASE WHEN n.身份 IS NOT NULL THEN 1 ELSE 0 END DESC
@@ -61,7 +67,7 @@ def get_list(page: int, page_size: int, title: Optional[str]):
         else:
             result = session.run(
                 """
-                MATCH (n)
+                MATCH (n:人物)
                 RETURN n
                 ORDER BY CASE WHEN n.身份 IS NOT NULL THEN 1 ELSE 0 END DESC
                 SKIP $skip LIMIT $limit
@@ -72,11 +78,11 @@ def get_list(page: int, page_size: int, title: Optional[str]):
         return result.data()
 
 
-def get_list_no_page(title: str):
+def person_get_list_no_page(title: str):
     with neo4j_driver.session() as session:
         result = session.run(
             """
-            MATCH (n)
+            MATCH (n:人物)
             WHERE n.姓名 CONTAINS $title
             RETURN n
             ORDER BY CASE WHEN n.身份 IS
@@ -87,22 +93,25 @@ def get_list_no_page(title: str):
         return result.data()
 
 
-def get_identity_set():
+def person_get_identity_set():
     with neo4j_driver.session() as session:
-        result = session.run("MATCH (n) WHERE n.身份 IS NOT NULL RETURN DISTINCT n.身份")
+        result = session.run("MATCH (n:人物) WHERE n.身份 IS NOT NULL RETURN DISTINCT n.身份")
         return result.data()
 
 
-def total_num(title: Optional[str]):
+def person_total_num(title: Optional[str]):
     with neo4j_driver.session() as session:
         if title:
-            result = session.run("MATCH (n) WHERE n.姓名 CONTAINS $title RETURN count(n)", title=title)
+            result = session.run("MATCH (n:人物) WHERE n.姓名 CONTAINS $title RETURN count(n)", title=title)
         else:
-            result = session.run("MATCH (n) RETURN count(n)")
+            result = session.run("MATCH (n:人物) RETURN count(n)")
         return result.data()
 
 
-def get_node_by_name(name: str):
+def person_get_node_by_name(name: str):
     with neo4j_driver.session() as session:
-        result = session.run("MATCH (n {姓名: $name}) RETURN n", name=name)
+        result = session.run("MATCH (n:人物 {姓名: $name}) RETURN n", name=name)
         return result.data()
+
+
+# -----------------------------------

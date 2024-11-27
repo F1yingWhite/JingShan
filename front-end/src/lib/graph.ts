@@ -27,8 +27,11 @@ export type Graph = {
   }[],
 }
 
+export function getAllGraph(){
+  return get(`/graph/all`);
+}
 
-export function getGraph(name: string) {
+export function getGraphByName(name: string) {
   return get(`/graph?name=${name}`);
 }
 

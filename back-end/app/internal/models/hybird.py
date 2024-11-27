@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
 
-from .graph_database.graph import get_list_no_page
+from .graph_database.graph import person_get_list_no_page
 from .relation_database import engine
 from .relation_database.colophon import Colophon
 from .relation_database.individual import Individual
@@ -18,7 +18,7 @@ def hybird_search(keyword: str, current: int, pageSize: int):
 
         colophon_results = Colophon.search_colophon_no_page(keyword)
 
-        graph_results = get_list_no_page(keyword)
+        graph_results = person_get_list_no_page(keyword)
 
         res_num = (
             len(individual_results) + len(preface_and_postscript_results) + len(colophon_results) + len(graph_results)

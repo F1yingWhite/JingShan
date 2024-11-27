@@ -1,3 +1,4 @@
+import random
 from math import sqrt
 from typing import Optional
 
@@ -5,12 +6,13 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from ...internal.models.graph_database.graph import (
-    get_identity_set,
-    get_list,
-    get_node_by_name,
-    get_relation_ship_by_id_in,
-    get_relation_ship_by_id_out,
-    total_num,
+    person_get_all_node_and_relation,
+    person_get_identity_set,
+    person_get_list,
+    person_get_node_by_name,
+    person_get_relation_ship_by_id_in,
+    person_get_relation_ship_by_id_out,
+    person_total_num,
 )
 from . import ResponseModel
 
@@ -25,8 +27,8 @@ async def get_graph_by_name(name: str):
         "nodes": [],
         "links": [],
     }
-    results_in = get_relation_ship_by_id_in(name)
-    results_out = get_relation_ship_by_id_out(name)
+    results_in = person_get_relation_ship_by_id_in(name)
+    results_out = person_get_relation_ship_by_id_out(name)
     results = results_in + results_out
     category_set = set()
     node_map = {}
@@ -81,6 +83,64 @@ async def get_graph_by_name(name: str):
     return ResponseModel(data=res_dict)
 
 
+@graph_router.get("/all")
+async def get_all():
+    all_node = person_get_all_node_and_relation()
+    res_dict = {
+        "type": "line",
+        "categories": [],
+        "nodes": [],
+        "links": [],
+    }
+
+    category_list = {"Not Found"}
+    node_category_map = {}
+    for node in all_node:
+        if "身份" in node["m"]:
+            category_list.add(node["m"]["身份"][0])
+            node_category_map[node["m"]["姓名"]] = node["m"]["身份"][0]
+        else:
+            node_category_map[node["m"]["姓名"]] = "Not Found"
+        if "身份" in node["n"]:
+            category_list.add(node["n"]["身份"][0])
+            node_category_map[node["n"]["姓名"]] = node["n"]["身份"][0]
+        else:
+            node_category_map[node["n"]["姓名"]] = "Not Found"
+    category_list = list(category_list)
+
+    random.shuffle(category_list)
+    for category in category_list:
+        res_dict["categories"].append({"name": category, "keyword": {}, "base": category})
+    node_map = {}
+    for node in all_node:
+        node_map[node["n"]["姓名"]] = node_map.get(node["n"]["姓名"], 0) + 1
+        node_map[node["m"]["姓名"]] = node_map.get(node["m"]["姓名"], 0) + 1
+    for node, count in node_map.items():
+        temp_dict = {
+            "name": node,
+            "category": list(category_list).index(node_category_map[node]),
+            "symbolSize": sqrt(count) * 10,
+            "label": {"show": True},
+            "value": count,
+        }
+        res_dict["nodes"].append(temp_dict)
+    for node in all_node:
+        res_dict["links"].append(
+            {
+                "source": next(
+                    (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["n"]["姓名"]),
+                    None,
+                ),
+                "target": next(
+                    (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["m"]["姓名"]),
+                    None,
+                ),
+                "value": node["r"][1],
+            }
+        )
+    return ResponseModel(data=res_dict)
+
+
 class GraphList(BaseModel):
     current: int
     pageSize: int
@@ -89,8 +149,8 @@ class GraphList(BaseModel):
 
 @graph_router.post("/list")
 async def get_graph_list(graph_data: GraphList):
-    results = get_list(graph_data.current, graph_data.pageSize, graph_data.title)
-    nums = total_num(graph_data.title)
+    results = person_get_list(graph_data.current, graph_data.pageSize, graph_data.title)
+    nums = person_total_num(graph_data.title)
     res_dict = []
     for result in results:
         temp_dict = {}
@@ -102,7 +162,7 @@ async def get_graph_list(graph_data: GraphList):
 
 @graph_router.get("/detail")
 async def get_graph_detail(name: str):
-    results = get_node_by_name(name)
+    results = person_get_node_by_name(name)
     res_dict = []
     for result in results:
         temp_dict = {}
@@ -114,7 +174,7 @@ async def get_graph_detail(name: str):
 
 @graph_router.get("/identity")
 async def get_identity():
-    results = get_identity_set()
+    results = person_get_identity_set()
     res_dict = []
     for result in results:
         res_dict.append(result["n.身份"])

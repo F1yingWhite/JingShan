@@ -26,7 +26,7 @@ dependencies = [
 
 [tool.poetry]
 name = "径山藏"
-version = "0.1.0"
+version = "1.0.0"
 description = "用于径山藏的相关研究平台"
 authors = ["Xu Yihan <81723334@qq.com>", "Xv Lizhi <xvlizhi24@163.com>"]
 

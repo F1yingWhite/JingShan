@@ -1,11 +1,12 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import RelationChart from '@/components/RelationChart'
-import { Graph, getGraph, getGraphDetailByName, GraphDetail, GraphLists, getIdentityList } from '@/lib/graph';
+import { Graph, getGraphByName, getGraphDetailByName, GraphDetail, GraphLists, getIdentityList } from '@/lib/graph';
 import { ProList } from '@ant-design/pro-components';
 import { useRouter } from 'next/navigation';
 import { identityColorList } from '@/utils/getColor';
 import GraphListItem from '@/components/list_item/GraphListItem';
+
 export default function page({ params }: { params: { slug: string } }) {
   const [graph, setGraph] = useState<Graph>()
   const [graphDetail, setGraphDetail] = useState<GraphLists>()
@@ -23,7 +24,7 @@ export default function page({ params }: { params: { slug: string } }) {
   }, []);
 
   useEffect(() => {
-    getGraph(slug).then(graph => {
+    getGraphByName(slug).then(graph => {
       if (graph) {
         const fetchGraphDetails = async () => {
           const details = [];
@@ -33,7 +34,7 @@ export default function page({ params }: { params: { slug: string } }) {
           }
           setGraphDetail(details);
         };
-        fetchGraphDetails().then(()=>{
+        fetchGraphDetails().then(() => {
           setGraph(graph);
         });
       }
@@ -54,7 +55,7 @@ export default function page({ params }: { params: { slug: string } }) {
   return (
     <div className='w-full h-full overflow-y-auto'>
       <div className="text-2xl font-bold text-center my-4 text-[#c19d50]">人物关系图</div>
-      <div className="h-2/3"><RelationChart graph={graph} /></div>
+      <div className="h-2/3"><RelationChart graph={graph} layout='none' /></div>
       <ProList< GraphDetail>
         rowKey="name"
         headerTitle="人物列表"
