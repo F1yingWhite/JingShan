@@ -47,7 +47,7 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
         circular: {
           rotateLabel: true
         },
-        zoom: layout !== 'none' ? 0.1 : 1,
+        zoom: layout !== 'none' ? 0.3 : 1,
         scaleLimit: {
           min: 0.1,
           max: 10
@@ -59,8 +59,13 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
         label: {
           position: 'inside',
           formatter: function (params: any) {
-            return params.data.name;
+            if (layout === "none") {
+              return params.data.name;
+            } else {
+              return params.data.value > 4 ? params.data.name : '';
+            }
           },
+          fontSize: 14,
         },
         lineStyle: {
           color: 'source',
@@ -85,6 +90,7 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
       }
     },
   };
+
 
   return (
     <ReactECharts
