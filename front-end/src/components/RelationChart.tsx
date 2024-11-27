@@ -1,25 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { Graph } from '@/lib/graph';
 
 type RelationChartProps = {
   graph: Graph;
+  layout: "force" | "circular" | "none";
 };
 
-const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
+const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
   if (!graph) {
     return null;
   }
   const [layoutType, setLayoutType] = useState('force');
-  useEffect(() => {
-    if (graph.nodes.length > 3) {
-      setLayoutType('circular');
-    }
-  }, [graph])
-  const option = {
-    title: {
+  const chartRef = useRef(null);
 
-    },
+  useEffect(() => {
+    if (layout === "none") {
+      if (graph.nodes.length > 3) {
+        setLayoutType('circular');
+      }
+    } else {
+      setLayoutType(layout);
+    }
+  }, [graph]);
+
+  const option = {
+    title: {},
     tooltip: {},
     legend: [
       {
@@ -41,19 +47,27 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
         circular: {
           rotateLabel: true
         },
+        zoom: layout !== 'none' ? 0.1 : 1,
+        scaleLimit: {
+          min: 0.1,
+          max: 10
+        },
         data: graph.nodes,
         links: graph.links,
         categories: graph.categories,
         roam: true,
         label: {
-          position: 'right',
-          formatter: '{b}'
+          position: 'inside',
+          formatter: function (params: any) {
+            return params.data.name;
+          },
         },
         lineStyle: {
           color: 'source',
           curveness: layoutType === 'force' ? 0 : 0.3,
         },
         edgeSymbol: ['none', 'arrow'],
+        edgeSymbolSize: 7,
         emphasis: {
           focus: 'adjacency',
           lineStyle: {
@@ -64,21 +78,22 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph }) => {
     ]
   };
 
-  useEffect(() => {
-  }, [graph])
   const onEvents = {
     'click': (params: any) => {
       if (params.dataType === 'node') {
         window.location.href = `/graph/${params.data.name}`;
       }
-    }
+    },
   };
 
-  return <ReactECharts
-    option={option}
-    style={{ height: '100%', width: '100%' }}
-    onEvents={onEvents}
-  />;
+  return (
+    <ReactECharts
+      ref={chartRef}
+      option={option}
+      style={{ height: '100%', width: '100%' }}
+      onEvents={onEvents}
+    />
+  );
 };
 
 export default RelationChart;

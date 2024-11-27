@@ -20,6 +20,7 @@ export default function Page({ params }: { params: { slug: string } }) {
       setTime(data.time);
       setDetails(data.details);
     });
+    window.scrollTo(0, 0);
   }, [slug]);
 
   const chartData = time

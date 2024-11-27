@@ -1,3 +1,4 @@
+import random
 from math import sqrt
 from typing import Optional
 
@@ -5,6 +6,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from ...internal.models.graph_database.graph import (
+    get_all_node_and_relation,
     get_identity_set,
     get_list,
     get_node_by_name,
@@ -76,6 +78,64 @@ async def get_graph_by_name(name: str):
                     None,
                 ),
                 "value": result["relationship"],
+            }
+        )
+    return ResponseModel(data=res_dict)
+
+
+@graph_router.get("/all")
+async def get_all():
+    all_node = get_all_node_and_relation()
+    res_dict = {
+        "type": "line",
+        "categories": [],
+        "nodes": [],
+        "links": [],
+    }
+
+    category_list = {"Not Found"}
+    node_category_map = {}
+    for node in all_node:
+        if "身份" in node["m"]:
+            category_list.add(node["m"]["身份"][0])
+            node_category_map[node["m"]["姓名"]] = node["m"]["身份"][0]
+        else:
+            node_category_map[node["m"]["姓名"]] = "Not Found"
+        if "身份" in node["n"]:
+            category_list.add(node["n"]["身份"][0])
+            node_category_map[node["n"]["姓名"]] = node["n"]["身份"][0]
+        else:
+            node_category_map[node["n"]["姓名"]] = "Not Found"
+    category_list = list(category_list)
+
+    random.shuffle(category_list)
+    for category in category_list:
+        res_dict["categories"].append({"name": category, "keyword": {}, "base": category})
+    node_map = {}
+    for node in all_node:
+        node_map[node["n"]["姓名"]] = node_map.get(node["n"]["姓名"], 0) + 1
+        node_map[node["m"]["姓名"]] = node_map.get(node["m"]["姓名"], 0) + 1
+    for node, count in node_map.items():
+        temp_dict = {
+            "name": node,
+            "category": list(category_list).index(node_category_map[node]),
+            "symbolSize": sqrt(count) * 10,
+            "label": {"show": True},
+            "value": count,
+        }
+        res_dict["nodes"].append(temp_dict)
+    for node in all_node:
+        res_dict["links"].append(
+            {
+                "source": next(
+                    (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["n"]["姓名"]),
+                    None,
+                ),
+                "target": next(
+                    (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["m"]["姓名"]),
+                    None,
+                ),
+                "value": node["r"][1],
             }
         )
     return ResponseModel(data=res_dict)

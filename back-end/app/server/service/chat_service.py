@@ -60,7 +60,7 @@ GRAPH_MESSAGE = {
 
 
 # 关系三元组
-[人物 关系类型 人物]
+[人物 r 人物]
 
 # 要求
 请你根据我接下来的问题给出对应的neo4j查询语句，neo4j语句需包含在```cypher```代码块中,如果我的语句不包含问题,那么随便回答些什么
@@ -119,6 +119,9 @@ async def chat_endpoint(websocket: WebSocket):
             cypher_data: List[dict[str, Any]] | None = get_query(messages)
             if cypher_data is not None:
                 cypher_data = json.dumps(cypher_data, ensure_ascii=False)
+                # 如果cypher_data的数据大于4k,那么就删除第一项,直到满足要求
+                while len(cypher_data) > 4096:
+                    cypher_data = cypher_data[cypher_data.find("}") + 1 :]
                 messages_with_system.append(
                     {
                         "role": "user",

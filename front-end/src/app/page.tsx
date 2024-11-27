@@ -30,7 +30,7 @@ export default function Page() {
   const search = (value: string) => {
     if (value.trim()) {
       value = encodeURIComponent(value);
-      router.push(`/search/${value}/colophon`);
+      router.push(`/search/${value}/hybrid`);
     } else {
       openNotification();
     }

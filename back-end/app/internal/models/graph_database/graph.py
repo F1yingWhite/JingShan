@@ -21,6 +21,12 @@ def execute_cypher(cypher: str):
         raise
 
 
+def get_all_node_and_relation():
+    with neo4j_driver.session() as session:
+        result = session.run("MATCH (n:人物)-[r]->(m:人物) RETURN n, r, m")
+        return result.data()
+
+
 def get_relation_ship_by_id_in(subject_name: str):
     with neo4j_driver.session() as session:
         result = session.run(
