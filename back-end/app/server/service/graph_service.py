@@ -6,13 +6,13 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from ...internal.models.graph_database.graph import (
-    get_all_node_and_relation,
-    get_identity_set,
-    get_list,
-    get_node_by_name,
-    get_relation_ship_by_id_in,
-    get_relation_ship_by_id_out,
-    total_num,
+    person_get_all_node_and_relation,
+    person_get_identity_set,
+    person_get_list,
+    person_get_node_by_name,
+    person_get_relation_ship_by_id_in,
+    person_get_relation_ship_by_id_out,
+    person_total_num,
 )
 from . import ResponseModel
 
@@ -27,8 +27,8 @@ async def get_graph_by_name(name: str):
         "nodes": [],
         "links": [],
     }
-    results_in = get_relation_ship_by_id_in(name)
-    results_out = get_relation_ship_by_id_out(name)
+    results_in = person_get_relation_ship_by_id_in(name)
+    results_out = person_get_relation_ship_by_id_out(name)
     results = results_in + results_out
     category_set = set()
     node_map = {}
@@ -85,7 +85,7 @@ async def get_graph_by_name(name: str):
 
 @graph_router.get("/all")
 async def get_all():
-    all_node = get_all_node_and_relation()
+    all_node = person_get_all_node_and_relation()
     res_dict = {
         "type": "line",
         "categories": [],
@@ -149,8 +149,8 @@ class GraphList(BaseModel):
 
 @graph_router.post("/list")
 async def get_graph_list(graph_data: GraphList):
-    results = get_list(graph_data.current, graph_data.pageSize, graph_data.title)
-    nums = total_num(graph_data.title)
+    results = person_get_list(graph_data.current, graph_data.pageSize, graph_data.title)
+    nums = person_total_num(graph_data.title)
     res_dict = []
     for result in results:
         temp_dict = {}
@@ -162,7 +162,7 @@ async def get_graph_list(graph_data: GraphList):
 
 @graph_router.get("/detail")
 async def get_graph_detail(name: str):
-    results = get_node_by_name(name)
+    results = person_get_node_by_name(name)
     res_dict = []
     for result in results:
         temp_dict = {}
@@ -174,7 +174,7 @@ async def get_graph_detail(name: str):
 
 @graph_router.get("/identity")
 async def get_identity():
-    results = get_identity_set()
+    results = person_get_identity_set()
     res_dict = []
     for result in results:
         res_dict.append(result["n.身份"])

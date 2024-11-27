@@ -14,7 +14,8 @@ export default function Page() {
 
   return (
     <div className='w-full h-full overflow-y-auto'>
+      < div className="text-2xl font-bold text-center my-4 text-[#c19d50]" > 人物关系图</div >
       <RelationChart graph={graph} layout={'force'} />
-    </div>
+    </div >
   )
 }

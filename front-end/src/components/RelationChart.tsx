@@ -44,14 +44,11 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
           repulsion: 1000,
           edgeLength: 200
         } : undefined,
+        draggable: true,
         circular: {
           rotateLabel: true
         },
-        zoom: layout !== 'none' ? 0.3 : 1,
-        scaleLimit: {
-          min: 0.1,
-          max: 10
-        },
+        zoom: layout !== 'none' ? 0.1 : 1,
         data: graph.nodes,
         links: graph.links,
         categories: graph.categories,
@@ -62,7 +59,7 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
             if (layout === "none") {
               return params.data.name;
             } else {
-              return params.data.value > 4 ? params.data.name : '';
+              return params.data.value > 4 ? params.data.name : "";
             }
           },
           fontSize: 14,
@@ -73,12 +70,12 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
         },
         edgeSymbol: ['none', 'arrow'],
         edgeSymbolSize: 7,
-        emphasis: {
+        emphasis: layout === 'none' ? {
           focus: 'adjacency',
           lineStyle: {
             width: 10
           }
-        }
+        } : {}
       }
     ]
   };
