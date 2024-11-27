@@ -157,7 +157,7 @@ export default function Page() {
         </div>
         <div className='relative w-full z-0'>
           <div className='absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full'>
-            <div className="max-h-[50vh] aspect-[1/2] overflow-hidden">
+            <div className="max-h-[50vh] aspect-[2/3] overflow-hidden">
               <Live2d isTTSPlaying={isTTSPlaying} setTTSPlaying={setTTSPlaying} wavFile={wavFile} />
             </div>
           </div>

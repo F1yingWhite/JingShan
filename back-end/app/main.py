@@ -30,3 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(main_router)
+
+# from .internal.utils.load_data import load_data
+
+# load_data()

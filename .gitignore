@@ -1,4 +1,6 @@
 **/*.pdf
+**/*.xls*
+**/*.doc*
 **/*.venv
 **/config.yaml
 **/*.log

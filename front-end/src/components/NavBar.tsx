@@ -96,7 +96,7 @@ export default function NavBar() {
       <Flex justify="start" className='items-center text-2xl font-bold text-black ml-0'>
         <Image src="/佛经.svg" alt='佛经' width={50} height={50} />
         <span
-          className='ml-2 text-base sm:text-lg md:text-xl lg:text-2xl'
+          className='ml-2 text-base sm:block hidden md:text-xl lg:text-2xl'
         >
           求是佛典
         </span>
