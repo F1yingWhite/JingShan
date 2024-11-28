@@ -1,7 +1,11 @@
 [project]
-name = "back-end-new"
-version = "0.1.0"
-description = "Add your description here"
+name = "jingshan-back-end"
+version = "2.0.0"
+description = "用于径山藏的相关研究平台"
+authors = [
+    {name="Xu Yihan", email="81723334@qq.com"},
+    {name="Xv Lizhi", email="xvlizhi24@163.com"}
+]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -24,13 +28,8 @@ dependencies = [
     "ruff>=0.7.3",
     "pandas>=2.2.3",
     "xlrd>=2.0.1",
+    "openpyxl>=3.1.5",
 ]
-
-[tool.poetry]
-name = "径山藏"
-version = "1.0.0"
-description = "用于径山藏的相关研究平台"
-authors = ["Xu Yihan <81723334@qq.com>", "Xv Lizhi <xvlizhi24@163.com>"]
 
 [tool.ruff]
 line-length = 120
