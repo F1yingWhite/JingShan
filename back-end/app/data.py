@@ -39,6 +39,91 @@ def process_经名卷数(excel_file: str):
             f.write(json.dumps(data, ensure_ascii=False) + "\n")
 
 
+def merge_data_经名卷数(origin_file: str, result_jsonl_file: str):
+    with open(result_jsonl_file, "r") as f:
+        lines = f.readlines()
+
+    with open(origin_file, "r") as f:
+        origin_file = f.readlines()
+    # 将原始file转换为json列表
+    original_dict = {}
+    for line in origin_file:
+        data = json.loads(line)
+        original_dict[data["custom_id"]] = data
+
+    with open("assets/径山藏/经名卷数_result_final.jsonl", "a") as f:
+        for i in range(len(lines)):
+            result_data = json.loads(lines[i])
+            content = (
+                result_data.get("response", {})
+                .get("body", {})
+                .get("choices", [{}])[0]
+                .get("message", {})
+                .get("content")
+            )
+            # 使用正则匹配出```json```中的内容
+            match = re.search(r"```json(.*?)```", content, re.S)
+            if match:
+                content = match.group(1)
+                content = json.loads(content)
+                # 如果是列表,只取第一个
+                if isinstance(content, list):
+                    content = content[0]
+                # content删除 第 和 卷两字
+                content["卷数"] = re.sub(r"第", "", content["卷数"])
+                content["卷数"] = re.sub(r"卷", "", content["卷数"])
+                origin_data = json.loads(origin_file[i])
+            else:
+                content = {"error": "未找到匹配的数据"}
+            origin_data = original_dict[result_data["custom_id"]]
+            data = origin_data["body"]["messages"][0]["content"]
+            # 按照\n分割,取第一个
+            data = data.split("\n")[0]
+            content["origin"] = data
+            f.write(json.dumps(content, ensure_ascii=False) + "\n")
+
+
+def merge_data_时间(origin_file: str, result_jsonl_file: str):
+    with open(result_jsonl_file, "r") as f:
+        lines = f.readlines()
+
+    with open(origin_file, "r") as f:
+        origin_file = f.readlines()
+    # 将原始file转换为json列表
+    original_dict = {}
+    for line in origin_file:
+        data = json.loads(line)
+        original_dict[data["custom_id"]] = data
+
+    with open("assets/径山藏/时间_final.jsonl", "a") as f:
+        for i in range(len(lines)):
+            result_data = json.loads(lines[i])
+            content = (
+                result_data.get("response", {})
+                .get("body", {})
+                .get("choices", [{}])[0]
+                .get("message", {})
+                .get("content")
+            )
+            # 使用正则匹配出```json```中的内容
+            match = re.search(r"```json(.*?)```", content, re.S)
+            if match:
+                content = match.group(1)
+                content = json.loads(content)
+                # 如果是列表,只取第一个
+                if isinstance(content, list):
+                    content = content[0]
+                origin_data = json.loads(origin_file[i])
+            else:
+                content = {"error": "未找到匹配的数据"}
+            origin_data = original_dict[result_data["custom_id"]]
+            data = origin_data["body"]["messages"][0]["content"]
+            # 按照\n分割,取第一个
+            data = data.split("\n")[0]
+            content["origin"] = data
+            f.write(json.dumps(content, ensure_ascii=False) + "\n")
+
+
 def process_time_data(excel_file: str):
     df = pd.read_excel(excel_file)
     df = df[["经名卷数", "地名（对）", "对", "地名（书）", "书", "地名（刻）", "刻工", "时间", "地点", "寺庙"]]
@@ -155,4 +240,5 @@ def process_地名对(excel_path: str):
 
 if __name__ == "__main__":
     file_path = "assets/径山藏/各刊刻地牌記.xls"
-    process_time_data(file_path)
+    merge_data_经名卷数("./assets/径山藏/经名卷数 copy.jsonl", "./assets/径山藏/经名卷数_result.jsonl")
+    # merge_data_时间("./assets/径山藏/时间.jsonl", "./assets/径山藏/时间_result.jsonl")
