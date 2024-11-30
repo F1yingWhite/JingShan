@@ -238,7 +238,69 @@ def process_地名对(excel_path: str):
             f.write(json.dumps(data, ensure_ascii=False) + "\n")
 
 
+def merge_excel(excel_path: str):
+    df = pd.read_excel(excel_path)
+
+    jsonl_path = "./assets/径山藏/经名卷数_result_final.jsonl"
+    with open(jsonl_path, "r") as f:
+        lines = f.readlines()
+    name_dict = {}
+    for line in lines:
+        data = json.loads(line)
+        name_dict[data["origin"]] = data
+    for i, row in df.iterrows():
+        if pd.isna(row["经名卷数"]):
+            continue
+        data = row["经名卷数"]
+        if data in name_dict:
+            data = name_dict[data]
+            经名 = data.get("经名")
+            卷数 = data.get("卷数")
+        else:
+            经名 = ""
+            卷数 = ""
+        df.loc[i, "经名"] = 经名
+        df.loc[i, "卷数"] = 卷数
+
+    jsonl_path = "./assets/径山藏/对 copy.jsonl"
+    index_dict = {}
+    with open(jsonl_path, "r") as f:
+        lines = f.readlines()
+    for line in lines:
+        data = json.loads(line)
+        index_dict[data["index"]] = data
+    for i, row in df.iterrows():
+        if i in index_dict:
+            data = index_dict[i]
+            df.loc[i, "对(1)"] = str(data.get("process"))
+
+    jsonl_path = "./assets/径山藏/书 copy.jsonl"
+    index_dict = {}
+    with open(jsonl_path, "r") as f:
+        lines = f.readlines()
+    for line in lines:
+        data = json.loads(line)
+        index_dict[data["index"]] = data
+    for i, row in df.iterrows():
+        if i in index_dict:
+            data = index_dict[i]
+            df.loc[i, "书(1)"] = str(data.get("process"))
+
+    josnl_path = "./assets/径山藏/刻 copy.jsonl"
+    index_dict = {}
+    with open(josnl_path, "r") as f:
+        lines = f.readlines()
+    for line in lines:
+        data = json.loads(line)
+        index_dict[data["index"]] = data
+    for i, row in df.iterrows():
+        if i in index_dict:
+            data = index_dict[i]
+            df.loc[i, "刻工(1)"] = str(data.get("process"))
+
+    df.to_excel("assets/径山藏/各刊刻地牌记_final.xlsx", index=False)
+
+
 if __name__ == "__main__":
     file_path = "assets/径山藏/各刊刻地牌記.xls"
-    merge_data_经名卷数("./assets/径山藏/经名卷数 copy.jsonl", "./assets/径山藏/经名卷数_result.jsonl")
-    # merge_data_时间("./assets/径山藏/时间.jsonl", "./assets/径山藏/时间_result.jsonl")
+    merge_excel(file_path)
