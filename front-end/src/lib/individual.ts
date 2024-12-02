@@ -5,7 +5,7 @@ export type Details = {
     [key: string]: Array<{
         content: string;
         type: string;
-        description: string;
+        place: string;
         colophon_id: number
     }>;
 };

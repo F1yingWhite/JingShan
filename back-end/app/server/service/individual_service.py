@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from ...internal.models.relation_database.individual import Individual
 from ...internal.utils.get_time_place import (
@@ -9,15 +8,6 @@ from ...internal.utils.get_time_place import (
     get_publication_time,
 )
 from . import ResponseModel
-
-
-class IndividualDetail(BaseModel):
-    name: str
-    content: str
-    scripture_name: str
-    type: str
-    description: str
-
 
 individual_router = APIRouter(prefix="/individuals")
 

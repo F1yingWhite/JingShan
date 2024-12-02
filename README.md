@@ -1,5 +1,13 @@
 # 径山藏
 
+## 数据库运行
+```bash
+cd script
+docker build -t jingshan .
+docker run -d -p 3306:3306 --name jingshan-db -e MYSQL_ROOT_PASSWORD=你的密码 jingshan
+```
+
+
 ## TODO
 - [x]  人物知识图谱构建
 - [ ]  牌记知识图谱 先重新校对提取的特征
