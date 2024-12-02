@@ -14,6 +14,8 @@ individual_router = APIRouter(prefix="/individuals")
 
 @individual_router.get("/all")
 async def get_all_individuals(page: int, pageSize: int, title: str):
+    if title == "None":
+        title = ""
     individuals, count = Individual.get_all_individuals(page, pageSize, title)
     res = {"data": {"data": individuals, "total": count}}
     return ResponseModel(data=res)
