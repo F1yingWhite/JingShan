@@ -238,7 +238,7 @@ def process_地名对(excel_path: str):
             f.write(json.dumps(data, ensure_ascii=False) + "\n")
 
 
-def merge_excel(excel_path: str):
+def merge_excel(excel_path: str):  # noqa: C901
     df = pd.read_excel(excel_path)
 
     jsonl_path = "./assets/径山藏/经名卷数_result_final.jsonl"

@@ -44,7 +44,7 @@ export const ModelDir: string[] = [
   // 'Natori',
   // 'Rice',
   "兔兔-阿米娅",
-  'xiangzi',
+  // 'xiangzi',
   'Mao',
   'Wanko'
 ];

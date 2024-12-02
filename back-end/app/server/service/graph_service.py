@@ -81,7 +81,6 @@ async def get_graph_by_name(name: str):
         )
     return ResponseModel(data=res_dict)
 
-
 @graph_router.get("/all")
 async def get_all():
     all_node = person_get_all_node_and_relation()

@@ -39,7 +39,7 @@ async def get_individuals_detail(id: int):
         if item.scripture_name not in individuals_dict["details"]:
             individuals_dict["details"][item.scripture_name] = []
         individuals_dict["details"][item.scripture_name].append(
-            {"content": item.content, "type": item.type, "description": item.description, "colophon_id": item.col_id}
+            {"content": item.content, "type": item.type, "place": item.place, "colophon_id": item.col_id}
         )
         place = get_publication_place(item.content)
         if place != "Not found":

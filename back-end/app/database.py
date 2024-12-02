@@ -1,5 +1,4 @@
-import ast
-
+# 数据处理杂项
 import pandas as pd
 from sqlalchemy import text
 from sqlmodel import Session
@@ -101,66 +100,30 @@ if __name__ == "__main__":
     for i in range(len(df)):
         id_list = map_database(df.loc[i, "经名"], df.loc[i, "卷数"], df.loc[i, "经名卷数"], df.loc[i, "千字文"], i)
         for id in id_list:
+            time = df.loc[i, "时间"]
+            if pd.isna(time):
+                time = ""
+            temple = df.loc[i, "寺庙"]
+            if pd.isna(temple):
+                temple = ""
+            if temple.endswith("识"):
+                temple = temple[:-1]
+            place = df.loc[i, "地点"]
+            if pd.isna(place):
+                place = ""
+            money = df.loc[i, "该银"]
+            if pd.isna(money):
+                money = ""
+            words_num = df.loc[i, "计字"]
+            if pd.isna(words_num) or words_num == 0:
+                words_num = ""
+            else:
+                words_num = str(words_num)
             with Session(engine) as session:
-                if pd.notna(df.loc[i, "对(1)"]):
-                    diming = df.loc[i, "地名（对）"]
-                    if pd.notna(diming):
-                        if diming[-1] == "县":
-                            diming = diming[:-1]
-                        if diming[-1] == "释":
-                            diming = diming[:-1]
-                    dui = ast.literal_eval(df.loc[i, "对(1)"])
-                    for d in dui:
-                        result = session.execute(text(f"SELECT id FROM individual_new WHERE name = '{d}'")).fetchone()
-                        if result is None:
-                            print(f"对未找到名称:{i}{d}")
-                            continue
-                        dui_user_id = result[0]
-                        session.execute(
-                            text(
-                                "insert into ind_col_new (col_id, ind_id, type,place) "
-                                "values ({id}, {dui_user_id}, '对','{diming}')"
-                            )
-                        )
-                if pd.notna(df.loc[i, "书(1)"]):
-                    diming = df.loc[i, "地名（书）"]
-                    if pd.notna(diming):
-                        if diming[-1] == "县":
-                            diming = diming[:-1]
-                        if diming[-1] == "释":
-                            diming = diming[:-1]
-
-                    shu = ast.literal_eval(df.loc[i, "书(1)"])
-                    for s in shu:
-                        result = session.execute(text(f"SELECT id FROM individual_new WHERE name = '{s}'")).fetchone()
-                        if result is None:
-                            print(f"书未找到名称:{i}{s}")
-                            continue
-                        shu_user_id = result[0]
-                        session.execute(
-                            text(
-                                f"insert into ind_col_new (col_id, ind_id, type,place) "
-                                f"values ({id}, {shu_user_id}, '书','{diming}')"
-                            )
-                        )
-                if pd.notna(df.loc[i, "刻工(1)"]):
-                    diming = df.loc[i, "地名（刻）"]
-                    if pd.notna(diming):
-                        if diming[-1] == "县":
-                            diming = diming[:-1]
-                        if diming[-1] == "释":
-                            diming = diming[:-1]
-                    ke = ast.literal_eval(df.loc[i, "刻工(1)"])
-                    for k in ke:
-                        result = session.execute(text(f"SELECT id FROM individual_new WHERE name = '{k}'")).fetchone()
-                        if result is None:
-                            print(f"刻工未找到名称: {i}{k}")
-                            continue
-                        ke_user_id = result[0]
-                        session.execute(
-                            text(
-                                "insert into ind_col_new (col_id, ind_id, type,place) "
-                                "values ({id}, {ke_user_id}, '刻工','{diming}')"
-                            )
-                        )
+                session.exec(
+                    text(
+                        f"UPDATE colophon SET time = '{time}', place = '{place}', "
+                        f"temple = '{temple}', money = '{money}', words_num = '{words_num}' WHERE id = {id}"
+                    )
+                )
                 session.commit()

@@ -29,7 +29,7 @@ class Individual(SQLModel, table=True):
                     Colophon.content,
                     Colophon.scripture_name,
                     Ind_Col.type,
-                    Ind_Col.description,
+                    Ind_Col.place,
                     Ind_Col.col_id,
                 )
                 .join(Ind_Col, cls.id == Ind_Col.ind_id)

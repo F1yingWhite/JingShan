@@ -16,6 +16,11 @@ class Colophon(SQLModel, table=True):
     qianziwen: str | None = Field(default=None, max_length=200)
     pdf_id: int | None = Field(default=None)
     page_id: int | None = Field(default=None)
+    time: str | None = Field(default=None, max_length=255)
+    place: str | None = Field(default=None, max_length=255)
+    temple: str | None = Field(default=None, max_length=255)
+    words_num: str | None = Field(default=None, max_length=255)
+    money: str | None = Field(default=None, max_length=255)
 
     @classmethod
     def get_colphon(
@@ -28,6 +33,9 @@ class Colophon(SQLModel, table=True):
         qianziwen: str = None,
         scripture_name: str = None,
         volume_id: str = None,
+        time: str = None,
+        place: str = None,
+        temple: str = None,
     ):
         with Session(engine) as session:
             page_size = min(page_size, 100)  # 限制 page_size 不超过 100
@@ -48,6 +56,12 @@ class Colophon(SQLModel, table=True):
                 statement = statement.where(cls.scripture_name.like(f"%{scripture_name}%"))
             if volume_id is not None:
                 statement = statement.where(cls.volume_id.like(f"%{volume_id}%"))
+            if time is not None:
+                statement = statement.where(cls.time.like(f"%{time}%"))
+            if place is not None:
+                statement = statement.where(cls.place.like(f"%{place}%"))
+            if temple is not None:
+                statement = statement.where(cls.temple.like(f"%{temple}%"))
 
             statement = statement.offset(offset).limit(page_size)
             results = session.exec(statement).all()
@@ -157,7 +171,7 @@ class Colophon(SQLModel, table=True):
                 {
                     "name": row[2],
                     "type": row[1].type,
-                    "description": row[1].description,
+                    "place": row[1].place,
                     "id": row[1].ind_id,
                 }
                 for row in result
