@@ -52,13 +52,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             defaultOpenKeys={['径山藏']}
           >
             <Menu.SubMenu key="径山藏" title="径山藏" icon={<CreditCardOutlined />}>
-              {menuItems.slice(0, 3).map(item => (
+              {menuItems.slice(0, 4).map(item => (
                 <Menu.Item key={item.key} icon={item.icon}>
                   <Link href={item.path}>{item.label}</Link>
                 </Menu.Item>
               ))}
             </Menu.SubMenu>
-            {menuItems.slice(3).map(item => (
+            {menuItems.slice(4).map(item => (
               <Menu.Item key={item.key} icon={item.icon}>
                 <Link href={item.path}>{item.label}</Link>
               </Menu.Item>
