@@ -34,6 +34,9 @@ export function getIndividualDetailById(id: number) {
 }
 
 export function getAllIndividuals({ page, pageSize, title }: { page: number; pageSize: number; title: string }) {
+    if (title === undefined) {
+        title = "None"
+    }
     return get(`/individuals/all?page=${page}&pageSize=${pageSize}&title=${title}`);
 }
 
