@@ -3,7 +3,7 @@ import { get, post } from './axios'
 export type RelatedIndividuals = {
     name: string;
     id: number;
-    description: string;
+    place: string;
     type: string;
 }
 
@@ -18,6 +18,9 @@ export type Colophon = {
     qianziwen: string;
     place?: string;
     time?: string;
+    temple?: string;
+    words_num?: string;
+    money?: string
     related_individuals?: RelatedIndividuals[];
 }
 

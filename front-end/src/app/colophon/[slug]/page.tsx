@@ -69,13 +69,22 @@ export default function Page({ params }: { params: { slug: string } }) {
                 <strong className="font-semibold text-[#A48F6A]">册数：</strong> {colophon.chapter_id}
               </div>
               <div>
-                <strong className="font-semibold text-[#A48F6A]">千字文：</strong> {colophon.qianziwen || "Not found"}
+                <strong className="font-semibold text-[#A48F6A]">千字文：</strong> {colophon.qianziwen}
               </div>
               <div>
                 <strong className="font-semibold text-[#A48F6A]">刊刻时间：</strong> {colophon.time || "未知"}
               </div>
               <div>
                 <strong className="font-semibold text-[#A48F6A]">刊刻地点：</strong> {colophon.place || "未知"}
+              </div>
+              <div>
+                <strong className="font-semibold text-[#A48F6A]">刊刻寺庙：</strong> {colophon.temple || "未知"}
+              </div>
+              <div>
+                <strong className="font-semibold text-[#A48F6A]">计字：</strong> {colophon.words_num || "未知"}
+              </div>
+              <div>
+                <strong className="font-semibold text-[#A48F6A]">该银：</strong> {colophon.money || "未知"}
               </div>
             </div>
           </div>
@@ -93,19 +102,15 @@ export default function Page({ params }: { params: { slug: string } }) {
               render: (text, record) => (
                 <Link className="text-[#c19d50]" href={`/individual/${record.id}`}>{record.name}</Link>
               ),
-              width: "20%"
             },
             {
               title: '参与活动',
               dataIndex: 'type',
-              render: (text) => (typeof text === 'string' ? text.replace(/^类型为：/, '') : text),
-              width: "20%"
             },
             {
-              title: '补充说明',
-              dataIndex: 'description',
+              title: '活动地点',
+              dataIndex: 'place',
               ellipsis: true,
-              width: "60%"
             },
           ]}
           pagination={{

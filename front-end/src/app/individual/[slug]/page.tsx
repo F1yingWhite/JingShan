@@ -86,8 +86,8 @@ export default function Page({ params }: { params: { slug: string } }) {
                               <p>{item.type.replace(/^类型为：/, '')}</p>
                               <p className="text-[#c19d50] font-bold">相关牌记:</p>
                               <p>{highlightText(item.content, name || '')}</p>
-                              <p className="text-[#c19d50] font-bold">补充说明：</p>
-                              <p>{item.description}</p>
+                              <p className="text-[#c19d50] font-bold">活动地点：</p>
+                              <p>{item.place}</p>
                             </div>
                           ))}
                         </div>

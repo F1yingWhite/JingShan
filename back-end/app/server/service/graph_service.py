@@ -1,4 +1,3 @@
-import random
 from math import sqrt
 from typing import Optional
 
@@ -108,7 +107,7 @@ async def get_all():
             node_category_map[node["n"]["姓名"]] = "Not Found"
     category_list = list(category_list)
 
-    random.shuffle(category_list)
+    # random.shuffle(category_list)
     for category in category_list:
         res_dict["categories"].append({"name": category, "keyword": {}, "base": category})
     node_map = {}

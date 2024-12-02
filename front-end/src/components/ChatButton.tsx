@@ -1,4 +1,4 @@
-import { postChat, Message } from '@/lib/chat';
+import { Message } from '@/lib/chat';
 import { CommentOutlined } from '@ant-design/icons';
 import { Button, FloatButton, Input, List, Modal } from 'antd';
 import { useEffect, useRef, useState } from 'react';
@@ -13,7 +13,7 @@ export default function ChatButton() {
 
   const handleSendMessage = async () => {
     if (inputValue.trim() && !isSending) { // 确保发送的内容不能为空并且没有正在发送的消息
-      setIsSending(true); // 设置状态为正在发送
+      setIsSending(true);
       const newMessage: Message = { role: 'user', content: inputValue };
       const updatedChatHistory = [...chatHistory, newMessage, { role: 'assistant' as 'assistant', content: '' }];
       setChatHistory(updatedChatHistory);
@@ -55,17 +55,12 @@ export default function ChatButton() {
       };
 
       websocket.onclose = (event) => {
-        if (event.wasClean) {
-          console.log("WebSocket connection closed normally");
-        } else {
-          console.error("WebSocket connection closed unexpectedly");
-        }
-        setIsSending(false); // 确保在连接关闭时重置状态
+        setIsSending(false);
       };
 
       websocket.onerror = (error) => {
         console.error("WebSocket error:", error);
-        setIsSending(false); // 确保在发生错误时重置状态
+        setIsSending(false);
       };
     }
   };
@@ -121,7 +116,7 @@ export default function ChatButton() {
             placeholder="输入消息..."
             style={{ maxHeight: 'calc(15vh)', overflowY: 'auto', resize: "none", flex: 1 }}
           />
-          <Button type='primary' style={{ maxHeight: 'calc(15vh)' }} onClick={() => { setChatHistory([{ role: "assistant", content: "您好,有什么可以帮助你的吗?" }]) }}>清空</Button>
+          <Button type='primary' style={{ maxHeight: 'calc(15vh)' }} onClick={() => { setChatHistory([]) }}>清空</Button>
         </div>
       </div>
     </Modal>

@@ -17,6 +17,26 @@ class Individual(SQLModel, table=True):
             return individuals
 
     @classmethod
+    def get_all_individuals(cls, page: int, pageSize: int, name: str):
+        with Session(engine) as session:
+            # 使用窗口函数获取总数并进行分页
+            if name:
+                statement = (
+                    select(cls, func.count().over().label("total_count"))
+                    .where(cls.name.like(f"%{name}%"))
+                    .offset((page - 1) * pageSize)
+                    .limit(pageSize)
+                )
+            else:
+                statement = (
+                    select(cls, func.count().over().label("total_count")).offset((page - 1) * pageSize).limit(pageSize)
+                )
+            results = session.exec(statement).all()
+            individuals = [result[0] for result in results]
+            total_count = results[0].total_count if results else 0
+            return individuals, total_count
+
+    @classmethod
     def get_individuals_by_id(cls, user_id: int):
         from .colophon import Colophon
         from .ind_col import Ind_Col
@@ -29,7 +49,7 @@ class Individual(SQLModel, table=True):
                     Colophon.content,
                     Colophon.scripture_name,
                     Ind_Col.type,
-                    Ind_Col.description,
+                    Ind_Col.place,
                     Ind_Col.col_id,
                 )
                 .join(Ind_Col, cls.id == Ind_Col.ind_id)

@@ -5,7 +5,7 @@ export type Details = {
     [key: string]: Array<{
         content: string;
         type: string;
-        description: string;
+        place: string;
         colophon_id: number
     }>;
 };
@@ -31,6 +31,10 @@ export function getindividualByName(name: string) {
 
 export function getIndividualDetailById(id: number) {
     return get(`/individuals/detail?id=${id}`);
+}
+
+export function getAllIndividuals({ page, pageSize, title }: { page: number; pageSize: number; title: string }) {
+    return get(`/individuals/all?page=${page}&pageSize=${pageSize}&title=${title}`);
 }
 
 export function searchIndividuals(name: string) {

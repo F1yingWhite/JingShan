@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from ...internal.models.relation_database.individual import Individual
 from ...internal.utils.get_time_place import (
@@ -10,16 +9,14 @@ from ...internal.utils.get_time_place import (
 )
 from . import ResponseModel
 
-
-class IndividualDetail(BaseModel):
-    name: str
-    content: str
-    scripture_name: str
-    type: str
-    description: str
-
-
 individual_router = APIRouter(prefix="/individuals")
+
+
+@individual_router.get("/all")
+async def get_all_individuals(page: int, pageSize: int, title: str):
+    individuals, count = Individual.get_all_individuals(page, pageSize, title)
+    res = {"data": {"data": individuals, "total": count}}
+    return ResponseModel(data=res)
 
 
 @individual_router.get("/")
@@ -39,7 +36,7 @@ async def get_individuals_detail(id: int):
         if item.scripture_name not in individuals_dict["details"]:
             individuals_dict["details"][item.scripture_name] = []
         individuals_dict["details"][item.scripture_name].append(
-            {"content": item.content, "type": item.type, "description": item.description, "colophon_id": item.col_id}
+            {"content": item.content, "type": item.type, "place": item.place, "colophon_id": item.col_id}
         )
         place = get_publication_place(item.content)
         if place != "Not found":
