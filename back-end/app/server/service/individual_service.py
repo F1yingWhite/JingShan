@@ -12,6 +12,13 @@ from . import ResponseModel
 individual_router = APIRouter(prefix="/individuals")
 
 
+@individual_router.get("/all")
+async def get_all_individuals(page: int, pageSize: int, title: str):
+    individuals, count = Individual.get_all_individuals(page, pageSize, title)
+    res = {"data": {"data": individuals, "total": count}}
+    return ResponseModel(data=res)
+
+
 @individual_router.get("/")
 async def get_individuals_by_name(name: str):
     individuals = Individual.get_individuals_by_name(name)

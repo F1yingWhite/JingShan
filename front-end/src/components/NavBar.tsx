@@ -71,7 +71,6 @@ export default function NavBar() {
     backgroundPosition: 'center',
     padding: 0,
   };
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
 
@@ -97,6 +96,7 @@ export default function NavBar() {
         <Image src="/佛经.svg" alt='佛经' width={50} height={50} />
         <span
           className='ml-2 text-base sm:block hidden md:text-xl lg:text-2xl'
+          onClick={() => { router.push(`/`) }}
         >
           求是佛典
         </span>
