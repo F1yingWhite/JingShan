@@ -3,8 +3,8 @@ name = "jingshan-back-end"
 version = "2.0.0"
 description = "用于径山藏的相关研究平台"
 authors = [
-    {name="Xu Yihan", email="81723334@qq.com"},
-    {name="Xv Lizhi", email="xvlizhi24@163.com"}
+    { name = "Xu Yihan", email = "81723334@qq.com" },
+    { name = "Xv Lizhi", email = "xvlizhi24@163.com" },
 ]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -33,3 +33,6 @@ dependencies = [
 
 [tool.ruff]
 line-length = 120
+
+[tool.uv]
+pypy-install-mirror = "http://mirrors.aliyun.com/pypi/simple/"
