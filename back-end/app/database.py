@@ -95,6 +95,27 @@ def map_database(jingming: str, juanshu: str, original: str, qianziwen: str, i: 
     return [row[0] for row in rows]
 
 
+def process_location(location):
+    while (
+        location.endswith("县")
+        or location.endswith("释")
+        or location.endswith("沙弥")
+        or location.endswith("沙门")
+        or location.endswith("比丘")
+        or location.endswith("居士")
+    ):
+        if location.endswith("县") or location.endswith("释"):
+            location = location[:-1]
+        if (
+            location.endswith("沙弥")
+            or location.endswith("沙门")
+            or location.endswith("比丘")
+            or location.endswith("居士")
+        ):
+            location = location[:-2]
+    return location
+
+
 if __name__ == "__main__":
     excel_path = "./assets/径山藏/各刊刻地牌記_with_id2.xlsx"
     df = pd.read_excel(excel_path)
@@ -182,8 +203,7 @@ if __name__ == "__main__":
                         地名 = df.loc[i, "地名（对）"]
                         if pd.isna(地名):
                             地名 = ""
-                        if 地名.endswith("县"):
-                            地名 = 地名[:-1]
+                        地名 = process_location(地名)
                         with Session(engine) as session:
                             session.exec(
                                 text(
@@ -206,8 +226,7 @@ if __name__ == "__main__":
                         地名 = df.loc[i, "地名（书）"]
                         if pd.isna(地名):
                             地名 = ""
-                        if 地名.endswith("县"):
-                            地名 = 地名[:-1]
+                        地名 = process_location(地名)
                         with Session(engine) as session:
                             session.exec(
                                 text(
@@ -231,8 +250,7 @@ if __name__ == "__main__":
                         地名 = df.loc[i, "地名（刻）"]
                         if pd.isna(地名):
                             地名 = ""
-                        if 地名.endswith("县"):
-                            地名 = 地名[:-1]
+                        地名 = process_location(地名)
                         with Session(engine) as session:
                             session.exec(
                                 text(
