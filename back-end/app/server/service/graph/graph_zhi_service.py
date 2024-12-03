@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from ...internal.models.graph_database.graph import (
+from ....internal.models.graph_database.zhi_graph import (
     person_get_all_node_and_relation,
     person_get_identity_set,
     person_get_list,
@@ -13,12 +13,12 @@ from ...internal.models.graph_database.graph import (
     person_get_relation_ship_by_id_out,
     person_total_num,
 )
-from . import ResponseModel
+from .. import ResponseModel
 
-graph_router = APIRouter(prefix="/graph")
+zhi_graph_router = APIRouter(prefix="/graph/zhi")
 
 
-@graph_router.get("/")
+@zhi_graph_router.get("/")
 async def get_graph_by_name(name: str):
     res_dict = {
         "type": "force",
@@ -82,7 +82,7 @@ async def get_graph_by_name(name: str):
     return ResponseModel(data=res_dict)
 
 
-@graph_router.get("/all")
+@zhi_graph_router.get("/all")
 async def get_all():
     all_node = person_get_all_node_and_relation()
     res_dict = {
@@ -146,7 +146,7 @@ class GraphList(BaseModel):
     title: Optional[str] = None
 
 
-@graph_router.post("/list")
+@zhi_graph_router.post("/list")
 async def get_graph_list(graph_data: GraphList):
     results = person_get_list(graph_data.current, graph_data.pageSize, graph_data.title)
     nums = person_total_num(graph_data.title)
@@ -159,7 +159,7 @@ async def get_graph_list(graph_data: GraphList):
     return ResponseModel(data={"success": True, "total": nums[0]["count(n)"], "data": res_dict})
 
 
-@graph_router.get("/detail")
+@zhi_graph_router.get("/detail")
 async def get_graph_detail(name: str):
     results = person_get_node_by_name(name)
     res_dict = []
@@ -171,7 +171,7 @@ async def get_graph_detail(name: str):
     return ResponseModel(data=res_dict)
 
 
-@graph_router.get("/identity")
+@zhi_graph_router.get("/identity")
 async def get_identity():
     results = person_get_identity_set()
     res_dict = []

@@ -4,7 +4,7 @@ import { ProList } from '@ant-design/pro-components';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { Person } from '@/lib/individual';
-import { getIdentityList, GraphDetail } from '@/lib/graph'
+import { getIdentityList, GraphDetail } from '@/lib/graph_zhi'
 import { ContentItem, } from '@/lib/colophon';
 import { PrefaceAndPostscriptClassic } from '@/lib/preface_and_postscript'
 import IndividualListItem from '@/components/list_item/IndividualListItem';

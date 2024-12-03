@@ -10,7 +10,7 @@ export function get(url: string, options?: any): Promise<any> {
     axios
       .get(`${host}${url}`, {
         ...options,
-        timeout: 3000,
+        timeout: 30000,
         headers: {
           // Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
           'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export function put(url: string, data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     axios
       .put(`${host}${url}`, data, {
-        timeout: 3000,
+        timeout: 30000,
         headers: {
           // Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
           'Content-Type': 'application/json',

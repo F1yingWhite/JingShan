@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
 
-from .graph_database.graph import person_get_list_no_page
+from .graph_database.zhi_graph import person_get_list_no_page
 from .relation_database import engine
 from .relation_database.colophon import Colophon
 from .relation_database.individual import Individual

@@ -1,4 +1,4 @@
-import { GraphDetail } from '@/lib/graph';
+import { GraphDetail } from '@/lib/graph_zhi';
 import { colorMap } from '@/utils/getColor';
 import { Collapse, Tag } from 'antd';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -25,7 +25,7 @@ export default function GraphListItem({ record, showTag, router, graph_colorMap 
                 <span
                   className="text-[#c19d50]"
                   onClick={() => {
-                    router.push(`/graph/${encodeURIComponent(record.姓名)}`);
+                    router.push(`/graph/individual/${encodeURIComponent(record.姓名)}`);
                   }}
                 >
                   {record.姓名 + ' '}

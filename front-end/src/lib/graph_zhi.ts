@@ -27,12 +27,12 @@ export type Graph = {
   }[],
 }
 
-export function getAllGraph(){
-  return get(`/graph/all`);
+export function getAllGraph() {
+  return get(`/graph/zhi/all`);
 }
 
 export function getGraphByName(name: string) {
-  return get(`/graph?name=${name}`);
+  return get(`/graph/zhi?name=${name}`);
 }
 
 export type GraphDetail = {
@@ -44,13 +44,13 @@ export type GraphDetail = {
 export type GraphLists = GraphDetail[];
 
 export function getGraphList(params: any) {
-  return post(`/graph/list`, params);
+  return post(`/graph/zhi/list`, params);
 }
 
 export function getGraphDetailByName(name: string) {
-  return get(`/graph/detail?name=${name}`);
+  return get(`/graph/zhi/detail?name=${name}`);
 }
 
 export function getIdentityList() {
-  return get(`/graph/identity`);
+  return get(`/graph/zhi/identity`);
 }

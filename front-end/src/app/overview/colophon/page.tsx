@@ -10,6 +10,9 @@ const columns = [
     title: "经名",
     dataIndex: "scripture_name",
     key: "scripture_name",
+    render: (text: any, record: any) => (
+      <Link className="text-[#c19d50]" href={`/graph/scripture/${record.scripture_name}`}>{record.scripture_name}</Link>
+    ),
   },
   {
     title: "卷数",
