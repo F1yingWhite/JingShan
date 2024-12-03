@@ -1,4 +1,5 @@
 # 数据处理杂项
+
 import pandas as pd
 from sqlalchemy import text
 from sqlmodel import Session
@@ -95,35 +96,147 @@ def map_database(jingming: str, juanshu: str, original: str, qianziwen: str, i: 
 
 
 if __name__ == "__main__":
-    file_path = "./assets/径山藏/各刊刻地牌记_final_modified_with_id.xlsx"
-    df = pd.read_excel(file_path)
+    excel_path = "./assets/径山藏/各刊刻地牌記_with_id2.xlsx"
+    df = pd.read_excel(excel_path)
+    # for i in range(len(df)):
+    #     id = df.loc[i, "id"]
+    #     if pd.isna(id):
+    #         continue
+    #     时间 = df.loc[i, "时间"]
+    #     if pd.isna(时间):
+    #         时间 = ""
+    #     地点 = df.loc[i, "地点"]
+    #     if pd.isna(地点):
+    #         地点 = ""
+    #     寺庙 = df.loc[i, "寺庙"]
+    #     if pd.isna(寺庙):
+    #         寺庙 = ""
+    #     if 寺庙.endswith("识"):
+    #         寺庙 = 寺庙[:-1]
+    #     money = df.loc[i, "该银"]
+    #     if pd.isna(money):
+    #         money = ""
+    #     计字 = df.loc[i, "计字"]
+    #     if pd.isna(计字):
+    #         计字 = ""
+    #     # 更新数据库
+    #     with Session(engine) as session:
+    #         session.exec(
+    #             text(
+    #                 f"""
+    #                 UPDATE colophon
+    #                 SET time = '{时间}', place = '{地点}', temple = '{寺庙}',money = '{money}',words_num = '{计字}'
+    #                 WHERE id = {id}
+    #             """
+    #             )
+    #         )
+    #         session.commit()
+    # 创建individual表
+    with Session(engine) as session:
+        session.exec(text("CREATE TABLE individual (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL)"))
+        session.commit()
+    with Session(engine) as session:
+        session.exec(text("CREATE TABLE ind_col(ind_id BIGINT, col_id BIGINT,place VARCHAR(255),type VARCHAR(255))"))
+        session.commit()
+    user_set = set()
     for i in range(len(df)):
-        id_list = map_database(df.loc[i, "经名"], df.loc[i, "卷数"], df.loc[i, "经名卷数"], df.loc[i, "千字文"], i)
-        for id in id_list:
-            time = df.loc[i, "时间"]
-            if pd.isna(time):
-                time = ""
-            temple = df.loc[i, "寺庙"]
-            if pd.isna(temple):
-                temple = ""
-            if temple.endswith("识"):
-                temple = temple[:-1]
-            place = df.loc[i, "地点"]
-            if pd.isna(place):
-                place = ""
-            money = df.loc[i, "该银"]
-            if pd.isna(money):
-                money = ""
-            words_num = df.loc[i, "计字"]
-            if pd.isna(words_num) or words_num == 0:
-                words_num = ""
-            else:
-                words_num = str(words_num)
-            with Session(engine) as session:
-                session.exec(
-                    text(
-                        f"UPDATE colophon SET time = '{time}', place = '{place}', "
-                        f"temple = '{temple}', money = '{money}', words_num = '{words_num}' WHERE id = {id}"
-                    )
-                )
+        for column in ["对(1)", "书(1)", "刻工(1)"]:
+            value = df.loc[i, column]
+            if pd.notna(value):
+                user_list = eval(value)
+                if isinstance(user_list, list):
+                    for user in user_list:
+                        user_set.add(user)
+    for user in user_set:
+        with Session(engine) as session:
+            if user != "":
+                session.exec(text(f"insert into individual (name) values ('{user}')"))
                 session.commit()
+    user_id_dict = {}
+    for i in range(len(df)):
+        for column in ["对(1)", "书(1)", "刻工(1)"]:
+            value = df.loc[i, column]
+            if pd.notna(value):
+                # 找到人物的id
+                user_list = eval(value)
+                if isinstance(user_list, list):
+                    for user in user_list:
+                        if user != "":
+                            with Session(engine) as session:
+                                query = text(f"SELECT id FROM individual WHERE name = '{user}'")
+                                result = session.execute(query)
+                                user_id = result.fetchone()[0]
+                                user_id_dict[user] = user_id
+    for i in range(len(df)):
+        value = df.loc[i, "对(1)"]
+        colophon_id = df.loc[i, "id"]
+        if pd.isna(colophon_id):
+            continue
+        if pd.notna(value):
+            # 找到人物的id
+            user_list = eval(value)
+            for user in user_list:
+                if user != "":
+                    with Session(engine) as session:
+                        user_id = user_id_dict[user]
+                        地名 = df.loc[i, "地名（对）"]
+                        if pd.isna(地名):
+                            地名 = ""
+                        if 地名.endswith("县"):
+                            地名 = 地名[:-1]
+                        with Session(engine) as session:
+                            session.exec(
+                                text(
+                                    f"insert into ind_col (ind_id, col_id,place,type) values ({user_id},{colophon_id},'{地名}','对')"
+                                )
+                            )
+                            session.commit()
+    for i in range(len(df)):
+        value = df.loc[i, "书(1)"]
+        colophon_id = df.loc[i, "id"]
+        if pd.isna(colophon_id):
+            continue
+        if pd.notna(value):
+            # 找到人物的id
+            user_list = eval(value)
+            for user in user_list:
+                if user != "":
+                    with Session(engine) as session:
+                        user_id = user_id_dict[user]
+                        地名 = df.loc[i, "地名（书）"]
+                        if pd.isna(地名):
+                            地名 = ""
+                        if 地名.endswith("县"):
+                            地名 = 地名[:-1]
+                        with Session(engine) as session:
+                            session.exec(
+                                text(
+                                    f"insert into ind_col (ind_id, col_id,place,type) values ({user_id},{colophon_id},'{地名}','书')"
+                                )
+                            )
+                            session.commit()
+
+    for i in range(len(df)):
+        value = df.loc[i, "刻工(1)"]
+        colophon_id = df.loc[i, "id"]
+        if pd.isna(colophon_id):
+            continue
+        if pd.notna(value):
+            # 找到人物的id
+            user_list = eval(value)
+            for user in user_list:
+                if user != "":
+                    with Session(engine) as session:
+                        user_id = user_id_dict[user]
+                        地名 = df.loc[i, "地名（刻）"]
+                        if pd.isna(地名):
+                            地名 = ""
+                        if 地名.endswith("县"):
+                            地名 = 地名[:-1]
+                        with Session(engine) as session:
+                            session.exec(
+                                text(
+                                    f"insert into ind_col (ind_id, col_id,place,type) values ({user_id},{colophon_id},'{地名}','刻工')"
+                                )
+                            )
+                            session.commit()
