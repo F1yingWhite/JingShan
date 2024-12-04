@@ -58,6 +58,7 @@ async def get_graph_by_name(name: str):
         temp_dict = {
             "name": node,
             "category": list(category_set).index(node_category_map[node]),
+            "url": "/graph/individual/" + node,
             "symbolSize": sqrt(count) * 5,
             "label": {"show": True},
             "value": count,
@@ -117,6 +118,7 @@ async def get_all():
     for node, count in node_map.items():
         temp_dict = {
             "name": node,
+            "url": "/graph/individual/" + node,
             "category": list(category_list).index(node_category_map[node]),
             "symbolSize": sqrt(count) * 10,
             "label": {"show": True},

@@ -85,7 +85,8 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, 
   const onEvents = {
     'click': (params: any) => {
       if (params.dataType === 'node') {
-        window.location.href = `/graph/individual/${params.data.name}`;
+        if (params.data.url)
+          window.location.href = `${params.data.url}`;
       }
     },
   };

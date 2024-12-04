@@ -14,6 +14,7 @@ export type Graph = {
     category: number;
     symbolSize: number;
     value: string;
+    url?: string;
     label?: {
       show: boolean;
     },

@@ -27,6 +27,6 @@ export type Graph = {
   }[],
 }
 
-export function getByScriptureName(scriptName: string) {
-  return get(`/graph/zang/by_scripture_name?scripture_name=${scriptName}`);
+export function getByScriptureName(scriptName: string, begin: number, length: number) {
+  return get(`/graph/zang/by_scripture_name?scripture_name=${scriptName}&begin=${begin}&length=${length}`);
 }

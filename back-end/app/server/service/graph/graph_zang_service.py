@@ -11,7 +11,7 @@ zang_graph_router = APIRouter(prefix="/graph/zang")
 
 
 @zang_graph_router.get("/by_scripture_name")
-async def get_graph_by_scripture_name(scripture_name: str):  # noqa: C901
+async def get_graph_by_scripture_name(scripture_name: str, begin: int, length: int):  # noqa: C901
     res_dict = {
         "type": "force",
         "categories": [],
@@ -24,14 +24,18 @@ async def get_graph_by_scripture_name(scripture_name: str):  # noqa: C901
     category_list = ["牌记", "卷数", "时间", "地点", "寺庙", "人物"]
     for category in category_list:
         res_dict["categories"].append({"name": category, "keyword": {}, "base": category})
-    nodes = [{"name": scripture_name, "type": "牌记"}]
+    nodes = [{"name": scripture_name, "type": "牌记", "url": "/graph/scripture/" + scripture_name}]
     links = []
+    total_len = len(res)
+    res = res[begin : begin + length]
     for i in res:
         colophon = i["related"]["chapter_id"]
         if not any(link for link in links if link["source"] == colophon and link["target"] == scripture_name):
             links.append({"source": colophon, "target": scripture_name, "value": "牌记"})
         if not any(node for node in nodes if node["name"] == i["related"]["chapter_id"]):
-            nodes.append({"name": i["related"]["chapter_id"], "type": "卷数"})
+            nodes.append(
+                {"name": i["related"]["chapter_id"], "type": "卷数", "url": "/colophon/" + str(i["related"]["id"])}
+            )
 
         related_datas = get_colophon_with_related_data(i["related"]["content"])
         for related_data in related_datas:
@@ -77,7 +81,13 @@ async def get_graph_by_scripture_name(scripture_name: str):  # noqa: C901
                     }
                 )
             if not any(node for node in nodes if node["name"] == person["related"]["name"]):
-                nodes.append({"name": person["related"]["name"], "type": "人物"})
+                nodes.append(
+                    {
+                        "name": person["related"]["name"],
+                        "type": "人物",
+                        "url": "/individual/" + str(person["related"]["id"]),
+                    }
+                )
     for node in nodes:
         new_node = {
             "name": node["name"],
@@ -86,6 +96,8 @@ async def get_graph_by_scripture_name(scripture_name: str):  # noqa: C901
             "label": {"show": True},
             "value": 1,
         }
+        if "url" in node:
+            new_node["url"] = node["url"]
         res_dict["nodes"].append(new_node)
     for link in links:
         res_dict["links"].append(
@@ -108,4 +120,4 @@ async def get_graph_by_scripture_name(scripture_name: str):  # noqa: C901
             for link in res_dict["links"]
         )
         node["symbolSize"] = 10.0 * node["value"] ** 0.5
-    return ResponseModel(data=res_dict)
+    return ResponseModel(data={"graph": res_dict, "total": total_len})
