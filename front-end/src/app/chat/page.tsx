@@ -158,113 +158,113 @@ export default function Page() {
 
 
   return (
-    <div className='w-full h-full flex flex-col items-center'>
-      <div className='flex flex-col flex-1 w-full' >
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 ">
-          {
-            chatHistory.length !== 0 && (
-              chatHistory.map((message, index) => (
-                <div
-                  key={index}
-                  className={`relative z-10 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+    <div className='w-full h-full flex flex-col'>
+      {/* 聊天区域 */}
+      <div className='flex-1 overflow-y-auto p-4 space-y-4'>
+        {
+          chatHistory.length !== 0 ? (
+            chatHistory.map((message, index) => (
+              <div
+                key={index}
+                className={`relative z-10 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className="flex items-start space-x-2 max-w-xl relative"
+                  onMouseEnter={() => setHoveredMessageIndex(index)}
+                  onMouseLeave={() => setHoveredMessageIndex(null)}
                 >
-                  <div className="flex items-start space-x-2 max-w-xl relative"
-                    onMouseEnter={() => setHoveredMessageIndex(index)}
-                    onMouseLeave={() => setHoveredMessageIndex(null)}
-                  >
+                  {
+                    message.role === 'assistant' && (
+                      <Avatar className="flex-shrink-0 w-8 h-8">径</Avatar>
+                    )
+                  }
+                  <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
+                    {message.content === "" ? (
+                      <Spin />
+                    ) : (
+                      <div
+                        onClick={() => {
+                          if (message.role === 'assistant' && !isTTSPlaying && !isSending && !ttsLoading) {
+                            setClickIndex(index);
+                            beginTTS(message.content);
+                          }
+                        }}
+                      >
+                        <ReactMarkdown>
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+                    )}
                     {
-                      message.role === 'assistant' && (
-                        <Avatar className="flex-shrink-0 w-8 h-8">径</Avatar>
+                      message.role === 'assistant' && clickIndex == index && ttsLoading && (
+                        <LoadingOutlined className="absolute -bottom-2 -right-2" />
                       )
                     }
-                    <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
-                      {message.content === "" ? (
-                        <Spin />
-                      ) : (
-                        <div
-                          onClick={() => {
-                            if (message.role === 'assistant' && !isTTSPlaying && !isSending && !ttsLoading) {
-                              setClickIndex(index);
-                              beginTTS(message.content);
-                            }
-                          }}
-                        >
-                          <ReactMarkdown>
-                            {message.content}
-                          </ReactMarkdown>
-                        </div>
-                      )}
-                      {
-                        message.role === 'assistant' && clickIndex == index && ttsLoading && (
-                          <LoadingOutlined className="absolute -bottom-2 -right-2" />
-                        )
-                      }
-                      {
-                        message.role === 'assistant' && clickIndex == index && isTTSPlaying && !ttsLoading && (
-                          <AudioOutlined className="absolute -bottom-2 -right-2" onClick={() => {
-                            setTTSPlaying(false)
-                          }} />
-                        )
-                      }
-                    </div>
                     {
-                      message.role === 'user' && (
-                        <Avatar className="flex-shrink-0 w-8 h-8">我</Avatar>
+                      message.role === 'assistant' && clickIndex == index && isTTSPlaying && !ttsLoading && (
+                        <AudioOutlined className="absolute -bottom-2 -right-2" onClick={() => {
+                          setTTSPlaying(false)
+                        }} />
                       )
                     }
                   </div>
+                  {
+                    message.role === 'user' && (
+                      <Avatar className="flex-shrink-0 w-8 h-8">我</Avatar>
+                    )
+                  }
                 </div>
-              ))
-            )
-          }
-          {
-            chatHistory.length === 0 &&
+              </div>
+            ))
+          ) : (
             <div className="flex justify-center items-center">
               <Bubble.List
                 className='z-10'
                 items={[{ content: placeholderNode, variant: 'borderless' }]}
               />
             </div>
-          }
-          <div ref={messagesEndRef} />
-        </div>
-        {
-          chatHistory.length !== 0 && (
-            <div className='relative w-full z-0'>
-              <div className='absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full'>
-                <div className="max-h-[50vh] aspect-[2/3] overflow-hidden">
-                  <Live2d isTTSPlaying={isTTSPlaying} setTTSPlaying={setTTSPlaying} wavFile={wavFile} />
-                </div>
-              </div>
-            </div>
           )
         }
-        <div className="flex justify-center items-end">
-          <Sender
-            style={{ width: '75vw', marginBottom: '5vh' }}
-            submitType="shiftEnter"
-            value={inputValue}
-            onChange={setInputValue}
-            onSubmit={() => { handleSend(inputValue) }}
-            actions={(_, info) => {
-              const { SendButton, LoadingButton, ClearButton } = info.components;
-              return (
-                <Space size="small">
-                  <Typography.Text type="secondary">
-                    <small>`Shift + Enter` to submit</small>
-                  </Typography.Text>
-                  <ClearButton />
-                  {isSending ? (
-                    <LoadingButton type="default" icon={<Spin size="small" />} disabled />
-                  ) : (
-                    <SendButton type="primary" icon={<OpenAIOutlined />} disabled={false} />
-                  )}
-                </Space>
-              );
-            }}
-          />
-        </div>
-      </div >
-    </div >
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* 动态显示 Live2d */}
+      {
+        chatHistory.length !== 0 && (
+          <div className='relative w-full z-0'>
+            <div className='absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full'>
+              <div className="max-h-[50vh] aspect-[2/3] overflow-hidden">
+                <Live2d isTTSPlaying={isTTSPlaying} setTTSPlaying={setTTSPlaying} wavFile={wavFile} />
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* 输入框 */}
+      <div className="flex justify-center items-end pb-4">
+        <Sender
+          style={{ width: '75vw' }}
+          submitType="shiftEnter"
+          onChange={setInputValue}
+          onSubmit={() => { handleSend(inputValue) }}
+          actions={(_, info) => {
+            const { SendButton, LoadingButton, ClearButton } = info.components;
+            return (
+              <Space size="small">
+                <Typography.Text type="secondary">
+                  <small>`Enter` to submit</small>
+                </Typography.Text>
+                <ClearButton />
+                {isSending ? (
+                  <LoadingButton type="default" icon={<Spin size="small" />} disabled />
+                ) : (
+                  <SendButton type="primary" icon={<OpenAIOutlined />} disabled={false} />
+                )}
+              </Space>
+            );
+          }}
+        />
+      </div>
+    </div>
   );
 }
