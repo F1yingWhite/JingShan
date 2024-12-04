@@ -56,7 +56,7 @@ export default function GraphListItem({ record, showTag, router, graph_colorMap 
         <span
           className="text-[#c19d50] ml-10"
           onClick={() => {
-            router.push(`/graph/${encodeURIComponent(record.姓名)}`);
+            router.push(`/graph/individual/${encodeURIComponent(record.姓名)}`);
           }}
         >
           {record.姓名 + ' '}

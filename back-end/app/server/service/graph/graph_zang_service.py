@@ -10,6 +10,7 @@ from .. import ResponseModel
 zang_graph_router = APIRouter(prefix="/graph/zang")
 
 
+# TODO:后续考虑封装组成graph的为一个特定函数避免多次复写
 @zang_graph_router.get("/by_scripture_name")
 async def get_graph_by_scripture_name(scripture_name: str, begin: int, length: int):  # noqa: C901
     res_dict = {
@@ -92,7 +93,6 @@ async def get_graph_by_scripture_name(scripture_name: str, begin: int, length: i
         new_node = {
             "name": node["name"],
             "category": category_list.index(node["type"]),
-            "symbolSize": 5.0,
             "label": {"show": True},
             "value": 1,
         }

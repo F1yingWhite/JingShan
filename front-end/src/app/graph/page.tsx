@@ -5,16 +5,26 @@ import { Graph, getAllGraph } from '@/lib/graph_zhi';
 import { Tabs } from 'antd';
 
 export default function Page() {
-  const [graph, setGraph] = useState<Graph>()
+  const [individualGraph, setIndividualGraph] = useState<Graph>()
 
   useEffect(() => {
     getAllGraph().then(graph => {
-      setGraph(graph);
+      setIndividualGraph(graph);
     });
   }, []);
 
   return (
-    <Tabs className='w-full h-full overflow-x-hidden overflow-y-auto' defaultActiveKey="1"
+    <Tabs className='w-full h-full overflow-x-hidden overflow-y-auto'
+      centered
+      defaultActiveKey="1"
+      onChange={(activateKey: string) => {
+        if (activateKey === '1') {
+          setIndividualGraph(undefined);
+          getAllGraph().then(graph => {
+            setIndividualGraph(graph);
+          });
+        }
+      }}
       items={[
         {
           key: '1',
@@ -22,7 +32,10 @@ export default function Page() {
           children: (
             <div>
               <div className='h-screen w-screen'>
-                <RelationChart graph={graph} layout={'force'} emphasis={true} zoom={0.1} />
+                {
+                  individualGraph &&
+                  <RelationChart graph={individualGraph} layout={'force'} emphasis={true} zoom={0.1} />
+                }
               </div>
             </div>
           )
@@ -33,7 +46,7 @@ export default function Page() {
           children: (
             <div>
               <div className='h-screen w-screen'>
-                <RelationChart graph={graph} layout={'force'} emphasis={true} zoom={0.1} />
+                <RelationChart graph={individualGraph} layout={'force'} emphasis={true} zoom={0.1} />
               </div>
             </div>
           )
