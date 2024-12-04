@@ -1,9 +1,8 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import Live2d from '@/components/live2d'
-import { Avatar, Button, GetProp, Space, Spin, Typography } from 'antd';
-import { AudioMutedOutlined, AudioOutlined, ClearOutlined, CommentOutlined, EllipsisOutlined, FireOutlined, HeartOutlined, LoadingOutlined, OpenAIOutlined, ReadOutlined, SendOutlined, ShareAltOutlined, SmileOutlined } from '@ant-design/icons';
-import TextArea from 'antd/es/input/TextArea';
+import { Avatar, GetProp, Space, Spin, Typography } from 'antd';
+import { AudioOutlined, FireOutlined, LoadingOutlined, OpenAIOutlined, } from '@ant-design/icons';
 import { Message, postTTS } from '@/lib/chat';
 import { wss_host } from '@/lib/axios';
 import ReactMarkdown from 'react-markdown';
@@ -29,11 +28,11 @@ const placeholderPromptsItems: GetProp<typeof Prompts, 'items'> = [
       },
       {
         key: '1-2',
-        description: `径山寺的历史?`,
+        description: `径山寺有哪些法侣?`,
       },
       {
         key: '1-3',
-        description: `径山寺的法侣?`,
+        description: `径山寺的历史?`,
       }
     ],
   },
@@ -136,7 +135,7 @@ export default function Page() {
     <Space direction="vertical" size={14} >
       <Welcome
         variant="borderless"
-        icon="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp"
+        icon="https://picture-bed-1325530970.cos.ap-nanjing.myqcloud.com/%E6%9C%A8%E9%B1%BC.svg"
         title="径山Chat"
         description="施主您好,我是径山寺智能AI,有任何问题可以询问我~"
       />
@@ -252,7 +251,7 @@ export default function Page() {
             return (
               <Space size="small">
                 <Typography.Text type="secondary">
-                  <small>`Enter` to submit</small>
+                  <small>`Shift + Enter` to submit</small>
                 </Typography.Text>
                 <ClearButton />
                 {isSending ? (
