@@ -24,9 +24,6 @@ export default function page({ params }: { params: { slug: string } }) {
   }, []);
 
   function onChangeComplete(value: number[]): void {
-    if (value[1] - value[0] > 100) {
-      return;
-    }
     setLoading(true);
     setBegin(value[0])
     setLen(value[1] - value[0])
