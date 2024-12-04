@@ -12,7 +12,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 from ...internal.config import config
-from ...internal.models.graph_database.graph import execute_cypher
+from ...internal.models.graph_database.zhi_graph import execute_cypher
 from . import ResponseModel
 
 

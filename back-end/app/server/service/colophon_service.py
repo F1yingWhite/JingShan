@@ -4,7 +4,6 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from ...internal.models.relation_database.colophon import Colophon
-from ...internal.utils.get_time_place import get_publication_place, get_publication_time
 from . import ResponseModel
 
 
@@ -58,8 +57,8 @@ async def get_colophon_detail(id: int):
     results = Colophon.get_colophon_by_id(colophon_id=id)
     if not results:
         raise HTTPException(status_code=404, detail="Colophon not found")
-    results["time"] = get_publication_time(results["content"])
-    results["place"] = get_publication_place(results["content"])
+    results["time"] = results["time"]
+    results["place"] = results["place"]
     return ResponseModel(data=results)
 
 

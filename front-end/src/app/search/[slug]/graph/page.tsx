@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { getGraphList, getIdentityList, GraphDetail } from '@/lib/graph'
+import { getGraphList, getIdentityList, GraphDetail } from '@/lib/graph_zhi'
 import { ProList } from '@ant-design/pro-components'
 import { Collapse, Space, Tag } from 'antd';
 import { useParams, useRouter } from 'next/navigation';

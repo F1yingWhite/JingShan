@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import RelationChart from '@/components/RelationChart'
-import { Graph, getGraphByName, getGraphDetailByName, GraphDetail, GraphLists, getIdentityList } from '@/lib/graph';
+import { Graph, getGraphByName, getGraphDetailByName, GraphDetail, GraphLists, getIdentityList } from '@/lib/graph_zhi';
 import { ProList } from '@ant-design/pro-components';
 import { useRouter } from 'next/navigation';
 import { identityColorList } from '@/utils/getColor';
@@ -55,7 +55,7 @@ export default function page({ params }: { params: { slug: string } }) {
   return (
     <div className='w-full h-full overflow-y-auto'>
       <div className="text-2xl font-bold text-center my-4 text-[#c19d50]">人物关系图</div>
-      <div className="h-2/3"><RelationChart graph={graph} layout='none' /></div>
+      <div className="h-2/3"><RelationChart graph={graph} layout='none' emphasis={true} /></div>
       <ProList< GraphDetail>
         rowKey="name"
         headerTitle="人物列表"

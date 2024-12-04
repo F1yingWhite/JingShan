@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
-import { Graph } from '@/lib/graph';
+import { Graph } from '@/lib/graph_zhi';
 
 type RelationChartProps = {
   graph: Graph;
   layout: "force" | "circular" | "none";
+  emphasis: boolean;
+  zoom: number
 };
 
-const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
+const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, zoom }) => {
   if (!graph) {
     return null;
   }
@@ -42,13 +44,13 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
         layout: layoutType,
         force: layoutType === 'force' ? {
           repulsion: 1000,
-          edgeLength: 200
+          edgeLength: 100
         } : undefined,
         draggable: true,
         circular: {
           rotateLabel: true
         },
-        zoom: layout !== 'none' ? 0.1 : 1,
+        zoom: zoom,
         data: graph.nodes,
         links: graph.links,
         categories: graph.categories,
@@ -70,7 +72,7 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
         },
         edgeSymbol: ['none', 'arrow'],
         edgeSymbolSize: 7,
-        emphasis: layout === 'none' ? {
+        emphasis: emphasis ? {
           focus: 'adjacency',
           lineStyle: {
             width: 10
@@ -83,7 +85,8 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout }) => {
   const onEvents = {
     'click': (params: any) => {
       if (params.dataType === 'node') {
-        window.location.href = `/graph/${params.data.name}`;
+        if (params.data.url)
+          window.location.href = `${params.data.url}`;
       }
     },
   };
