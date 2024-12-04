@@ -21,7 +21,7 @@ export default function ColophonListItem({ record, showTag, slug, router }: Cont
         {
           key: record.name,
           label: (
-            <span className="text-[#c19d50]">
+            <span onClick={() => { router.push(`/graph/scripture/${record.name}`) }} className="text-[#c19d50]">
               {record.name + " "}
               {showTag && (
                 <Tag color={colorMap["牌记"]}>牌记</Tag>
