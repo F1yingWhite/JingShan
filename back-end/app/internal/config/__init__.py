@@ -16,6 +16,8 @@ class Config(BaseModel):
     redis_url: Optional[str] = None
     debug: bool
 
+    SECRET_KEY: str
+
     SPARKAI_URL: str
     SPARKAI_DOMAIN: str
     SPARKAI_PASSWORD: str
