@@ -1,5 +1,4 @@
 from math import sqrt
-from typing import Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -145,7 +144,7 @@ async def get_all():
 class GraphList(BaseModel):
     current: int
     pageSize: int
-    title: Optional[str] = None
+    title: str | None = None
 
 
 @zhi_graph_router.post("/list")

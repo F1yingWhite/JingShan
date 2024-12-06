@@ -14,7 +14,7 @@ def hybird_search(keyword: str, current: int, pageSize: int):
         individual_query = select(Individual).where(Individual.name.like(keyword_pattern))
         individual_results = list(session.exec(individual_query).all())
 
-        preface_and_postscript_results = Preface_And_Postscript.search_preface_and_postscript_classic_no_page(keyword)
+        preface_and_postscript_results = Preface_And_Postscript.search_by_classic(keyword)
 
         colophon_results = Colophon.search_colophon_no_page(keyword)
 
@@ -41,7 +41,7 @@ def hybird_search(keyword: str, current: int, pageSize: int):
             res_dict["preface_and_postscript"].append(
                 {
                     "name": preface_and_postscript_classic,
-                    "related_data": Preface_And_Postscript.get_preface_and_postscript_by_classic(
+                    "related_data": Preface_And_Postscript.get_by_classic_and_title(
                         preface_and_postscript_classic, keyword
                     ),
                 }

@@ -16,7 +16,7 @@ class Preface_And_Postscript(SQLModel, table=True):
     page_id: int | None = Field(default=None)
 
     @classmethod
-    def get_preface_and_postscript(
+    def get_by_statement_with_num(
         cls,
         page: int,
         page_size: int,
@@ -30,10 +30,13 @@ class Preface_And_Postscript(SQLModel, table=True):
         page_id: int = None,
     ):
         with Session(engine) as session:
-            page_size = min(page_size, 100)  # 限制 page_size 不超过 100
+            page_size = min(page_size, 100)
             offset = (page - 1) * page_size
 
-            statement = select(cls)
+            statement = select(
+                cls,
+                func.count().over().label("total_count"),  # 添加总数为窗口函数的一部分
+            )
 
             # 根据提供的参数动态添加条件
             if classic is not None:
@@ -49,59 +52,30 @@ class Preface_And_Postscript(SQLModel, table=True):
             if author is not None:
                 statement = statement.where(cls.author.like(f"%{author}%"))
             if copy_id is not None:
-                statement = statement.where(cls.copy_id == copy_id)  # 精确匹配
+                statement = statement.where(cls.copy_id == copy_id)
             if page_id is not None:
-                statement = statement.where(cls.page_id == page_id)  # 精确匹配
+                statement = statement.where(cls.page_id == page_id)
 
+            # 使用 offset 和 limit 实现分页
             statement = statement.offset(offset).limit(page_size)
+
+            # 执行查询
             results = session.exec(statement).all()
-            return results
+
+            # 获取总数（来自窗口函数）
+            total_count = results[0].total_count if results else 0
+
+            return [result[0] for result in results], total_count
 
     @classmethod
-    def get_preface_and_postscript_total_num(
-        cls,
-        classic: str = None,
-        translator: str = None,
-        title: str = None,
-        category: str = None,
-        dynasty: str = None,
-        author: str = None,
-        copy_id: int = None,
-        page_id: int = None,
-    ):
-        with Session(engine) as session:
-            statement = select(cls)
-
-            # 根据提供的参数动态添加条件
-            if classic is not None:
-                statement = statement.where(cls.classic.like(f"%{classic}%"))
-            if translator is not None:
-                statement = statement.where(cls.translator.like(f"%{translator}%"))
-            if title is not None:
-                statement = statement.where(cls.title.like(f"%{title}%"))
-            if category is not None:
-                statement = statement.where(cls.category.like(f"%{category}%"))
-            if dynasty is not None:
-                statement = statement.where(cls.dynasty.like(f"%{dynasty}%"))
-            if author is not None:
-                statement = statement.where(cls.author.like(f"%{author}%"))
-            if copy_id is not None:
-                statement = statement.where(cls.copy_id == copy_id)  # 精确匹配
-            if page_id is not None:
-                statement = statement.where(cls.page_id == page_id)  # 精确匹配
-
-            results = session.exec(statement).all()
-            return len(results)
-
-    @classmethod
-    def search_preface_and_postscript(cls, keyword: str, page: int, page_size: int):
+    def search_by_title_with_num(cls, title: str, page: int, page_size: int):
         with Session(engine) as session:
             page_size = min(page_size, 100)
             offset = (page - 1) * page_size
 
             statement = (
                 select(cls, func.count(cls.id).over().label("total_count"))
-                .where(cls.title.like(f"%{keyword}%"))
+                .where(cls.title.like(f"%{title}%"))
                 .offset(offset)
                 .limit(page_size)
             )
@@ -113,22 +87,22 @@ class Preface_And_Postscript(SQLModel, table=True):
             return {"total": total_count, "data": data}
 
     @classmethod
-    def get_preface_and_postscript_by_id(cls, id: int):
+    def get_by_id(cls, id: int):
         with Session(engine) as session:
             statement = select(cls).where(cls.id == id)
             result = session.exec(statement).first()
             return result
 
     @classmethod
-    def search_preface_and_postscript_classic_no_page(cls, keyword: str):
+    def search_by_classic(cls, title: str):
         with Session(engine) as session:
-            statement = select(cls.classic).where(cls.title.like(f"%{keyword}%")).distinct()
+            statement = select(cls.classic).where(cls.title.like(f"%{title}%")).distinct()
             results = session.exec(statement).all()
             return list(results)
 
     @classmethod
-    def get_preface_and_postscript_by_classic(cls, classic: str, keyword: str):
+    def get_by_classic_and_title(cls, classic: str, title: str):
         with Session(engine) as session:
-            statement = select(cls).where(cls.classic == classic).where(cls.title.like(f"%{keyword}%"))
+            statement = select(cls).where(cls.classic == classic).where(cls.title.like(f"%{title}%"))
             results = session.exec(statement).all()
             return results

@@ -10,6 +10,7 @@ from .server.service.individual_service import individual_router
 from .server.service.pdf_service import pdf_router
 from .server.service.preface_and_postscript_service import preface_and_postscript_router
 from .server.service.story_service import story_router
+from .server.service.user_service import user_router
 
 app = FastAPI()
 
@@ -23,6 +24,7 @@ main_router.include_router(zhi_graph_router)
 main_router.include_router(chat_router)
 main_router.include_router(hybrid_router)
 main_router.include_router(zang_graph_router)
+main_router.include_router(user_router)
 
 app.add_middleware(
     CORSMiddleware,

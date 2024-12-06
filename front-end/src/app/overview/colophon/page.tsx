@@ -1,5 +1,5 @@
 'use client';
-import { getColophonList, getColophonTotalNum } from '@/lib/colophon';
+import { getColophonList } from '@/lib/colophon';
 import React from 'react';
 import DataTable from '@/components/DataTable'; // 确保路径正确
 import { Colophon } from '@/lib/colophon';
@@ -13,11 +13,6 @@ const columns = [
     render: (text: any, record: any) => (
       <Link className="text-[#c19d50]" href={`/graph/scripture/${record.scripture_name}`}>{record.scripture_name}</Link>
     ),
-  },
-  {
-    title: "卷数",
-    dataIndex: "volume_id",
-    key: "volume_id",
   },
   {
     title: "册数",
@@ -46,7 +41,6 @@ export default function Page() {
     <DataTable<Colophon>
       columns={columns}
       getList={getColophonList}
-      getTotalNum={getColophonTotalNum}
     />
   );
 }

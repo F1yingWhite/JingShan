@@ -1,9 +1,9 @@
-from neo4j import GraphDatabase
+from neo4j import GraphDatabase, exceptions
 
-from ...config import config
+from ...bootstrap import config
 
 try:
-    neo4j_driver = GraphDatabase.driver(config.neo4j_url, auth=(config.neo4j_auth_name, config.neo4j_auth_password))
+    neo4j_driver = GraphDatabase.driver(config.NEO4J.URL, auth=(config.NEO4J.AUTH_NAME, config.NEO4J.AUTH_PASSWORD))
     if neo4j_driver:
         with neo4j_driver.session() as session:
             result = session.run("RETURN 1")
@@ -15,3 +15,18 @@ except Exception as e:
     print("Neo4j连接失败:", e)
     exit(1)
 
+
+def execute_cypher(cypher: str):
+    try:
+        with neo4j_driver.session() as session:
+            result = session.run(cypher)
+            return result.data()
+    except exceptions.CypherError as e:
+        print(f"CypherError: {e}")
+        raise
+    except exceptions.ServiceUnavailable as e:
+        print(f"ServiceUnavailable: {e}")
+        raise
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        raise

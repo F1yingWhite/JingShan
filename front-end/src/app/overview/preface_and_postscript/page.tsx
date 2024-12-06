@@ -1,5 +1,5 @@
 'use client';
-import { getPrefaceAndPostscriptList, getcPrefaceAndPostscriptTotalNum } from '@/lib/preface_and_postscript';
+import { getPrefaceAndPostscriptList } from '@/lib/preface_and_postscript';
 import { PrefaceAndPostscript } from '@/lib/preface_and_postscript';
 import React from 'react';
 import DataTable from '@/components/DataTable'; // 确保路径正确
@@ -43,16 +43,6 @@ const columns = [
     key: "author",
     width: "20%",
   },
-  // {
-  //   title: "册",
-  //   dataIndex: "copy_id",
-  //   key: "copy_id",
-  // },
-  // {
-  //   title: "页",
-  //   dataIndex: "page_id",
-  //   key: "page_id",
-  // }
 ];
 
 export default function Page() {
@@ -60,7 +50,6 @@ export default function Page() {
     <DataTable<PrefaceAndPostscript>
       columns={columns}
       getList={getPrefaceAndPostscriptList}
-      getTotalNum={getcPrefaceAndPostscriptTotalNum}
     />
   );
 }

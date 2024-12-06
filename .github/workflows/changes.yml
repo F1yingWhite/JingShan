@@ -1,0 +1,18 @@
+name: Show Changes on Tag Push
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  show_changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Show changes
+        run: |
+          git fetch --tags
+          git log --oneline ${GITHUB_SHA}..$(git describe --tags --abbrev=0)

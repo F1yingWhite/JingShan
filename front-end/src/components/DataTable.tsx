@@ -4,19 +4,18 @@ import ProTable from '@ant-design/pro-table';
 
 interface TableProps<T extends Record<string, any>> {
   columns: any[];
-  getList: (page: number, pageSize: number, params: any) => Promise<any>;
-  getTotalNum: (params: any) => Promise<any>;
+  getList: (page: number, pageSize: number, params: any) => Promise<T>;
 }
 
-const DataTable = <T extends Record<string, any>>({ columns, getList, getTotalNum }: TableProps<T>) => {
+
+const DataTable = <T extends Record<string, any>>({ columns, getList }: TableProps<T>) => {
   const fetchData = async (params: any) => {
     const { current, pageSize, ...rest } = params;
     try {
       const res = await getList(current, pageSize, rest);
-      const total = await getTotalNum(rest);
       return {
-        data: res.data,
-        total: total.data.total_num,
+        data: res.data.data,
+        total: res.data.total_num,
         success: true,
       };
     } catch (err) {

@@ -1,11 +1,11 @@
 from sqlmodel import create_engine
 
-from ...config import config
+from ...bootstrap import config
 
-if config.debug:
-    engine = create_engine(config.database_url)
+if config.DEBUG:
+    engine = create_engine(config.DATABASE_URL, echo=True)
 else:
-    engine = create_engine(config.database_url)
+    engine = create_engine(config.DATABASE_URL)
 
 try:
     with engine.connect() as connection:

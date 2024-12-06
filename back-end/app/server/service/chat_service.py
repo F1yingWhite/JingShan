@@ -11,8 +11,8 @@ import requests
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
-from ...internal.config import config
-from ...internal.models.graph_database.zhi_graph import execute_cypher
+from ...internal.bootstrap import config
+from ...internal.models.graph_database import execute_cypher
 from . import ResponseModel
 
 
@@ -70,14 +70,14 @@ GRAPH_MESSAGE = {
 
 def get_spark_once(message: List[Message]):
     data = {
-        "model": config.SPARKAI_DOMAIN,
+        "model": config.SPARKAI.DOMAIN,
         "messages": message,
         "stream": True,
         "max_tokens": 8192,
         "tools.web_search": {"enable": False},
     }
-    header = {"Authorization": "Bearer " + config.SPARKAI_PASSWORD}
-    response = requests.post(url=config.SPARKAI_URL, headers=header, json=data, stream=True)
+    header = {"Authorization": "Bearer " + config.SPARKAI.PASSWORD}
+    response = requests.post(url=config.SPARKAI.URL, headers=header, json=data, stream=True)
     response.encoding = "utf-8"
     total_response = ""
     for line in response.iter_lines(decode_unicode="utf-8"):
@@ -129,14 +129,14 @@ async def chat_endpoint(websocket: WebSocket):
                     }
                 )
             data = {
-                "model": config.SPARKAI_DOMAIN,
+                "model": config.SPARKAI.DOMAIN,
                 "messages": messages_with_system,
                 "stream": True,
                 "presence_penalty": 1,
                 "max_tokens": 8192,
             }
-            header = {"Authorization": "Bearer " + config.SPARKAI_PASSWORD}
-            response = requests.post(url=config.SPARKAI_URL, headers=header, json=data, stream=True)
+            header = {"Authorization": "Bearer " + config.SPARKAI.PASSWORD}
+            response = requests.post(url=config.SPARKAI.URL, headers=header, json=data, stream=True)
             response.encoding = "utf-8"
             for line in response.iter_lines(decode_unicode="utf-8"):
                 if line.startswith("data:"):
@@ -162,12 +162,12 @@ class TTSRequest(BaseModel):
 
 
 def get_wav_tts(text: str):
-    header = {"Authorization": f"Bearer;{config.VOLCENGINE_TOKEN}"}
+    header = {"Authorization": f"Bearer;{config.VOLCENGINE.TOKEN}"}
     request_json = {
-        "app": {"appid": config.VOLCENGINE_APPID, "token": "access_token", "cluster": config.VOLCENGINE_CLUSTER},
+        "app": {"appid": config.VOLCENGINE.APPID, "token": "access_token", "cluster": config.VOLCENGINE.CLUSTER},
         "user": {"uid": str(uuid.uuid4())},
         "audio": {
-            "voice_type": config.VOLCENGINE_VOICE_TYPE,
+            "voice_type": config.VOLCENGINE.VOICE_TYPE,
             "encoding": "wav",
             "speed_ratio": 1.0,
             "volume_ratio": 1.0,
@@ -182,7 +182,7 @@ def get_wav_tts(text: str):
             "frontend_type": "unitTson",
         },
     }
-    resp = requests.post(config.VOLCENGINE_URL, json.dumps(request_json), headers=header)
+    resp = requests.post(config.VOLCENGINE.URL, json.dumps(request_json), headers=header)
     if "data" in resp.json():
         data = resp.json()["data"]
         return data

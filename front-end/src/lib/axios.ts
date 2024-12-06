@@ -13,7 +13,7 @@ export function get(url: string, options?: any): Promise<any> {
         ...options,
         timeout: 30000,
         headers: {
-          // Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
+          Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
           'Content-Type': 'application/json',
         }
       })
@@ -33,7 +33,7 @@ export function put(url: string, data: any): Promise<any> {
       .put(`${host}${url}`, data, {
         timeout: 30000,
         headers: {
-          // Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
+          Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
           'Content-Type': 'application/json',
         }
       })
@@ -51,7 +51,7 @@ export function post(url: string, data: any): Promise<any> {
     axios.post(`${host}${url}`, data, {
       timeout: 30000,
       headers: {
-        // Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
+        Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
         'Content-Type': 'application/json',
       }
     }).then((res) => {
@@ -68,7 +68,7 @@ export function del(url: string, data: any): Promise<any> {
       data: data,
       timeout: 3000,
       headers: {
-        // Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
+        Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
         'Content-Type': 'application/json',
       },
     })
@@ -85,7 +85,7 @@ export function postFormData(url: string, data: FormData): Promise<any> {
     axios.post(`${host}${url}`, data, {
       timeout: 3000,
       headers: {
-        // Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
+        Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
         'Content-Type': 'multipart/form-data',
       }
     })
@@ -103,7 +103,7 @@ export function putFormData(url: string, data: FormData): Promise<any> {
     axios.put(`${host}${url}`, data, {
       timeout: 3000,
       headers: {
-        // Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
+        Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
         'Content-Type': 'multipart/form-data',
       }
     })
