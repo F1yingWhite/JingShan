@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import yaml
 from pydantic import BaseModel, ValidationError
@@ -7,26 +6,40 @@ from pydantic import BaseModel, ValidationError
 CONFIG_PATH = "config.yaml"
 
 
+class SparkAIConfig(BaseModel):
+    URL: str
+    DOMAIN: str
+    PASSWORD: str
+
+
+class VolcengineConfig(BaseModel):
+    URL: str
+    APPID: str
+    TOKEN: str
+    CLUSTER: str
+    VOICE_TYPE: str
+
+
+class EmailConfig(BaseModel):
+    EMAIL: str
+    PASSWORD: str
+
+
+class Neo4jConfig(BaseModel):
+    URL: str
+    AUTH_NAME: str
+    AUTH_PASSWORD: str
+
+
 class Config(BaseModel):
-    database_url: str
-    log_file: str
-    neo4j_url: str
-    neo4j_auth_name: str
-    neo4j_auth_password: str
-    redis_url: Optional[str] = None
-    debug: bool
-
+    DATABASE_URL: str
+    LOG_FILE: str
+    DEBUG: bool
+    NEO4J: Neo4jConfig
     SECRET_KEY: str
-
-    SPARKAI_URL: str
-    SPARKAI_DOMAIN: str
-    SPARKAI_PASSWORD: str
-
-    VOLCENGINE_URL: str
-    VOLCENGINE_APPID: str
-    VOLCENGINE_TOKEN: str
-    VOLCENGINE_CLUSTER: str
-    VOLCENGINE_VOICE_TYPE: str
+    SPARKAI: SparkAIConfig
+    VOLCENGINE: VolcengineConfig
+    EMAIL: EmailConfig
 
     @classmethod
     def load(cls, file_path: str) -> "Config":
@@ -41,9 +54,9 @@ class Config(BaseModel):
 
 config = Config.load(CONFIG_PATH)
 # 删除原有的log
-open(config.log_file, "w").close()
+open(config.LOG_FILE, "w").close()
 logging.basicConfig(
-    filename=config.log_file,
+    filename=config.LOG_FILE,
     filemode="a",
     level=logging.DEBUG,
     format="%(asctime)s - %(levelname)s - %(message)s",

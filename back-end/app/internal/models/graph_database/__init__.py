@@ -3,7 +3,7 @@ from neo4j import GraphDatabase
 from ...config import config
 
 try:
-    neo4j_driver = GraphDatabase.driver(config.neo4j_url, auth=(config.neo4j_auth_name, config.neo4j_auth_password))
+    neo4j_driver = GraphDatabase.driver(config.NEO4J.URL, auth=(config.NEO4J.AUTH_NAME, config.NEO4J.AUTH_PASSWORD))
     if neo4j_driver:
         with neo4j_driver.session() as session:
             result = session.run("RETURN 1")
@@ -14,4 +14,3 @@ try:
 except Exception as e:
     print("Neo4j连接失败:", e)
     exit(1)
-
