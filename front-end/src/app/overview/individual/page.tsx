@@ -12,8 +12,11 @@ export default function page() {
         rowKey="name"
         headerTitle="人物列表"
         request={async (params = {}) => {
-          const { current: page, pageSize, title } = params;
-          const res = await getAllIndividuals({ page, pageSize, title });
+          let { current, pageSize, title } = params;
+          if (title === undefined) {
+            title = '';
+          }
+          const res = await getAllIndividuals(current, pageSize, title);
           return {
             data: res.data.data,
             total: res.data.total,

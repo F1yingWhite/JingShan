@@ -68,7 +68,7 @@ GRAPH_MESSAGE = {
 }
 
 
-def get_spark_once(message: List[Message]):
+def get_spark_once(message: list[Message]):
     data = {
         "model": config.SPARKAI.DOMAIN,
         "messages": message,
@@ -93,7 +93,7 @@ def get_spark_once(message: List[Message]):
                 print(f"JSONDecodeError: {e} - Line: {line}")
 
 
-def get_query(messages: List[Message]):
+def get_query(messages: list[Message]):
     messages = [GRAPH_MESSAGE] + messages
     response = get_spark_once(messages)
     print(response)

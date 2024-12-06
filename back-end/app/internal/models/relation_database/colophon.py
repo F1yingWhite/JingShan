@@ -69,7 +69,7 @@ class Colophon(SQLModel, table=True):
             return [result[0] for result in results], total_count
 
     @classmethod
-    def search_colophon(cls, keyword: str, page: int, page_size: int):
+    def search_by_content_with_num(cls, content: str, page: int, page_size: int):
         with Session(engine) as session:
             page_size = min(page_size, 100)
             offset = (page - 1) * page_size
@@ -77,7 +77,7 @@ class Colophon(SQLModel, table=True):
             # 使用窗口函数获取总数并进行分页
             statement = (
                 select(cls.scripture_name, func.count(cls.scripture_name).over().label("total_count"))
-                .where(cls.content.like(f"%{keyword}%"))
+                .where(cls.content.like(f"%{content}%"))
                 .group_by(cls.scripture_name)
                 .offset(offset)
                 .limit(page_size)
@@ -90,29 +90,22 @@ class Colophon(SQLModel, table=True):
             return scripture_names, total_count
 
     @classmethod
-    def search_colophon_no_page(cls, keyword: str):
+    def search_by_content_no_page(cls, content: str):
         with Session(engine) as session:
-            statement = select(cls.scripture_name).where(cls.content.like(f"%{keyword}%")).group_by(cls.scripture_name)
+            statement = select(cls.scripture_name).where(cls.content.like(f"%{content}%")).group_by(cls.scripture_name)
 
             results = session.exec(statement).all()
             return results
 
     @classmethod
-    def search_colophon_total_num(cls, keyword: str):
+    def get_by_scripture_name_and_content(cls, scripture_name: str, content: str):
         with Session(engine) as session:
-            statement = select(cls.scripture_name).where(cls.content.like(f"%{keyword}%")).group_by(cls.scripture_name)
-            results = session.exec(statement).all()
-            return len(results)
-
-    @classmethod
-    def get_results_by_scripture_name_and_keyword(cls, scripture_name: str, keyword: str):
-        with Session(engine) as session:
-            statement = select(cls).where(cls.scripture_name == scripture_name).where(cls.content.like(f"%{keyword}%"))
+            statement = select(cls).where(cls.scripture_name == scripture_name).where(cls.content.like(f"%{content}%"))
             results = session.exec(statement).all()
             return results
 
     @classmethod
-    def get_colophon_by_id(cls, colophon_id: int):
+    def get_by_id(cls, colophon_id: int):
         from .ind_col import Ind_Col
         from .individual import Individual
 

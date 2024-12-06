@@ -39,11 +39,9 @@ async def get_colophon(
 
 @colophon_router.get("/detail")
 async def get_colophon_detail(id: int):
-    results = Colophon.get_colophon_by_id(colophon_id=id)
+    results = Colophon.get_by_id(colophon_id=id)
     if not results:
-        raise HTTPException(status_code=404, detail="Colophon not found")
-    results["time"] = results["time"]
-    results["place"] = results["place"]
+        raise HTTPException(status_code=400, detail="Colophon not found")
     return ResponseModel(data=results)
 
 
@@ -51,16 +49,14 @@ async def get_colophon_detail(id: int):
 async def search_colophon(keyword: str, page: int = 1, page_size: int = 20):
     if not keyword:
         raise HTTPException(status_code=400, detail="Keyword cannot be empty")
-    scripture_names, total_num = Colophon.search_colophon(keyword=keyword, page=page, page_size=page_size)
+    scripture_names, total_num = Colophon.search_by_content_with_num(content=keyword, page=page, page_size=page_size)
     colophons = {}
     colophons["content"] = []
     for name in scripture_names:
         colophons["content"].append(
             {
                 "name": name,
-                "related_data": Colophon.get_results_by_scripture_name_and_keyword(
-                    scripture_name=name, keyword=keyword
-                ),
+                "related_data": Colophon.get_by_scripture_name_and_content(scripture_name=name, content=keyword),
             }
         )
     return ResponseModel(data={"data": colophons, "total": total_num, "success": True})
