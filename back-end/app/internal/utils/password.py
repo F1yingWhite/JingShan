@@ -3,7 +3,7 @@ import base64
 import bcrypt
 import jwt
 
-from ..config import config
+from ..bootstrap import config
 
 
 def encrypt_password(password: str) -> str:

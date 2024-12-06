@@ -23,7 +23,7 @@ class Colophon(SQLModel, table=True):
     money: str | None = Field(default=None, max_length=255)
 
     @classmethod
-    def get_colphon(
+    def get_colphon_with_num(
         cls,
         page: int,
         page_size: int,
@@ -41,9 +41,9 @@ class Colophon(SQLModel, table=True):
             page_size = min(page_size, 100)  # 限制 page_size 不超过 100
             offset = (page - 1) * page_size
 
-            statement = select(cls)
+            # 构造查询语句
+            statement = select(cls, func.count().over().label("total_count"))
 
-            # 根据提供的参数动态添加条件
             if chapter_id is not None:
                 statement = statement.where(cls.chapter_id.like(f"%{chapter_id}%"))
             if content is not None:
@@ -65,37 +65,8 @@ class Colophon(SQLModel, table=True):
 
             statement = statement.offset(offset).limit(page_size)
             results = session.exec(statement).all()
-            return results
-
-    @classmethod
-    def get_colphon_total_num(
-        cls,
-        chapter_id: str = None,
-        content: str = None,
-        id: int = None,
-        qianziwen: str = None,
-        scripture_name: str = None,
-        volume_id: str = None,
-    ):
-        with Session(engine) as session:
-            statement = select(cls)
-
-            # 根据提供的参数动态添加条件
-            if chapter_id is not None:
-                statement = statement.where(cls.chapter_id.like(f"%{chapter_id}%"))
-            if content is not None:
-                statement = statement.where(cls.content.like(f"%{content}%"))
-            if id is not None:
-                statement = statement.where(cls.id == id)
-            if qianziwen is not None:
-                statement = statement.where(cls.qianziwen.like(f"%{qianziwen}%"))
-            if scripture_name is not None:
-                statement = statement.where(cls.scripture_name.like(f"%{scripture_name}%"))
-            if volume_id is not None:
-                statement = statement.where(cls.volume_id.like(f"%{volume_id}%"))
-
-            results = session.exec(statement).all()
-            return len(results)
+            total_count = results[0].total_count if results else 0
+            return [result[0] for result in results], total_count
 
     @classmethod
     def search_colophon(cls, keyword: str, page: int, page_size: int):

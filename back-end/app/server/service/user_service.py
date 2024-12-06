@@ -2,8 +2,10 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, field_validator
 
 from ...internal.models.relation_database.user import User
-from ...internal.utils.password import generate_jwt
+from ...internal.utils.password import generate_jwt, verify_password
 from . import ResponseModel
+
+user_router = APIRouter(prefix="/user")
 
 
 class RegisterParams(BaseModel):
@@ -30,9 +32,31 @@ class RegisterParams(BaseModel):
         return username
 
 
+@user_router.post("/register")
+async def register_user(params: RegisterParams):
+    # 先检查是否已经存在
+    user = User.get_user_by_email(params.email)
+    if user is not None:
+        raise HTTPException(status_code=400, detail="User already exists")
+    user = User.register(params.username, params.email, params.password)
+    return ResponseModel(data={})
+
+
 class LoginParams(BaseModel):
     email: str
     password: str
+
+
+@user_router.post("/login")
+async def login_user(params: LoginParams):
+    user = User.get_user_by_email(params.email)
+    if user:
+        if user.verified is False:
+            raise HTTPException(status_code=400, detail="User not verified")
+        if verify_password(params.password, user.password):
+            return ResponseModel(data={"jwt": f"Bearer {generate_jwt(user.id)}"})
+    else:
+        raise HTTPException(status_code=400, detail="Login failed")
 
 
 class ChangePasswordParams(BaseModel):
@@ -52,39 +76,21 @@ class ChangePasswordParams(BaseModel):
         return password
 
 
+@user_router.put("/change_password")
+async def change_password(params: ChangePasswordParams):
+    user = User.get_user_by_email(params.email)
+    if user:
+        if user.verified is False:
+            raise HTTPException(status_code=400, detail="User not verified")
+        if verify_password(params.old_password, user.password):
+            user.change_password(params.new_password)
+            return ResponseModel(data={})
+    raise HTTPException(status_code=400, detail="Change password failed")
+
+
 class ChangeAvatar(BaseModel):
     email: str
     avatar: str
-
-
-user_router = APIRouter(prefix="/user")
-
-
-@user_router.post("/register")
-async def register_user(params: RegisterParams):
-    # 先检查是否已经存在
-    user = User.get_user_by_email(params.email)
-    if user is not None:
-        raise HTTPException(status_code=400, detail="User already exists")
-    user = User.register(params.username, params.email, params.password)
-    return ResponseModel(data={})
-
-
-@user_router.post("/login")
-async def login_user(params: LoginParams):
-    user = User.login(params.email, params.password)
-    if user[0]:
-        return ResponseModel(data={"jwt": f"Bearer {generate_jwt(user[1].id)}"})
-    else:
-        raise HTTPException(status_code=400, detail="Login failed")
-
-
-@user_router.put("/change_password")
-async def change_password(params: ChangePasswordParams):
-    if User.change_password(params.email, params.old_password, params.new_password):
-        return ResponseModel(data={})
-    else:
-        raise HTTPException(status_code=400, detail="Change password failed")
 
 
 # TODO:需要jwt验证

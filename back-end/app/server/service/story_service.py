@@ -1,6 +1,5 @@
 import base64
 from time import sleep
-from typing import Optional
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
@@ -10,8 +9,8 @@ from . import ResponseModel
 
 
 class StoryQueryParams(BaseModel):
-    title: Optional[str] = None
-    content: Optional[str] = None
+    title: str | None = None
+    content: str | None = None
 
 
 class ContentModel(BaseModel):
@@ -27,22 +26,13 @@ async def get_story(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1),
 ):
-    stories = Story.get_story(
+    stories, num = Story.get_story_with_num(
         page=page,
         page_size=page_size,
         title=params.title,
         content=params.content,
     )
-    return ResponseModel(data=stories)
-
-
-@story_router.post("/total_num")
-async def get_story_total_num(params: StoryQueryParams):
-    total_num = Story.get_story_total_num(
-        title=params.title,
-        content=params.content,
-    )
-    return ResponseModel(data={"total_num": total_num})
+    return ResponseModel(data={"data": stories, "total": num})
 
 
 @story_router.get("/detail")
@@ -51,6 +41,7 @@ async def get_story_detail(id: int):
     return ResponseModel(data=story)
 
 
+# TODO:文生图的后续调用
 @story_router.post("/generate_picture")
 async def generate_picture(content_model: ContentModel):
     # content = content_model.content

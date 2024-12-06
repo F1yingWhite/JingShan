@@ -1,9 +1,9 @@
 from sqlmodel import create_engine
 
-from ...config import config
+from ...bootstrap import config
 
 if config.DEBUG:
-    engine = create_engine(config.DATABASE_URL)
+    engine = create_engine(config.DATABASE_URL, echo=True)
 else:
     engine = create_engine(config.DATABASE_URL)
 

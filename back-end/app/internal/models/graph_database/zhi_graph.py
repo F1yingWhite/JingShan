@@ -1,24 +1,4 @@
-from typing import Optional
-
-from neo4j import exceptions
-
 from . import neo4j_driver
-
-
-def execute_cypher(cypher: str):
-    try:
-        with neo4j_driver.session() as session:
-            result = session.run(cypher)
-            return result.data()
-    except exceptions.CypherError as e:
-        print(f"CypherError: {e}")
-        raise
-    except exceptions.ServiceUnavailable as e:
-        print(f"ServiceUnavailable: {e}")
-        raise
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        raise
 
 
 def person_get_all_node_and_relation():
@@ -49,7 +29,7 @@ def person_get_relation_ship_by_id_out(object_name: str):
         return result.data()
 
 
-def person_get_list(page: int, page_size: int, title: Optional[str]):
+def person_get_list(page: int, page_size: int, title: str | None):
     with neo4j_driver.session() as session:
         if title:
             result = session.run(
@@ -99,7 +79,7 @@ def person_get_identity_set():
         return result.data()
 
 
-def person_total_num(title: Optional[str]):
+def person_total_num(title: str | None):
     with neo4j_driver.session() as session:
         if title:
             result = session.run("MATCH (n:人物) WHERE n.姓名 CONTAINS $title RETURN count(n)", title=title)

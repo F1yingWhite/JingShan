@@ -22,10 +22,6 @@ export function getPrefaceAndPostscriptList(page: number, page_size: number, par
     return post(`/preface_and_postscript/?page=${page}&page_size=${page_size}`, params);
 }
 
-export function getcPrefaceAndPostscriptTotalNum(params: any) {
-    return post(`/preface_and_postscript/total_num/`, params);
-}
-
 export function searchPrefaceAndPostscript(keyword: string, page: number, page_size: number) {
     return get(`/preface_and_postscript/search/?keyword=${keyword}&page=${page}&page_size=${page_size}`)
 }
