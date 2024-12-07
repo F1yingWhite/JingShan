@@ -1,8 +1,10 @@
 import base64
+import datetime
 
 import bcrypt
 import jwt
 from cryptography.fernet import Fernet
+from pydantic import EmailStr
 
 from ..bootstrap import config
 
@@ -22,12 +24,13 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password_bytes, hashed_password_bytes)
 
 
-def generate_jwt(id: int) -> str:
-    payload = {"sub": id}
+def generate_jwt(email: EmailStr) -> str:
+    expiration = datetime.datetime.now() + datetime.timedelta(days=7)
+    payload = {"sub": email, "exp": expiration}
     return jwt.encode(payload, config.SECRET_KEY, algorithm="HS256")
 
 
-def decoder_jwt(token: str) -> dict:
+def decode_jwt(token: str) -> dict:
     return jwt.decode(token, config.SECRET_KEY, algorithms=["HS256"])
 
 
@@ -37,6 +40,7 @@ fernet = Fernet(config.SECRET_KEY)
 def reversible_encrypt(data: str) -> bytes:
     encrypted_data = fernet.encrypt(data.encode())
     return encrypted_data  # 返回字节类型，不要转换成字符串
+
 
 def reversible_decrypt(encrypted_data: bytes) -> str:
     decrypted_data = fernet.decrypt(encrypted_data)

@@ -2,13 +2,14 @@ import asyncio
 import base64
 
 import yagmail
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, EmailStr, field_validator
 
 from ...internal.bootstrap import config
 from ...internal.models.relation_database.user import User
 from ...internal.utils.encryption import generate_jwt, reversible_decrypt, reversible_encrypt, verify_password
+from ..dependencies.user_auth import user_auth
 from . import ResponseModel
 
 
@@ -26,6 +27,7 @@ async def send_email(target_email: EmailStr, subject: str, content: str):
 
 
 user_router = APIRouter(prefix="/user")
+auth_user_router = APIRouter(prefix="/user")
 
 
 class RegisterParams(BaseModel):
@@ -81,7 +83,6 @@ async def register_user(params: RegisterParams):
 async def verify_user(token: str):
     encrypted_email = base64.urlsafe_b64decode(token.encode())  # 解码
     email = reversible_decrypt(encrypted_email)  # 解密
-    print(email)
     user = User.get_user_by_email(email)
     if user:
         user.verify()
@@ -104,7 +105,7 @@ async def login_user(params: LoginParams):
         if user.verified is False:
             raise HTTPException(status_code=400, detail="User not verified")
         if verify_password(params.password, user.password):
-            return ResponseModel(data={"jwt": f"Bearer {generate_jwt(user.id)}"})
+            return ResponseModel(data={"jwt": f"Bearer {generate_jwt(user.email)}"})
     else:
         raise HTTPException(status_code=400, detail="Login failed")
 
@@ -139,13 +140,17 @@ async def change_password(params: ChangePasswordParams):
 
 
 class ChangeAvatar(BaseModel):
-    email: str
     avatar: str
 
 
-# TODO:需要jwt验证
-@user_router.put("/change_avatar")
-async def change_avatar(params: ChangeAvatar):
-    user = User.get_user_by_email(params.email)
+@auth_user_router.put("/change_avatar")
+async def change_avatar(params: ChangeAvatar, current_user: dict = Depends(user_auth)):
+    user = User.get_user_by_email(current_user["sub"])
     user.avatar = params.avatar
     return ResponseModel(data={})
+
+
+@auth_user_router.get("/info")
+async def get_user_info(current_user: dict = Depends(user_auth)):
+    user = User.get_user_by_email(current_user["sub"])
+    return ResponseModel(data={"username": user.name, "email": user.email, "avatar": user.avatar})

@@ -1,4 +1,5 @@
 import yaml
+from cryptography.fernet import Fernet
 from pydantic import AnyUrl, BaseModel, EmailStr, ValidationError
 
 
@@ -46,10 +47,37 @@ class Config(BaseModel):
 
     @classmethod
     def load(cls, file_path: str) -> "Config":
-        # 如果加载失败, 抛出异常
-        with open(file_path, "r") as f:
-            try:
+        default_config = {
+            "DATABASE_URL": "mysql+mysqldb://root:1234567@127.0.0.1:3306/jingshan",
+            "LOG_FILE": "app.log",
+            "DEBUG": True,
+            "SECRET_KEY": Fernet.generate_key().decode(),
+            "NEO4J": {"URL": "bolt://localhost:7687", "AUTH_NAME": "neo4j", "AUTH_PASSWORD": "12345678"},
+            "SPARKAI": {
+                "URL": "https://spark-api-open.xf-yun.com/v1/chat/completions",
+                "DOMAIN": "4.0Ultra",
+                "PASSWORD": "your paasword",
+            },
+            "VOLCENGINE": {
+                "URL": "https://openspeech.bytedance.com/api/v1/tts",
+                "APPID": "APP_ID",
+                "TOKEN": "TOKEN",
+                "CLUSTER": "volcano_tts",
+                "VOICE_TYPE": "BV700_streaming",
+            },
+            "EMAIL": {"EMAIL": "xxx@qq.om", "PASSWORD": "your password", "HOST": "smtp.xxx.com"},
+            "ENV": {
+                "DEBUG": {"URL": "http://localhost:5001", "FRONT_URL": "http://localhost:3000"},
+                "NODEBUG": {"URL": "https://jingshanback.cpolar.top", "FRONT_URL": "https://jingshan.cpolar.top"},
+            },
+        }
+
+        try:
+            with open(file_path, "r") as f:
                 return cls(**yaml.load(f, Loader=yaml.FullLoader))
-            except ValidationError as e:
-                print(e)
-                raise e
+        except (FileNotFoundError, ValidationError) as e:
+            print(f"加载配置文件失败: {e}")
+            print("使用默认配置")
+            with open(file_path, "w") as f:
+                yaml.dump(default_config, f)
+            return cls(**default_config)
