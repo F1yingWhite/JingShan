@@ -5,11 +5,11 @@ export type Login = {
   password: string
 }
 
-export type register = Login & {
+export type Register = Login & {
   username: string,
 }
 
-export type User = register & {
+export type User = Register & {
   id: number,
   avatar?: string,
 }
@@ -24,7 +24,7 @@ export function login(params: Login) {
   return post(`/user/login/`, params);
 }
 
-export function register(params: register) {
+export function register(params: Register) {
   return post(`/user/register/`, params);
 }
 

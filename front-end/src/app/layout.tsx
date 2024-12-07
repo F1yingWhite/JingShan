@@ -25,7 +25,6 @@ export default function RootLayout({
     const jwt = localStorage.getItem('jwt');
     if (!jwt) return;
     fetch_user().then((res) => {
-      console.log(res)
       setUser(res)
     }).catch((err) => {
       localStorage.removeItem('jwt')

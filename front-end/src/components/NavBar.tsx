@@ -1,11 +1,11 @@
 'use client'
-import React from 'react';
-import { Avatar, Flex, Input, Layout, Space } from 'antd';
+import React, { useState } from 'react';
+import { Avatar, Flex, Input, Layout, Modal, Space } from 'antd';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { UserOutlined } from '@ant-design/icons';
 import { useUserStore } from '@/store/useStore';
+import LoginPage, { tabsType } from './LoginFrom';
 const { Header } = Layout;
 
 interface NavItemProps {
@@ -59,9 +59,21 @@ const IconList: NavItemProps[] = [
 export default function NavBar() {
   const router = useRouter();
   const { user } = useUserStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [type, setType] = useState<tabsType>('account');
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <Header className="flex items-center justify-between h-[60px]" style={{ backgroundColor: "#1A2B5C" }}>
+      <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
+        <LoginPage type={type} setType={setType} setIsModalOpen={setIsModalOpen} ></LoginPage>
+      </Modal>
       <Flex justify="start" className="items-center ml-0 h-full cursor-pointer" onClick={() => { router.push(`/`) }}>
         <Image src="/logo.svg" alt="佛经" width={45} height={45} />
         <div className="ml-2 h-10 border-l-2 border-[#DAA520] hidden md:block"></div>
@@ -89,9 +101,21 @@ export default function NavBar() {
 
       <Flex justify="center" className='h-full text-white flex items-center'>
         <Space wrap size={16}>
-          <div className="cursor-pointer">登录</div>
+          <div className="cursor-pointer"
+            onClick={() => {
+              setType('account');
+              setIsModalOpen(true)
+            }}>
+            登录
+          </div>
           <div className="h-5 border-l-2 border-white" />
-          <div className="cursor-pointer">注册</div>
+          <div className="cursor-pointer"
+            onClick={() => {
+              setType('register');
+              setIsModalOpen(true)
+            }}>
+            注册
+          </div>
           {user ? (
             user.avatar ? (
               <Avatar className='mx-2' size={45} src={user.avatar} />

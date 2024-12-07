@@ -105,7 +105,14 @@ async def login_user(params: LoginParams):
         if user.verified is False:
             raise HTTPException(status_code=400, detail="User not verified")
         if verify_password(params.password, user.password):
-            return ResponseModel(data={"jwt": f"Bearer {generate_jwt(user.email)}"})
+            return ResponseModel(
+                data={
+                    "jwt": f"Bearer {generate_jwt(user.email)}",
+                    "user": {"username": user.name, "email": user.email, "avatar": user.avatar},
+                }
+            )
+        else:
+            raise HTTPException(status_code=400, detail="Login failed")
     else:
         raise HTTPException(status_code=400, detail="Login failed")
 
