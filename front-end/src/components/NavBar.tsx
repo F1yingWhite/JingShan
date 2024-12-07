@@ -101,26 +101,29 @@ export default function NavBar() {
 
       <Flex justify="center" className='h-full text-white flex items-center'>
         <Space wrap size={16}>
-          <div className="cursor-pointer"
-            onClick={() => {
-              setType('account');
-              setIsModalOpen(true)
-            }}>
-            登录
-          </div>
-          <div className="h-5 border-l-2 border-white" />
-          <div className="cursor-pointer"
-            onClick={() => {
-              setType('register');
-              setIsModalOpen(true)
-            }}>
-            注册
-          </div>
+          {!user ? (<>
+            <div className="cursor-pointer"
+              onClick={() => {
+                setType('account');
+                setIsModalOpen(true)
+              }}>
+              登录
+            </div>
+            <div className="h-5 border-l-2 border-white" />
+            <div className="cursor-pointer"
+              onClick={() => {
+                setType('register');
+                setIsModalOpen(true)
+              }}>
+              注册
+            </div>
+          </>) : null
+          }
           {user ? (
             user.avatar ? (
               <Avatar className='mx-2' size={45} src={user.avatar} />
             ) : (
-              <Avatar className='mx-2' style={{ backgroundColor: '#fde3cf', color: '#f56a00' }} size={45}>user.name[0]</Avatar>
+              <Avatar className='mx-2' style={{ backgroundColor: '#fde3cf', color: '#f56a00' }} size={45}>{user.username[0]}</Avatar>
             )
           ) : (
             <Avatar className='mx-2' size={45} src={"/heshang.png"} />

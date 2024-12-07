@@ -20,6 +20,7 @@ export const useUserStore = create<BearState>((set, get) => ({
   setUser: (user) => {
     if (user) {
       set({ user: user, isLogin: true })
+      console.log(user)
     } else {
       set({ user: null, isLogin: false })
     }
@@ -29,7 +30,7 @@ export const useUserStore = create<BearState>((set, get) => ({
   },
   updateUser: (user) => {
     const oldUser = get().user
-    if (!oldUser) return // 如果没有用户，直接返回
+    if (!oldUser) return
     const newUser = { ...oldUser, ...user }
     set({ user: newUser })
   },

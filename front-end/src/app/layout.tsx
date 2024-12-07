@@ -20,9 +20,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { setUser } = useUserStore();
+  const { setUser,user } = useUserStore();
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
+    console.log(jwt)
     if (!jwt) return;
     fetch_user().then((res) => {
       setUser(res)

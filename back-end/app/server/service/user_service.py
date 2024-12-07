@@ -107,7 +107,7 @@ async def login_user(params: LoginParams):
         if verify_password(params.password, user.password):
             return ResponseModel(
                 data={
-                    "jwt": f"Bearer {generate_jwt(user.email)}",
+                    "jwt": generate_jwt(user.email),
                     "user": {"username": user.name, "email": user.email, "avatar": user.avatar},
                 }
             )

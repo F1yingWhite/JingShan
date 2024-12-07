@@ -28,8 +28,8 @@ export default function LoginPage({ type, setIsModalOpen, setType }: LoginPagePr
   const handleLogin = async (values) => {
     const { email, password, autoLogin } = values;
     login({ email, password }).then((res) => {
-      window.localStorage.setItem('jwt', res.jwt)
-      setUser(res.user)
+      window.localStorage.setItem('jwt', res.data.jwt)
+      setUser(res.data.user)
       messageApi.open({
         type: 'success',
         content: '登录成功',
