@@ -1,3 +1,4 @@
+'use client'
 import { ConfigProvider, Layout } from "antd";
 import "./globals.css";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
@@ -5,6 +6,9 @@ import NavBar from "@/components/NavBar";
 import { Content } from "antd/es/layout/layout";
 import { Noto_Sans_SC } from "next/font/google";
 import Script from "next/script";
+import { fetch_user } from "@/lib/user";
+import { useEffect } from "react";
+import { useUserStore } from "@/store/useStore";
 
 const noto_sans_sc = Noto_Sans_SC({
   display: 'swap',
@@ -16,6 +20,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { setUser } = useUserStore();
+  useEffect(() => {
+    const jwt = localStorage.getItem('jwt');
+    if (!jwt) return;
+    fetch_user().then((res) => {
+      console.log(res)
+      setUser(res)
+    }).catch((err) => {
+      localStorage.removeItem('jwt')
+    })
+  }, [])
   return (
     <html lang="cn">
       <body className={noto_sans_sc.className}>
