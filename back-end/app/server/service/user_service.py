@@ -3,6 +3,7 @@ import base64
 
 import yagmail
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, EmailStr, field_validator
 
 from ...internal.bootstrap import config
@@ -60,15 +61,15 @@ async def register_user(params: RegisterParams):
     user = User.register(params.username, params.email, params.password)
     encryption_email = base64.urlsafe_b64encode(reversible_encrypt(user.email)).decode()
     if config.DEBUG:
-        verify_url = f"{config.DEBUG_URL}api/user/verify/{encryption_email}"
+        verify_url = f"{config.ENV['DEBUG'].URL}api/user/verify/{encryption_email}"
     else:
-        verify_url = f"{config.NODEBUG_URL}api/user/verify/{encryption_email}"
+        verify_url = f"{config.ENV['NODEBUG'].URL}api/user/verify/{encryption_email}"
 
     # 生成 HTML 内容
     content = f"""
     <html>
         <body>
-            <p>请点击链接确认身份: <a href="{verify_url}">{verify_url}</a></p>
+            <p>请点击链接确认身份: <a href='{verify_url}'>{verify_url}</a></p>
         </body>
     </html>
     """
@@ -84,7 +85,10 @@ async def verify_user(token: str):
     user = User.get_user_by_email(email)
     if user:
         user.verify()
-        return ResponseModel(data={})
+        if config.DEBUG:
+            return RedirectResponse(url=config.ENV["DEBUG"].FRONT_URL)
+        else:
+            return RedirectResponse(url=config.ENV["NODEBUG"].FRONT_URL)
     raise HTTPException(status_code=403, detail="Verify failed")
 
 
