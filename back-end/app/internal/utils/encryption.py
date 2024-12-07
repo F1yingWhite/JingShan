@@ -2,6 +2,7 @@ import base64
 
 import bcrypt
 import jwt
+from cryptography.fernet import Fernet
 
 from ..bootstrap import config
 
@@ -14,7 +15,6 @@ def encrypt_password(password: str) -> str:
     return hashed_password_str
 
 
-# 验证函数
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     plain_password_bytes = plain_password.encode("utf-8")
     # 将 Base64 编码的字符串转换回字节
@@ -31,10 +31,20 @@ def decoder_jwt(token: str) -> dict:
     return jwt.decode(token, config.SECRET_KEY, algorithms=["HS256"])
 
 
-# 示例
+fernet = Fernet(config.SECRET_KEY)
+
+
+def reversible_encrypt(data: str) -> bytes:
+    encrypted_data = fernet.encrypt(data.encode())
+    return encrypted_data  # 返回字节类型，不要转换成字符串
+
+def reversible_decrypt(encrypted_data: bytes) -> str:
+    decrypted_data = fernet.decrypt(encrypted_data)
+    return decrypted_data.decode()
+
+
 if __name__ == "__main__":
     password = "my_secure_password"
-
     hashed_password = encrypt_password(password)
     print(f"加密后的密码: {hashed_password}")
 

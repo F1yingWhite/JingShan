@@ -31,6 +31,8 @@ dependencies = [
     "bcrypt>=4.2.1",
     "pycryptodome>=3.21.0",
     "pyjwt>=2.10.1",
+    "yagmail>=0.15.293",
+    "cryptography>=44.0.0",
 ]
 
 [tool.ruff]

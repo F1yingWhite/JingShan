@@ -1,9 +1,28 @@
+import asyncio
+import base64
+
+import yagmail
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, field_validator
 
+from ...internal.bootstrap import config
 from ...internal.models.relation_database.user import User
-from ...internal.utils.password import generate_jwt, verify_password
+from ...internal.utils.encryption import generate_jwt, reversible_decrypt, reversible_encrypt, verify_password
 from . import ResponseModel
+
+
+async def send_email(target_email: EmailStr, subject: str, content: str):
+    sender_email: EmailStr = config.EMAIL.EMAIL
+    sender_password: str = config.EMAIL.PASSWORD
+    loop = asyncio.get_event_loop()
+
+    def send_email(sender_email, sender_password, target_email, subject, content):
+        with yagmail.SMTP(user=sender_email, password=sender_password, host=config.EMAIL.HOST) as yag:
+            yag.send(to=target_email, subject=subject, contents=content)
+
+    # 使用 run_in_executor 将阻塞的同步任务放到线程池中执行
+    await loop.run_in_executor(None, send_email, sender_email, sender_password, target_email, subject, content)
+
 
 user_router = APIRouter(prefix="/user")
 
@@ -39,7 +58,34 @@ async def register_user(params: RegisterParams):
     if user is not None:
         raise HTTPException(status_code=400, detail="User already exists")
     user = User.register(params.username, params.email, params.password)
+    encryption_email = base64.urlsafe_b64encode(reversible_encrypt(user.email)).decode()
+    if config.DEBUG:
+        verify_url = f"{config.DEBUG_URL}api/user/verify/{encryption_email}"
+    else:
+        verify_url = f"{config.NODEBUG_URL}api/user/verify/{encryption_email}"
+
+    # 生成 HTML 内容
+    content = f"""
+    <html>
+        <body>
+            <p>请点击链接确认身份: <a href="{verify_url}">{verify_url}</a></p>
+        </body>
+    </html>
+    """
+    await send_email(params.email, "求是智藏", content)
     return ResponseModel(data={})
+
+
+@user_router.get("/verify/{token}")
+async def verify_user(token: str):
+    encrypted_email = base64.urlsafe_b64decode(token.encode())  # 解码
+    email = reversible_decrypt(encrypted_email)  # 解密
+    print(email)
+    user = User.get_user_by_email(email)
+    if user:
+        user.verify()
+        return ResponseModel(data={})
+    raise HTTPException(status_code=403, detail="Verify failed")
 
 
 class LoginParams(BaseModel):

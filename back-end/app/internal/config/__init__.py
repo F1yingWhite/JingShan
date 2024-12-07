@@ -1,15 +1,15 @@
 import yaml
-from pydantic import BaseModel, ValidationError
+from pydantic import AnyUrl, BaseModel, EmailStr, ValidationError
 
 
 class SparkAIConfig(BaseModel):
-    URL: str
+    URL: AnyUrl
     DOMAIN: str
     PASSWORD: str
 
 
 class VolcengineConfig(BaseModel):
-    URL: str
+    URL: AnyUrl
     APPID: str
     TOKEN: str
     CLUSTER: str
@@ -17,8 +17,9 @@ class VolcengineConfig(BaseModel):
 
 
 class EmailConfig(BaseModel):
-    EMAIL: str
+    EMAIL: EmailStr
     PASSWORD: str
+    HOST: str
 
 
 class Neo4jConfig(BaseModel):
@@ -31,6 +32,8 @@ class Config(BaseModel):
     DATABASE_URL: str
     LOG_FILE: str
     DEBUG: bool
+    DEBUG_URL: AnyUrl
+    NODEBUG_URL: AnyUrl
     NEO4J: Neo4jConfig
     SECRET_KEY: str
     SPARKAI: SparkAIConfig
