@@ -1,12 +1,12 @@
 'use client'
 import React, { useState } from 'react';
-import { Avatar, Flex, Input, Layout, Modal, Space, Drawer, MenuProps, Menu } from 'antd';
+import { Avatar, Flex, Layout, Modal, Space, Drawer, MenuProps, Dropdown, Menu, } from 'antd';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUserStore } from '@/store/useStore';
 import LoginPage, { tabsType } from './LoginFrom';
-import { AppstoreOutlined, CloseOutlined, LogoutOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
+import { CloseOutlined,  LogoutOutlined } from '@ant-design/icons';
 const { Header } = Layout;
 
 interface UserAvatarProps {
@@ -18,18 +18,20 @@ interface UserAvatarProps {
 }
 
 const UserAvatar: React.FC<UserAvatarProps> = ({ user, onClick }) => {
+  const cursorClass = onClick ? 'cursor-pointer' : '';
+
   return (
     <>
       {user ? (
         user.avatar ? (
-          <Avatar className='mx-2' size={45} src={user.avatar} onClick={onClick} />
+          <Avatar className={`mx-2 ${cursorClass}`} size={45} src={user.avatar} onClick={onClick} />
         ) : (
-          <Avatar className='mx-2' style={{ backgroundColor: '#fde3cf', color: '#f56a00' }} size={45} onClick={onClick}>
+          <Avatar className={`mx-2 ${cursorClass}`} style={{ backgroundColor: '#fde3cf', color: '#f56a00' }} size={45} onClick={onClick}>
             {user.username[0]}
           </Avatar>
         )
       ) : (
-        <Avatar className='mx-2' size={45} src={"/heshang.png"} />
+        <Avatar className={`mx-2 ${cursorClass}`} size={45} src={"/heshang.png"} />
       )}
     </>
   );
@@ -39,9 +41,64 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, onClick }) => {
 interface NavItemProps {
   href: string;
   text: string;
+  items?: MenuProps['items']
 }
 
-const NavItem: React.FC<NavItemProps> = ({ href, text }) => {
+const items: MenuProps['items'] = [
+  {
+    key: '径山藏',
+    type: 'group',
+    label: (
+      <Link href={'/overview'}>
+        径山藏
+      </Link>
+    ),
+    children: [
+      {
+        key: '牌记',
+        label: (
+          <Link href={'/overview/colophon'}>
+            牌记
+          </Link>
+        ),
+      },
+      {
+        key: '序跋',
+        label: (
+          <Link href={'/overview/preface_and_postscript'}>
+            序跋
+          </Link>
+        ),
+      },
+      {
+        key: '人物',
+        label: (
+          <Link href={'/overview/person'}>
+            人物
+          </Link>
+        )
+      },
+      {
+        key: '故事',
+        label: (
+          <Link href={'/overview/story'}>
+            故事
+          </Link>
+        ),
+      },
+    ]
+  },
+  {
+    key: '径山志',
+    label: (
+      <Link href={'/overview/graph'}>
+        径山志
+      </Link>
+    ),
+  }
+];
+
+const NavItem: React.FC<NavItemProps> = ({ href, text, items }) => {
   const path = usePathname();
   const isCurrentPath =
     path === href || (path.startsWith(href) && (path === href || path[href.length] === '/'));
@@ -50,14 +107,29 @@ const NavItem: React.FC<NavItemProps> = ({ href, text }) => {
   const bgColor = isCurrentPath ? 'bg-[#DBDEF0]' : '';
 
   return (
-    <div className={`${hoverColor} ${bgColor} h-full flex justify-center items-center w-[10vw]`}>
-      <Link
-        href={href}
-        className={`sm:text-base md:text-lg lg:text-xl pt-2 pb-2 ${textColor}`}
-      >
-        <span className="text-center">{text}</span>
-      </Link>
-    </div>
+    <div className={`${hoverColor} ${bgColor} h-full flex justify-center items-center`}>
+      {items ? (
+        <Dropdown menu={{ items }} trigger={['hover']} placement="bottomLeft"
+          overlayStyle={{ width: '20vw' }}
+        // TODO:修改下拉菜单的样式
+        >
+          <Link
+            href={href}
+            className={`sm:text-base md:text-lg lg:text-xl pt-2 pb-2 ${textColor} w-[10vw] flex justify-center`}
+          >
+            <span className="text-center">文库</span>
+          </Link>
+        </Dropdown>
+      ) : (
+        <Link
+          href={href}
+          className={`sm:text-base md:text-lg lg:text-xl pt-2 pb-2 ${textColor} w-[10vw] flex justify-center`}
+        >
+          <span className="text-center">{text}</span>
+        </Link>
+      )
+      }
+    </div >
   );
 };
 
@@ -169,7 +241,10 @@ export default function NavBar() {
 
       <Flex justify="center" className="h-full">
         {IconList.map((icon, index) => (
-          <NavItem key={index} href={icon.href} text={icon.text} />
+          icon.text === "文库" ? (
+            <NavItem key={index} href={icon.href} text={icon.text} items={items} />
+          ) :
+            (<NavItem key={index} href={icon.href} text={icon.text} />)
         ))}
       </Flex>
 
