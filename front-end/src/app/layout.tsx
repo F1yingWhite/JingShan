@@ -51,7 +51,7 @@ export default function RootLayout({
               <div className="top-0 left-0 w-full z-10">
                 <NavBar />
               </div>
-              <Content className="flex-1">
+              <Content className="flex-1 bg-white">
                 {children}
               </Content>
             </Layout>

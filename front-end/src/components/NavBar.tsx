@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUserStore } from '@/store/useStore';
 import LoginPage, { tabsType } from './LoginFrom';
-import { CloseOutlined,  LogoutOutlined } from '@ant-design/icons';
+import { CloseOutlined, LogoutOutlined } from '@ant-design/icons';
 const { Header } = Layout;
 
 interface UserAvatarProps {
@@ -193,8 +193,7 @@ export default function NavBar() {
 
 
   return (
-    <Header className="flex items-center justify-between h-[60px]" style={{ backgroundColor: "#1A2B5C" }}>
-
+    <Header className="flex items-center justify-between" style={{ backgroundColor: "#1A2B5C", height: "64px" ,paddingLeft:"10px",paddingRight:"10px"}}>
       <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
         <LoginPage type={type} setType={setType} setIsModalOpen={setIsModalOpen} ></LoginPage>
       </Modal>
@@ -220,24 +219,26 @@ export default function NavBar() {
         }} />
       </Drawer>
 
-      <Flex justify="start" className="items-center ml-0 h-full cursor-pointer" onClick={() => { router.push(`/`) }}>
-        <Image src="/logo.svg" alt="佛经" width={45} height={45} />
-        <div className="ml-2 h-10 border-l-2 border-[#DAA520] hidden md:block"></div>
-        <div className="ml-2 text-base font-bold text-center hidden md:block">
-          <div className='md:text-xl lg:text-2xl'>
-            <div className='text-white flex justify-center' style={{ lineHeight: '1.3' }}>
-              <span>求是</span>
-              <span className='text-[#DAA520]'>智藏</span>
+      <div className='hidden md:block'>
+        <Flex justify="start" className="items-center ml-0 h-full cursor-pointer" onClick={() => { router.push(`/`) }}>
+          <Image src="/logo.svg" alt="佛经" width={45} height={45} />
+          <div className="ml-2 h-10 border-l-2 border-[#DAA520]"></div>
+          <div className="ml-2 text-base font-bold text-center">
+            <div className='md:text-xl lg:text-2xl'>
+              <div className='text-white flex justify-center' style={{ lineHeight: '1.3' }}>
+                <span>求是</span>
+                <span className='text-[#DAA520]'>智藏</span>
+              </div>
+            </div>
+            <div className='md:text-[7px] lg:text-[8px]'>
+              <div className='text-white flex justify-center' style={{ lineHeight: '1.3' }}>
+                <span>QIUSHI&nbsp;</span>
+                <span className='text-[#DAA520]'>Digital Archive</span>
+              </div>
             </div>
           </div>
-          <div className='md:text-[7px] lg:text-[8px]'>
-            <div className='text-white flex justify-center' style={{ lineHeight: '1.3' }}>
-              <span>QIUSHI&nbsp;</span>
-              <span className='text-[#DAA520]'>Digital Archive</span>
-            </div>
-          </div>
-        </div>
-      </Flex>
+        </Flex>
+      </div>
 
       <Flex justify="center" className="h-full">
         {IconList.map((icon, index) => (
