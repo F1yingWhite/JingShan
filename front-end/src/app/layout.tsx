@@ -10,6 +10,8 @@ import { fetch_user } from "@/lib/user";
 import { useEffect } from "react";
 import { useUserStore } from "@/store/useStore";
 
+
+
 const noto_sans_sc = Noto_Sans_SC({
   display: 'swap',
   subsets: ['vietnamese'],
@@ -20,7 +22,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { setUser,user } = useUserStore();
+  const { setUser, user } = useUserStore();
+
+
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
     console.log(jwt)
@@ -43,11 +47,11 @@ export default function RootLayout({
               },
             }}
           >
-            <Layout className="h-screen">
-              <div className="fixed top-0 left-0 w-full z-10">
+            <Layout className="overflow-auto h-[100vh]">
+              <div className="top-0 left-0 w-full z-10">
                 <NavBar />
               </div>
-              <Content className="mt-16">
+              <Content className="flex-1">
                 {children}
               </Content>
             </Layout>

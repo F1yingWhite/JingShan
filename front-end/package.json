@@ -15,6 +15,8 @@
     "@ant-design/pro-components": "^2.8.1",
     "@ant-design/pro-table": "^3.18.1",
     "@ant-design/x": "^1.0.1",
+    "@studio-freight/lenis": "^1.0.42",
+    "@studio-freight/react-lenis": "^0.0.47",
     "@webgpu/types": "^0.1.51",
     "antd": "^5.22.3",
     "antd-style": "^3.7.1",

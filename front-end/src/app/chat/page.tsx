@@ -158,8 +158,7 @@ export default function Page() {
 
   return (
     <div className='w-full h-full flex flex-col'>
-      {/* 聊天区域 */}
-      <div className='flex-1 overflow-y-auto p-4 space-y-4'>
+      <div className='flex-1 overflow-y-auto p-4 space-y-4  h-full'>
         {
           chatHistory.length !== 0 ? (
             chatHistory.map((message, index) => (
@@ -239,10 +238,10 @@ export default function Page() {
         )
       }
 
-      {/* 输入框 */}
       <div className="flex justify-center items-end pb-4">
         <Sender
           style={{ width: '75vw' }}
+          value={inputValue}
           submitType="shiftEnter"
           onChange={setInputValue}
           onSubmit={() => { handleSend(inputValue) }}

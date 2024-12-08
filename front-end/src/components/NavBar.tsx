@@ -73,7 +73,7 @@ const items: MenuProps['items'] = [
       {
         key: '人物',
         label: (
-          <Link href={'/overview/person'}>
+          <Link href={'/overview/individual'}>
             人物
           </Link>
         )
