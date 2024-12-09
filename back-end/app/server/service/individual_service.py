@@ -20,7 +20,7 @@ class IndividualQueryParams(BaseModel):
 @individual_router.post("/")
 async def get_all_individuals(page: int, pageSize: int, params: IndividualQueryParams):
     individuals, count = Individual.get_all_individuals(page, pageSize, params.name)
-    return ResponseModel(data= {"data": individuals, "total": count})
+    return ResponseModel(data={"data": individuals, "total": count})
 
 
 @individual_router.get("/detail")
@@ -70,3 +70,11 @@ async def search_individuals(name: str):
         raise HTTPException(status_code=400, detail="Keyword cannot be empty")
     individuals = Individual.search_individuals(name)
     return ResponseModel(data=individuals)
+
+
+@individual_router.get("/random")
+async def get_random_individuals(size:int):
+    individuals = Individual.get_random_individuals(size)
+    for i, individual in enumerate(individuals):
+        individuals[i] = {"name": individual.name, "url": "/individual/" + str(individual.id)}
+    return ResponseModel(data={"data": individuals})

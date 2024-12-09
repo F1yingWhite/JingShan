@@ -1,8 +1,7 @@
 # 牌记
 import json
 
-from sqlalchemy import func
-from sqlmodel import Field, Session, SQLModel, select
+from sqlmodel import Field, Session, SQLModel, distinct, func, select
 
 from . import engine
 
@@ -21,6 +20,14 @@ class Colophon(SQLModel, table=True):
     temple: str | None = Field(default=None, max_length=255)
     words_num: str | None = Field(default=None, max_length=255)
     money: str | None = Field(default=None, max_length=255)
+
+    @classmethod
+    def random_get_scripture_name(cls, size: int):
+        with Session(engine) as session:
+            size = min(size, 100)
+            statement = select(distinct(cls.scripture_name)).order_by(func.random()).limit(size)
+            results = session.exec(statement).all()
+            return results
 
     @classmethod
     def get_colphon_with_num(

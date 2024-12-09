@@ -106,3 +106,10 @@ class Preface_And_Postscript(SQLModel, table=True):
             statement = select(cls).where(cls.classic == classic).where(cls.title.like(f"%{title}%"))
             results = session.exec(statement).all()
             return results
+
+    @classmethod
+    def random_get_title(cls, size: int):
+        with Session(engine) as session:
+            statement = select(cls.title, cls.id).order_by(func.random()).limit(size)
+            results = session.exec(statement).all()
+            return results

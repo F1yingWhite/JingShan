@@ -36,3 +36,7 @@ export function getAllIndividuals(page: number, pageSize: number, name: string) 
 export function searchIndividuals(name: string) {
     return get(`/individuals/search?name=${name}`);
 }
+
+export function getIndividualRandom(size: number) {
+    return get(`/individuals/random?size=${size}`);
+}

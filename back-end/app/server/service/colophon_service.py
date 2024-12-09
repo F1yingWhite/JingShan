@@ -37,6 +37,14 @@ async def get_colophon(
     return ResponseModel(data={"data": colphons, "total_num": total})
 
 
+@colophon_router.get("/scripture_name/random")
+async def get_scripture_name(size: int = 20):
+    results = Colophon.random_get_scripture_name(size)
+    for i, result in enumerate(results):
+        results[i] = {"name": result, "url": "/graph/scripture/" + result}
+    return ResponseModel(data={"data": results})
+
+
 @colophon_router.get("/detail")
 async def get_colophon_detail(id: int):
     results = Colophon.get_by_id(colophon_id=id)

@@ -1,8 +1,12 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Layout, Input, notification, Carousel, Image, Space } from 'antd';
+import { Layout, Input, notification, Carousel, Image, Space, List } from 'antd';
 import { Footer, Content } from 'antd/es/layout/layout';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { getScriptureListRandom } from '@/lib/colophon';
+import { getPrefaceAndPostscriptListRandom } from '@/lib/preface_and_postscript';
+import { getIndividualRandom } from '@/lib/individual';
 const { Search } = Input;
 
 
@@ -21,9 +25,49 @@ const Title: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
+const SubTitle: React.FC<{ text: string }> = ({ text }) => {
+  return (
+    <div className='flex items-center m-6'>
+      <img src="/decoration_f.svg" alt="Decoration Left" className='h-6 w-6' />
+      <span className='text-lg text-white'>{text}</span>
+    </div>
+  )
+};
+
+interface dataSource {
+  name: string;
+  url: string;
+}
+
+interface ShowListProps {
+  dataSource: dataSource[];
+}
+
+const ShowList: React.FC<ShowListProps> = ({ dataSource }) => {
+  return (
+    <List
+      size="small"
+      split={false}
+      dataSource={dataSource}
+      renderItem={(item) => (
+        <List.Item>
+          <div className='pl-4'>
+            <span className='text-white inline-block w-2.5 h-2.5 rounded-full bg-white'></span>
+            <Link className='text-white pl-4 truncate' href={item.url}>{item.name}</Link>
+          </div>
+        </List.Item>
+      )}
+    />
+  );
+};
+
 
 export default function Page() {
   const router = useRouter();
+
+  const [colophon, setColophon] = useState<dataSource[]>([]);
+  const [preface, setPreface] = useState<dataSource[]>([]);
+  const [individual, setIndividual] = useState<dataSource[]>([]);
 
   const [api, contextHolder] = notification.useNotification();
   const openNotification = () => {
@@ -52,6 +96,18 @@ export default function Page() {
 
     handleResize(); // 初始化检查屏幕大小
     window.addEventListener('resize', handleResize);
+
+    getScriptureListRandom(10).then((res) => {
+      setColophon(res.data)
+    });
+
+    getPrefaceAndPostscriptListRandom(10).then((res) => {
+      setPreface(res.data)
+    });
+
+    getIndividualRandom(10).then((res) => {
+      setIndividual(res.data)
+    });
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -101,14 +157,20 @@ export default function Page() {
             <div
               className={`w-full  flex ${isSmallScreen ? 'flex-col items-center' : 'justify-center'} gap-4`}
             >
-              <div className={`h-[500px] ${isSmallScreen ? 'w-[90%]' : 'w-[30%]'} bg-gray-300 rounded-lg shadow-lg`}>
-                牌记
+              <div className={`h-[500px] relative ${isSmallScreen ? 'w-[90%]' : 'w-[30%]'} bg-[#1A2B5C] bg-opacity-80 rounded-lg shadow-lg`}>
+                <SubTitle text="序跋" />
+                <ShowList dataSource={preface} />
+                <Link className='text-white text-opacity-70 absolute bottom-5 right-5 m-2' href={'/graph/scripture'}>更多&gt;&gt;</Link>
               </div>
-              <div className={`h-[500px] ${isSmallScreen ? 'w-[90%]' : 'w-[30%]'} bg-gray-300 rounded-lg shadow-lg`}>
-                序跋
+              <div className={`h-[500px] relative ${isSmallScreen ? 'w-[90%]' : 'w-[30%]'} bg-[#1A2B5C] bg-opacity-80 rounded-lg shadow-lg`}>
+                <SubTitle text="牌记" />
+                <ShowList dataSource={colophon} />
+                <Link className='text-white text-opacity-70 absolute bottom-5 right-5 m-2' href={'/overview/preface_and_postscript'}>更多&gt;&gt;</Link>
               </div>
-              <div className={`h-[500px]  ${isSmallScreen ? 'w-[90%]' : 'w-[30%]'} bg-gray-300 rounded-lg shadow-lg`}>
-                人物
+              <div className={`h-[500px] relative ${isSmallScreen ? 'w-[90%]' : 'w-[30%]'} bg-[#1A2B5C] bg-opacity-80 rounded-lg shadow-lg`}>
+                <SubTitle text="人物" />
+                <ShowList dataSource={individual} />
+                <Link className='text-white text-opacity-70 absolute bottom-5 right-5 m-2' href={'/overview/individual'}>更多&gt;&gt;</Link>
               </div>
             </div>
           </div>
@@ -116,8 +178,12 @@ export default function Page() {
           {/* 径山志 */}
           <div className='flex flex-col items-center max-w-[1600px] mx-auto min-h-[500px] max-h-[1000px]'>
             <Title text='径山志' />
-            <div className='h-[500px] w-[90%] bg-gray-300 rounded-lg shadow-lg'>
-              牌记
+            <div
+              className={`w-full flex ${isSmallScreen ? 'flex-col items-center' : 'justify-center'} gap-4`}
+            >
+              <div className='h-[500px] w-[90%] bg-[#DAA520] bg-opacity-60 rounded-lg shadow-lg'>
+                牌记
+              </div>
             </div>
           </div>
 
