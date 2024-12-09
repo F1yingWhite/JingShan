@@ -32,7 +32,7 @@ async def get_story(
         title=params.title,
         content=params.content,
     )
-    return ResponseModel(data={"data": stories, "total": num})
+    return ResponseModel(data={"data": stories, "total_num": num})
 
 
 @story_router.get("/detail")

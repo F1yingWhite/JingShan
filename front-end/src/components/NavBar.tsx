@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { Avatar, Flex, Layout, Modal, Space, Drawer, MenuProps, Dropdown, Menu, } from 'antd';
+import { Avatar, Flex, Layout, Modal, Space, Drawer, MenuProps, Dropdown, Menu, message, } from 'antd';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -191,9 +191,11 @@ export default function NavBar() {
     setIsDrawerOpen(false);
   };
 
+  const [messageApi, contextHolder] = message.useMessage();
 
   return (
-    <Header className="flex items-center justify-between" style={{ backgroundColor: "#1A2B5C", height: "64px" ,paddingLeft:"10px",paddingRight:"10px"}}>
+    <Header className="flex items-center justify-between" style={{ backgroundColor: "#1A2B5C", height: "64px", paddingLeft: "10px", paddingRight: "10px" }}>
+      {contextHolder}
       <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
         <LoginPage type={type} setType={setType} setIsModalOpen={setIsModalOpen} ></LoginPage>
       </Modal>
@@ -215,6 +217,7 @@ export default function NavBar() {
       >
         <DrawerItem icon={<LogoutOutlined />} text='退出登录' onClick={() => {
           setUser(null);
+          messageApi.success('注销成功,请重新登陆');
           setIsDrawerOpen(false);
         }} />
       </Drawer>

@@ -31,7 +31,6 @@ def generate_jwt(email: EmailStr) -> str:
 
 
 def decode_jwt(token: str) -> dict:
-    print(token)
     return jwt.decode(token, config.SECRET_KEY, algorithms=["HS256"])
 
 

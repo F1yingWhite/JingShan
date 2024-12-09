@@ -48,6 +48,7 @@ export default function Page() {
   const [wavFile, setWavFile] = useState<string>();
   const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
   const [clickIndex, setClickIndex] = useState<number | null>(null);
+  const [cur_chat_id, setChatID] = useState<number | null>(null);
 
   const onPromptsItemClick = (info) => {
     handleSend(info.data.description);
@@ -65,7 +66,19 @@ export default function Page() {
       const websocket = new WebSocket(uri);
 
       websocket.onopen = () => {
-        websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1) }));
+        const jwt = localStorage.getItem('jwt');
+        const chat_id = cur_chat_id;
+        if (jwt) {
+          if (chat_id) {
+            websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1), jwt, chat_id }));
+          }
+          else {
+            websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1), jwt }));
+          }
+        }
+        else {
+          websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1) }));
+        }
       };
 
       websocket.onmessage = (event) => {
@@ -73,7 +86,13 @@ export default function Page() {
         if (data === "[DONE]") {
           websocket.close();
           setIsSending(false);
-        } else {
+        }
+        else if (data.startsWith("[CHAT_ID]:")) {
+          const chat_id = parseInt(data.substring(10));
+          console.log("chat_id:", chat_id);
+          setChatID(chat_id);
+        }
+        else {
           setChatHistory((prevHistory) => {
             const lastMessageIndex = prevHistory.length - 1;
             const lastMessage = prevHistory[lastMessageIndex];

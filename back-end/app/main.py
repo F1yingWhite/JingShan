@@ -1,7 +1,7 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .server.service.chat_service import chat_router
+from .server.service.chat_service import auth_chat_router, chat_router
 from .server.service.colophon_service import colophon_router
 from .server.service.graph.graph_zang_service import zang_graph_router
 from .server.service.graph.graph_zhi_service import zhi_graph_router
@@ -22,6 +22,7 @@ main_router.include_router(individual_router)
 main_router.include_router(pdf_router)
 main_router.include_router(zhi_graph_router)
 main_router.include_router(chat_router)
+main_router.include_router(auth_chat_router)
 main_router.include_router(hybrid_router)
 main_router.include_router(zang_graph_router)
 main_router.include_router(user_router)

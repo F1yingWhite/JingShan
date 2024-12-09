@@ -2,7 +2,7 @@ import asyncio
 import base64
 
 import yagmail
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, EmailStr, field_validator
 
@@ -27,7 +27,7 @@ async def send_email(target_email: EmailStr, subject: str, content: str):
 
 
 user_router = APIRouter(prefix="/user")
-auth_user_router = APIRouter(prefix="/user")
+auth_user_router = APIRouter(prefix="/user", dependencies=[Depends(user_auth)])
 
 
 class RegisterParams(BaseModel):
@@ -151,13 +151,15 @@ class ChangeAvatar(BaseModel):
 
 
 @auth_user_router.put("/change_avatar")
-async def change_avatar(params: ChangeAvatar, current_user: dict = Depends(user_auth)):
+async def change_avatar(request: Request, params: ChangeAvatar):
+    current_user = request.state.user_info
     user = User.get_user_by_email(current_user["sub"])
     user.avatar = params.avatar
     return ResponseModel(data={})
 
 
 @auth_user_router.get("/info")
-async def get_user_info(current_user: dict = Depends(user_auth)):
+async def get_user_info(request: Request):
+    current_user = request.state.user_info
     user = User.get_user_by_email(current_user["sub"])
     return ResponseModel(data={"username": user.name, "email": user.email, "avatar": user.avatar})

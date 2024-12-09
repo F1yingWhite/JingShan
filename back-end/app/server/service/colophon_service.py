@@ -24,7 +24,7 @@ async def get_colophon(
     page_size: int = Query(20, ge=1),
 ):
     # 从请求模型中提取其他参数
-    colphons, data = Colophon.get_colphon_with_num(
+    colphons, total = Colophon.get_colphon_with_num(
         page=page,
         page_size=page_size,
         chapter_id=params.chapter_id,
@@ -34,7 +34,7 @@ async def get_colophon(
         scripture_name=params.scripture_name,
         volume_id=params.volume_id,
     )
-    return ResponseModel(data={"data": colphons, "total": data})
+    return ResponseModel(data={"data": colphons, "total_num": total})
 
 
 @colophon_router.get("/detail")

@@ -27,7 +27,6 @@ export default function RootLayout({
 
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
-    console.log(jwt)
     if (!jwt) return;
     fetch_user().then((res) => {
       setUser(res)
