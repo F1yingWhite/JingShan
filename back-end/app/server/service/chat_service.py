@@ -274,6 +274,8 @@ async def get_chat_history_length(request: Request):
 @auth_chat_router.get("/history/{id}")
 async def get_chat_history_by_id(id: int, request: Request):
     res = Chat_History.get_history_by_id(id)
+    if res is None:
+        raise HTTPException(status_code=400, detail="未找到对应历史记录")
     user_info = request.state.user_info
     if res.email != user_info["sub"]:
         raise HTTPException(status_code=403, detail="无权访问")
@@ -284,6 +286,8 @@ async def get_chat_history_by_id(id: int, request: Request):
 async def delete_chat_history_by_id(id: int, request: Request):
     user_info = request.state.user_info
     res = Chat_History.get_history_by_id(id)
+    if res is None:
+        raise HTTPException(status_code=400, detail="未找到对应历史记录")
     if res.email != user_info["sub"]:
         raise HTTPException(status_code=403, detail="无权访问")
     res.delete()
@@ -298,6 +302,8 @@ class ChangeTitle(BaseModel):
 async def update_title_by_id(id: int, request: Request, title: ChangeTitle):
     user_info = request.state.user_info
     res = Chat_History.get_history_by_id(id)
+    if res is None:
+        raise HTTPException(status_code=400, detail="未找到对应历史记录")
     if res.email != user_info["sub"]:
         raise HTTPException(status_code=403, detail="无权访问")
     res.update(history=None, title=title.title)
