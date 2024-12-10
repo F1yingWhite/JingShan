@@ -25,21 +25,18 @@ export type Person = {
     id: number;
 }
 
-export function getindividualByName(name: string) {
-    return get(`/individuals?name= {${name}`);
-}
-
 export function getIndividualDetailById(id: number) {
     return get(`/individuals/detail?id=${id}`);
 }
 
-export function getAllIndividuals({ page, pageSize, title }: { page: number; pageSize: number; title: string }) {
-    if (title === undefined) {
-        title = "None"
-    }
-    return get(`/individuals/all?page=${page}&pageSize=${pageSize}&title=${title}`);
+export function getAllIndividuals(page: number, pageSize: number, name: string) {
+    return post(`/individuals/?page=${page}&pageSize=${pageSize}`, { "name": name });
 }
 
 export function searchIndividuals(name: string) {
     return get(`/individuals/search?name=${name}`);
+}
+
+export function getIndividualRandom(size: number) {
+    return get(`/individuals/random?size=${size}`);
 }

@@ -29,19 +29,17 @@ const DataTable = <T extends Record<string, any>>({ columns, getList }: TablePro
   };
 
   return (
-    <div className='overflow-auto h-full'>
-      <ProTable<T>
-        bordered
-        columns={columns}
-        request={fetchData}
-        pagination={{
-          showSizeChanger: true,
-          pageSizeOptions: [5, 10, 20, 50],
-          defaultPageSize: 20,
-        }}
-        rowKey="id"
-      />
-    </div>
+    <ProTable<T>
+      bordered
+      columns={columns}
+      request={fetchData}
+      pagination={{
+        showSizeChanger: true,
+        pageSizeOptions: [5, 10, 20, 50],
+        defaultPageSize: 20,
+      }}
+      rowKey="id"
+    />
   );
 };
 

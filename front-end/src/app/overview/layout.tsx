@@ -1,82 +1,54 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { LaptopOutlined, NotificationOutlined, CreditCardOutlined, LeftOutlined, RightOutlined, NodeIndexOutlined, SmileOutlined } from '@ant-design/icons';
-import { Layout, Menu, FloatButton } from 'antd';
+'use client'
+import { Breadcrumb, Layout } from 'antd';
 import { Content } from 'antd/es/layout/layout';
-import Sider from 'antd/es/layout/Sider';
-import Link from 'next/link';
 import ChatButton from '@/components/ChatButton';
+import { usePathname } from 'next/navigation';
 
-const menuItems = [
-  { key: '1', icon: <CreditCardOutlined />, label: '牌记', path: '/overview/colophon' },
-  { key: '2', icon: <NotificationOutlined />, label: '序跋', path: '/overview/preface_and_postscript' },
-  { key: '3', icon: <SmileOutlined />, label: '人物', path: '/overview/individual' },
-  { key: '4', icon: <LaptopOutlined />, label: '故事', path: '/overview/story' },
-  { key: '5', icon: <NodeIndexOutlined />, label: '径山志', path: '/overview/graph' },
-];
+const path_map = {
+  "overview": "文库",
+  "preface_and_postscript": "径山藏/序跋",
+  "colophon": "径山藏/牌记",
+  "individual": "径山藏/人物",
+  "graph": "径山藏"
+};
+
+const getBreadcrumbs = (pathname) => {
+  return pathname.split('/').filter(item => item).flatMap((item, index, arr) => {
+    let breadcrumbName = path_map[item] || item.charAt(0).toUpperCase() + item.slice(1);
+    if (breadcrumbName.includes('/')) {
+      return breadcrumbName.split('/').map((namePart, partIndex, parts) => ({
+        path: `/${arr.slice(0, index + 1).join('/')}${partIndex > 0 ? `/${parts.slice(0, partIndex + 1).join('/')}` : ''}`,
+        breadcrumbName: namePart,
+      }));
+    } else {
+      return [{
+        path: `/${arr.slice(0, index + 1).join('/')}`,
+        breadcrumbName,
+      }];
+    }
+  });
+};
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState('1');
-  const [showSider, setShowSider] = useState(false);
   const pathname = usePathname();
-
-  useEffect(() => {
-    const currentItem = menuItems.find(item => item.path === pathname);
-    if (currentItem) {
-      setSelectedKey(currentItem.key);
-    }
-  }, [pathname]);
-
-  const toggleCollapsed = () => setCollapsed(!collapsed);
-  const toggleSider = () => setShowSider(!showSider);
-
-  const handleFloatButtonClick = () => {
-    if (window.innerWidth >= 768) {
-      toggleCollapsed();
-    } else {
-      toggleSider();
-    }
-  };
-
+  const breadcrumbs = getBreadcrumbs(pathname);
   return (
-    <section className="h-full">
-      <Layout className="h-full">
-        <Sider className={`h-full relative ${showSider ? 'block' : 'hidden'} md:block`} collapsed={collapsed}>
-          <Menu
-            mode="inline"
-            selectedKeys={[selectedKey]}
-            className="h-full"
-            onClick={({ key }) => setSelectedKey(key)}
-            defaultOpenKeys={['径山藏']}
-          >
-            <Menu.SubMenu key="径山藏" title="径山藏" icon={<CreditCardOutlined />}>
-              {menuItems.slice(0, 4).map(item => (
-                <Menu.Item key={item.key} icon={item.icon}>
-                  <Link href={item.path}>{item.label}</Link>
-                </Menu.Item>
-              ))}
-            </Menu.SubMenu>
-            {menuItems.slice(4).map(item => (
-              <Menu.Item key={item.key} icon={item.icon}>
-                <Link href={item.path}>{item.label}</Link>
-              </Menu.Item>
+    <Layout className="h-full">
+      <Content className="p-6 bg-white overflow-auto">
+        <div className='hidden md:block'>
+          <ChatButton />
+        </div>
+        <div className='mb-4'>
+          <Breadcrumb separator={<div className='text-lg'>&gt;&gt;</div>}>
+            {breadcrumbs.map(({ path, breadcrumbName }, index) => (
+              <Breadcrumb.Item key={index} className='text-lg'>
+                {breadcrumbName}
+              </Breadcrumb.Item>
             ))}
-          </Menu>
-        </Sider>
-        <FloatButton
-          onClick={handleFloatButtonClick}
-          icon={showSider || collapsed ? <RightOutlined /> : <LeftOutlined />}
-          style={{ position: 'absolute', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
-        />
-        <Content className="p-6">
-          <div className='hidden md:block'>
-            <ChatButton />
-          </div>
-          {children}
-        </Content>
-      </Layout>
-    </section>
+          </Breadcrumb>
+        </div>
+        {children}
+      </Content>
+    </Layout>
   );
 }

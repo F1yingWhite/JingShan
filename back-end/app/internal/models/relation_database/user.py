@@ -2,7 +2,7 @@
 
 from sqlmodel import Field, Session, SQLModel, select
 
-from ...utils.password import encrypt_password
+from ...utils.encryption import encrypt_password
 from . import engine
 
 
@@ -33,7 +33,7 @@ class User(SQLModel, table=True):
     @classmethod
     def get_user_by_email(cls, email: str):
         with Session(engine) as session:
-            user = session.exec(select(cls).where(cls.email == email, cls.verified is True)).first()
+            user = session.exec(select(cls).where(cls.email == email)).first()
             return user
 
     def change_password(self, new_password: str):
@@ -44,6 +44,14 @@ class User(SQLModel, table=True):
             session.commit()
             session.refresh(self)
             return self
+
+    def verify(self):
+        self.verified = True
+        with Session(engine) as session:
+            session.add(self)
+            session.commit()
+            session.refresh(self)
+            return
 
     def change_avatar(self, avatar: str):
         self.avatar = avatar

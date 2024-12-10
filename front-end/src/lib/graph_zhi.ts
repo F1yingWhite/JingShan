@@ -55,3 +55,7 @@ export function getGraphDetailByName(name: string) {
 export function getIdentityList() {
   return get(`/graph/zhi/identity`);
 }
+
+export function getRandomPerson() {
+  return get(`/graph/zhi/random`);
+}

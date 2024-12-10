@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { getStoryList  } from '@/lib/story';
+import { getStoryList } from '@/lib/story';
 import { Story } from '@/lib/story';
 import DataTable from '@/components/DataTable'; // 确保路径正确
 import Link from 'next/link';

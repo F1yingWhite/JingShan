@@ -16,7 +16,7 @@ def hybird_search(keyword: str, current: int, pageSize: int):
 
         preface_and_postscript_results = Preface_And_Postscript.search_by_classic(keyword)
 
-        colophon_results = Colophon.search_colophon_no_page(keyword)
+        colophon_results = Colophon.search_by_content_no_page(keyword)
 
         graph_results = person_get_list_no_page(keyword)
 
@@ -60,7 +60,7 @@ def hybird_search(keyword: str, current: int, pageSize: int):
             res_dict["colophon"].append(
                 {
                     "name": colophon,
-                    "related_data": Colophon.get_results_by_scripture_name_and_keyword(colophon, keyword),
+                    "related_data": Colophon.get_by_scripture_name_and_content(colophon, keyword),
                 }
             )
         graph_list = graph_results[

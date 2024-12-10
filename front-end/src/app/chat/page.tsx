@@ -1,12 +1,15 @@
 'use client'
+//TODO:后续拆分侧边栏组件减轻代码复杂度
 import React, { useState, useEffect, useRef } from 'react'
 import Live2d from '@/components/live2d'
-import { Avatar, GetProp, Space, Spin, Typography } from 'antd';
-import { AudioOutlined, FireOutlined, LoadingOutlined, OpenAIOutlined, } from '@ant-design/icons';
-import { Message, postTTS } from '@/lib/chat';
+import { Avatar, Button, Divider, GetProp, message, Space, Spin, Typography } from 'antd';
+import { AudioOutlined, DeleteOutlined, EditOutlined, FireOutlined, LoadingOutlined, OpenAIOutlined, PlusOutlined, RedoOutlined, } from '@ant-design/icons';
+import { deleteChat, getChatDetail, getHistory, getHistoryLength, Message, postTTS } from '@/lib/chat';
 import { wss_host } from '@/lib/axios';
 import ReactMarkdown from 'react-markdown';
-import { Bubble, Prompts, Sender, Welcome } from '@ant-design/x';
+import { Bubble, Conversations, ConversationsProps, Prompts, Sender, Welcome } from '@ant-design/x';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { Conversation } from '@ant-design/x/es/conversations';
 
 const renderTitle = (icon: React.ReactElement, title: string) => (
   <Space align="start">
@@ -38,16 +41,23 @@ const placeholderPromptsItems: GetProp<typeof Prompts, 'items'> = [
   },
 ];
 
+
+
 export default function Page() {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [conversationList, setConversationList] = useState<Conversation[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isTTSPlaying, setTTSPlaying] = useState(false);
   const [ttsLoading, setTTSLoading] = useState(false);
   const [wavFile, setWavFile] = useState<string>();
   const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
   const [clickIndex, setClickIndex] = useState<number | null>(null);
+  const [curChatId, setChatID] = useState<string>();
+  const [chatLength, setChatLength] = useState<number | null>(null);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onPromptsItemClick = (info) => {
     handleSend(info.data.description);
@@ -65,7 +75,19 @@ export default function Page() {
       const websocket = new WebSocket(uri);
 
       websocket.onopen = () => {
-        websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1) }));
+        const jwt = localStorage.getItem('jwt');
+        const chat_id = curChatId;
+        if (jwt) {
+          if (chat_id) {
+            websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1), jwt: jwt, id: chat_id }));
+          }
+          else {
+            websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1), jwt }));
+          }
+        }
+        else {
+          websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1) }));
+        }
       };
 
       websocket.onmessage = (event) => {
@@ -73,7 +95,14 @@ export default function Page() {
         if (data === "[DONE]") {
           websocket.close();
           setIsSending(false);
-        } else {
+        }
+        else if (data.startsWith("[CHAT_ID]:")) {
+          const chat_id = data.substring(10);
+          setChatID(chat_id);
+          setChatLength(chatLength + 1);
+          setConversationList([{ key: chat_id, label: inputValues }, ...conversationList]);
+        }
+        else {
           setChatHistory((prevHistory) => {
             const lastMessageIndex = prevHistory.length - 1;
             const lastMessage = prevHistory[lastMessageIndex];
@@ -125,6 +154,15 @@ export default function Page() {
   }, [chatHistory]);
 
   useEffect(() => {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      getHistoryLength().then((res) => {
+        setChatLength(res.length);
+      })
+      getHistory().then((res) => {
+        setConversationList(res);
+      });
+    }
     return () => {
       setTTSPlaying(false);
     };
@@ -156,113 +194,194 @@ export default function Page() {
   );
 
 
+  const menuConfig: ConversationsProps['menu'] = (conversation) => ({
+    items: [
+      {
+        label: '删除',
+        key: 'Delete',
+        icon: <DeleteOutlined />,
+        danger: true,
+        onClick: (menuInfo) => {
+          deleteChat(conversation.key).then(() => {
+            setConversationList(conversationList.filter((item) => item.key !== conversation.key));
+            setChatLength(chatLength - 1);
+          });
+        },
+      },
+    ],
+    onClick: (menuInfo) => {
+      console.log(`Click ${conversation.key} - ${menuInfo.key}`);
+    },
+  });
+
+  const handleNewConversion = () => {
+    if (isSending) {
+      messageApi.error('请等待当前消息发送完成');
+      return
+    }
+    setChatHistory([]);
+    setChatID(null);
+  }
+
+  const loadMoreData = () => {
+    console.log("正在加载")
+    // if (isLoading) {
+    //   return;
+    // }
+    // setIsLoading(true);
+    // const page = conversationList.length / PAGE_SIZE + 1;
+    // getHistory(page, PAGE_SIZE).then((res) => {
+    //   setConversationList([...conversationList, ...res]);
+    //   setIsLoading(false);
+    // }).catch(() => {
+    //   setIsLoading(false);
+    // });
+  }
+
+  const getConversationDetail = (id: string) => {
+    getChatDetail(id).then((res) => {
+      setChatHistory(res);
+    });
+    setChatID(id);
+  }
+
   return (
-    <div className='w-full h-full flex flex-col'>
-      {/* 聊天区域 */}
-      <div className='flex-1 overflow-y-auto p-4 space-y-4'>
-        {
-          chatHistory.length !== 0 ? (
-            chatHistory.map((message, index) => (
-              <div
-                key={index}
-                className={`relative z-10 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className="flex items-start space-x-2 max-w-xl relative"
-                  onMouseEnter={() => setHoveredMessageIndex(index)}
-                  onMouseLeave={() => setHoveredMessageIndex(null)}
+    <div className='w-full h-full flex flex-row'>
+      {contextHolder}
+      <div className='h-full w-1/4 max-w-[400px] bg-gray-100 overflow-auto'>
+        <Button
+          icon={<PlusOutlined />}
+          onClick={handleNewConversion}
+          style={
+            {
+              background: "#1677ff0f",
+              border: "1px solid #1677ff34",
+              width: "calc(100% - 24px)",
+              margin: "24px 12px 24px 12px",
+            }
+          }
+        >
+          新的会话
+        </Button>
+        <InfiniteScroll
+          dataLength={conversationList.length}
+          next={loadMoreData}
+          hasMore={conversationList.length < chatLength}
+          loader={
+            <div style={{ textAlign: 'center' }}>
+              <Spin indicator={<RedoOutlined spin />} size="small" />
+            </div>
+          }
+          endMessage={<Divider plain>没有更多会话历史了 🤐</Divider>}
+          scrollableTarget="scrollableDiv"
+        >
+          <Conversations menu={menuConfig} items={conversationList} onActiveChange={getConversationDetail} activeKey={curChatId} />
+        </InfiniteScroll>
+      </div>
+
+      <div className='w-full h-full flex flex-col'>
+        <div className='flex-1 overflow-y-auto p-4 space-y-4 h-full'>
+          {
+            chatHistory.length !== 0 ? (
+              chatHistory.map((message, index) => (
+                <div
+                  key={index}
+                  className={`relative z-10 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  {
-                    message.role === 'assistant' && (
-                      <Avatar className="flex-shrink-0 w-8 h-8">径</Avatar>
-                    )
-                  }
-                  <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
-                    {message.content === "" ? (
-                      <Spin />
-                    ) : (
-                      <div
-                        onClick={() => {
-                          if (message.role === 'assistant' && !isTTSPlaying && !isSending && !ttsLoading) {
-                            setClickIndex(index);
-                            beginTTS(message.content);
-                          }
-                        }}
-                      >
-                        <ReactMarkdown>
-                          {message.content}
-                        </ReactMarkdown>
-                      </div>
-                    )}
+                  <div className="flex items-start space-x-2 max-w-xl relative"
+                    onMouseEnter={() => setHoveredMessageIndex(index)}
+                    onMouseLeave={() => setHoveredMessageIndex(null)}
+                  >
                     {
-                      message.role === 'assistant' && clickIndex == index && ttsLoading && (
-                        <LoadingOutlined className="absolute -bottom-2 -right-2" />
+                      message.role === 'assistant' && (
+                        <Avatar className="flex-shrink-0 w-8 h-8">径</Avatar>
                       )
                     }
+                    <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
+                      {message.content === "" ? (
+                        <Spin />
+                      ) : (
+                        <div
+                          onClick={() => {
+                            if (message.role === 'assistant' && !isTTSPlaying && !isSending && !ttsLoading) {
+                              setClickIndex(index);
+                              beginTTS(message.content);
+                            }
+                          }}
+                        >
+                          <ReactMarkdown>
+                            {message.content}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                      {
+                        message.role === 'assistant' && clickIndex == index && ttsLoading && (
+                          <LoadingOutlined className="absolute -bottom-2 -right-2" />
+                        )
+                      }
+                      {
+                        message.role === 'assistant' && clickIndex == index && isTTSPlaying && !ttsLoading && (
+                          <AudioOutlined className="absolute -bottom-2 -right-2" onClick={() => {
+                            setTTSPlaying(false)
+                          }} />
+                        )
+                      }
+                    </div>
                     {
-                      message.role === 'assistant' && clickIndex == index && isTTSPlaying && !ttsLoading && (
-                        <AudioOutlined className="absolute -bottom-2 -right-2" onClick={() => {
-                          setTTSPlaying(false)
-                        }} />
+                      message.role === 'user' && (
+                        <Avatar className="flex-shrink-0 w-8 h-8">我</Avatar>
                       )
                     }
                   </div>
-                  {
-                    message.role === 'user' && (
-                      <Avatar className="flex-shrink-0 w-8 h-8">我</Avatar>
-                    )
-                  }
+                </div>
+              ))
+            ) : (
+              <div className="flex justify-center items-center mt-20">
+                <Bubble.List
+                  className='z-10'
+                  items={[{ content: placeholderNode, variant: 'borderless' }]}
+                />
+              </div>
+            )
+          }
+          <div ref={messagesEndRef} />
+        </div>
+        {
+          chatHistory.length !== 0 && (
+            <div className='relative w-full z-0'>
+              <div className='absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full'>
+                <div className="max-h-[50vh] aspect-[2/3] overflow-hidden">
+                  <Live2d isTTSPlaying={isTTSPlaying} setTTSPlaying={setTTSPlaying} wavFile={wavFile} />
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="flex justify-center items-center">
-              <Bubble.List
-                className='z-10'
-                items={[{ content: placeholderNode, variant: 'borderless' }]}
-              />
             </div>
           )
         }
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* 动态显示 Live2d */}
-      {
-        chatHistory.length !== 0 && (
-          <div className='relative w-full z-0'>
-            <div className='absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full'>
-              <div className="max-h-[50vh] aspect-[2/3] overflow-hidden">
-                <Live2d isTTSPlaying={isTTSPlaying} setTTSPlaying={setTTSPlaying} wavFile={wavFile} />
-              </div>
-            </div>
-          </div>
-        )
-      }
-
-      {/* 输入框 */}
-      <div className="flex justify-center items-end pb-4">
-        <Sender
-          style={{ width: '75vw' }}
-          submitType="shiftEnter"
-          onChange={setInputValue}
-          onSubmit={() => { handleSend(inputValue) }}
-          actions={(_, info) => {
-            const { SendButton, LoadingButton, ClearButton } = info.components;
-            return (
-              <Space size="small">
-                <Typography.Text type="secondary">
-                  <small>`Shift + Enter` to submit</small>
-                </Typography.Text>
-                <ClearButton />
-                {isSending ? (
-                  <LoadingButton type="default" icon={<Spin size="small" />} disabled />
-                ) : (
-                  <SendButton type="primary" icon={<OpenAIOutlined />} disabled={false} />
-                )}
-              </Space>
-            );
-          }}
-        />
+        <div className="flex justify-center items-end pb-4">
+          <Sender
+            style={{ width: '80%' }}
+            value={inputValue}
+            submitType="shiftEnter"
+            onChange={setInputValue}
+            onSubmit={() => { handleSend(inputValue) }}
+            actions={(_, info) => {
+              const { SendButton, LoadingButton, ClearButton } = info.components;
+              return (
+                <Space size="small">
+                  <Typography.Text type="secondary">
+                    <small>`Shift + Enter` to submit</small>
+                  </Typography.Text>
+                  <ClearButton />
+                  {isSending ? (
+                    <LoadingButton type="default" icon={<Spin size="small" />} disabled />
+                  ) : (
+                    <SendButton type="primary" icon={<OpenAIOutlined />} disabled={false} />
+                  )}
+                </Space>
+              );
+            }}
+          />
+        </div>
       </div>
     </div>
   );

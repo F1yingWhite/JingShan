@@ -5,14 +5,17 @@ import json
 import re
 import uuid
 import wave
-from typing import Any, List, Literal
+from typing import Any, Literal
 
 import requests
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, Request, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 from ...internal.bootstrap import config
 from ...internal.models.graph_database import execute_cypher
+from ...internal.models.relation_database.chat_history import Chat_History
+from ...internal.utils.encryption import decode_jwt
+from ..dependencies.user_auth import user_auth
 from . import ResponseModel
 
 
@@ -22,10 +25,11 @@ class Message(BaseModel):
 
 
 class ChatQueryParams(BaseModel):
-    messages: List[Message]
+    messages: list[Message]
 
 
 chat_router = APIRouter(prefix="/chat")
+auth_chat_router = APIRouter(prefix="/chat", dependencies=[Depends(user_auth)])
 
 SYSTEM_MESSAGE = {"role": "system", "content": "现在你是一个在径山寺修行的小和尚"}
 GRAPH_MESSAGE = {
@@ -68,7 +72,7 @@ GRAPH_MESSAGE = {
 }
 
 
-def get_spark_once(message: List[Message]):
+def get_spark_once(message: list[Message]):
     data = {
         "model": config.SPARKAI.DOMAIN,
         "messages": message,
@@ -93,7 +97,7 @@ def get_spark_once(message: List[Message]):
                 print(f"JSONDecodeError: {e} - Line: {line}")
 
 
-def get_query(messages: List[Message]):
+def get_query(messages: list[Message]):
     messages = [GRAPH_MESSAGE] + messages
     response = get_spark_once(messages)
     print(response)
@@ -108,51 +112,80 @@ def get_query(messages: List[Message]):
         return None
 
 
+async def process_websocket_data(websocket: WebSocket, data: dict):
+    messages = data["messages"]
+    print(messages)
+    jwt = data.get("jwt")
+    # 非登录状态下,不需要更新
+    history = None
+    if jwt is not None:
+        user_info = decode_jwt(jwt)
+        id = data.get("id")
+        if id is not None:
+            history = Chat_History.get_history_by_id(id)
+            if history is None or history.email != user_info["sub"]:
+                await websocket.close()
+        else:
+            history = Chat_History.generate_new_history(user_info["sub"])
+            history.update(history=None, title=messages[0]["content"])
+            content = "[CHAT_ID]:" + str(history.id)
+            await websocket.send_text(content)
+            await asyncio.sleep(0)  # 确保每条消息立即发送
+    messages_with_system = [SYSTEM_MESSAGE] + messages
+    cypher_data: list[dict[str, Any]] | None = get_query(messages)
+    cypher_data = json.dumps(cypher_data, ensure_ascii=False)
+    # 如果cypher_data的数据大于4k,那么就删除第一项,直到满足要求
+    while len(cypher_data) > 4096:
+        cypher_data = cypher_data[cypher_data.find("}") + 1 :]
+    messages_with_system.append(
+        {
+            "role": "user",
+            "content": "上面的问题从数据库中查询得到的结果如下,请你将他组织为一段话" + cypher_data,
+        }
+    )
+    await send_response(websocket, messages_with_system, history)
+
+
+async def send_response(websocket: WebSocket, messages: list, history: Chat_History):
+    data = {
+        "model": config.SPARKAI.DOMAIN,
+        "messages": messages,
+        "stream": True,
+        "presence_penalty": 1,
+        "max_tokens": 8192,
+    }
+    header = {"Authorization": "Bearer " + config.SPARKAI.PASSWORD}
+    response = requests.post(url=config.SPARKAI.URL, headers=header, json=data, stream=True)
+    response.encoding = "utf-8"
+    res = ""
+    for line in response.iter_lines(decode_unicode="utf-8"):
+        if line.startswith("data:"):
+            line = line[len("data:") :].strip()
+        if line:
+            if line == "[DONE]":
+                await websocket.close()
+                if history is not None:
+                    messages = messages[1:-1]
+                    messages.append({"role": "assistant", "content": res})
+                    history.update(messages, title=None)
+                return
+            try:
+                data = json.loads(line)
+                content = data["choices"][0]["delta"]["content"]
+                res += content
+                await websocket.send_text(content)
+                await asyncio.sleep(0)  # 确保每条消息立即发送
+            except json.JSONDecodeError as e:
+                print(f"JSONDecodeError: {e} - Line: {line}")
+
+
 @chat_router.websocket("/ws")
 async def chat_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
         while True:
             data = await websocket.receive_json()
-            messages = data["messages"]
-            messages_with_system = [SYSTEM_MESSAGE] + messages
-            cypher_data: List[dict[str, Any]] | None = get_query(messages)
-            if cypher_data is not None:
-                cypher_data = json.dumps(cypher_data, ensure_ascii=False)
-                # 如果cypher_data的数据大于4k,那么就删除第一项,直到满足要求
-                while len(cypher_data) > 4096:
-                    cypher_data = cypher_data[cypher_data.find("}") + 1 :]
-                messages_with_system.append(
-                    {
-                        "role": "user",
-                        "content": "上面的问题从数据库中查询得到的结果如下,请你将他组织为一段话" + cypher_data,
-                    }
-                )
-            data = {
-                "model": config.SPARKAI.DOMAIN,
-                "messages": messages_with_system,
-                "stream": True,
-                "presence_penalty": 1,
-                "max_tokens": 8192,
-            }
-            header = {"Authorization": "Bearer " + config.SPARKAI.PASSWORD}
-            response = requests.post(url=config.SPARKAI.URL, headers=header, json=data, stream=True)
-            response.encoding = "utf-8"
-            for line in response.iter_lines(decode_unicode="utf-8"):
-                if line.startswith("data:"):
-                    line = line[len("data:") :].strip()
-                if line:
-                    if line == "[DONE]":
-                        await websocket.close()
-                        return
-                    try:
-                        data = json.loads(line)
-                        content = data["choices"][0]["delta"]["content"]
-                        await websocket.send_text(content)
-                        await asyncio.sleep(0)  # 确保每条消息立即发送
-                    except json.JSONDecodeError as e:
-                        print(f"JSONDecodeError: {e} - Line: {line}")
-
+            await process_websocket_data(websocket, data)
     except WebSocketDisconnect:
         await websocket.close()
 
@@ -222,3 +255,50 @@ async def tts(request: TTSRequest):
     combined_wav_data = merge_wav_files(wav_data_list)
 
     return ResponseModel(data=combined_wav_data)
+
+
+@auth_chat_router.get("/history")
+async def get_chat_history(request: Request):
+    user_info = request.state.user_info
+    items = Chat_History.get_history_title_by_email(user_info["sub"])
+    return ResponseModel(data=items)
+
+
+@auth_chat_router.get("/history/length")
+async def get_chat_history_length(request: Request):
+    user_info = request.state.user_info
+    res = Chat_History.get_history_length_by_email(user_info["sub"])
+    return ResponseModel(data={"length": res})
+
+
+@auth_chat_router.get("/history/{id}")
+async def get_chat_history_by_id(id: int, request: Request):
+    res = Chat_History.get_history_by_id(id)
+    user_info = request.state.user_info
+    if res.email != user_info["sub"]:
+        raise HTTPException(status_code=403, detail="无权访问")
+    return ResponseModel(data=res.history)
+
+
+@auth_chat_router.delete("/history/{id}")
+async def delete_chat_history_by_id(id: int, request: Request):
+    user_info = request.state.user_info
+    res = Chat_History.get_history_by_id(id)
+    if res.email != user_info["sub"]:
+        raise HTTPException(status_code=403, detail="无权访问")
+    res.delete()
+    return ResponseModel(data={})
+
+
+class ChangeTitle(BaseModel):
+    title: str
+
+
+@auth_chat_router.put("/history/{id}")
+async def update_title_by_id(id: int, request: Request, title: ChangeTitle):
+    user_info = request.state.user_info
+    res = Chat_History.get_history_by_id(id)
+    if res.email != user_info["sub"]:
+        raise HTTPException(status_code=403, detail="无权访问")
+    res.update(history=None, title=title.title)
+    return ResponseModel(data={})

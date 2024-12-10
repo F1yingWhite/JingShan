@@ -1,5 +1,4 @@
-from sqlalchemy import func
-from sqlmodel import Field, Session, SQLModel, select
+from sqlmodel import Field, Session, SQLModel, func, select
 
 from . import engine
 
@@ -12,8 +11,16 @@ class Individual(SQLModel, table=True):
     def get_individuals_by_name(cls, name: str):
         # 使用模糊查询
         with Session(engine) as session:
-            stmt = select(cls).where(cls.name.like(f"%{name}%"))
-            individuals = session.exec(stmt).all()  # 在会话关闭之前将结果转换为列表
+            statement = select(cls).where(cls.name.like(f"%{name}%"))
+            individuals = session.exec(statement).all()  # 在会话关闭之前将结果转换为列表
+            return individuals
+
+    @classmethod
+    def get_random_individuals(cls, size: int):
+        size = min(size, 100)
+        with Session(engine) as session:
+            statement = select(cls).order_by(func.random()).limit(size)
+            individuals = session.exec(statement).all()
             return individuals
 
     @classmethod

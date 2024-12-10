@@ -24,7 +24,7 @@ async def get_colophon(
     page_size: int = Query(20, ge=1),
 ):
     # 从请求模型中提取其他参数
-    colphons, data = Colophon.get_colphon_with_num(
+    colphons, total = Colophon.get_colphon_with_num(
         page=page,
         page_size=page_size,
         chapter_id=params.chapter_id,
@@ -34,16 +34,22 @@ async def get_colophon(
         scripture_name=params.scripture_name,
         volume_id=params.volume_id,
     )
-    return ResponseModel(data={"data": colphons, "total": data})
+    return ResponseModel(data={"data": colphons, "total_num": total})
+
+
+@colophon_router.get("/scripture_name/random")
+async def get_scripture_name(size: int = 20):
+    results = Colophon.random_get_scripture_name(size)
+    for i, result in enumerate(results):
+        results[i] = {"name": result, "url": "/graph/scripture/" + result}
+    return ResponseModel(data={"data": results})
 
 
 @colophon_router.get("/detail")
 async def get_colophon_detail(id: int):
-    results = Colophon.get_colophon_by_id(colophon_id=id)
+    results = Colophon.get_by_id(colophon_id=id)
     if not results:
-        raise HTTPException(status_code=404, detail="Colophon not found")
-    results["time"] = results["time"]
-    results["place"] = results["place"]
+        raise HTTPException(status_code=400, detail="Colophon not found")
     return ResponseModel(data=results)
 
 
@@ -51,16 +57,14 @@ async def get_colophon_detail(id: int):
 async def search_colophon(keyword: str, page: int = 1, page_size: int = 20):
     if not keyword:
         raise HTTPException(status_code=400, detail="Keyword cannot be empty")
-    scripture_names, total_num = Colophon.search_colophon(keyword=keyword, page=page, page_size=page_size)
+    scripture_names, total_num = Colophon.search_by_content_with_num(content=keyword, page=page, page_size=page_size)
     colophons = {}
     colophons["content"] = []
     for name in scripture_names:
         colophons["content"].append(
             {
                 "name": name,
-                "related_data": Colophon.get_results_by_scripture_name_and_keyword(
-                    scripture_name=name, keyword=keyword
-                ),
+                "related_data": Colophon.get_by_scripture_name_and_content(scripture_name=name, content=keyword),
             }
         )
     return ResponseModel(data={"data": colophons, "total": total_num, "success": True})

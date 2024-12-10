@@ -29,3 +29,7 @@ export function searchPrefaceAndPostscript(keyword: string, page: number, page_s
 export function getPrefaceAndPostscriptById(id: number) {
     return get(`/preface_and_postscript/detail/?id=${id}`)
 }
+
+export function getPrefaceAndPostscriptListRandom(size: number) {
+    return get(`/preface_and_postscript/title/random/?size=${size}`)
+}

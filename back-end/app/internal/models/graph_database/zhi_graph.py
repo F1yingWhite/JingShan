@@ -94,4 +94,7 @@ def person_get_node_by_name(name: str):
         return result.data()
 
 
-# -----------------------------------
+def get_random_person():
+    with neo4j_driver.session() as session:
+        result = session.run("MATCH (n:人物) WHERE n.身份 IS NOT NULL RETURN n.姓名 ORDER BY rand() LIMIT 1")
+        return result.data()

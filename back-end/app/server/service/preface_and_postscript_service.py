@@ -53,3 +53,11 @@ async def search_preface_and_postscript(keyword: str, page: int, page_size: int)
 async def get_preface_and_postscript_by_id(id: int):
     preface_and_postscript = Preface_And_Postscript.get_by_id(id)
     return ResponseModel(data=preface_and_postscript)
+
+
+@preface_and_postscript_router.get("/title/random")
+async def get_preface_and_postscript_title(size: int = 20):
+    results = Preface_And_Postscript.random_get_title(size)
+    for i, result in enumerate(results):
+        results[i] = {"name": result[0], "url": "/preface_and_postscript/" + str(result[1])}
+    return ResponseModel(data={"data": results})

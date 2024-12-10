@@ -5,11 +5,11 @@ export type Login = {
   password: string
 }
 
-export type register = Login & {
+export type Register = Login & {
   username: string,
 }
 
-export type User = register & {
+export type User = Register & {
   id: number,
   avatar?: string,
 }
@@ -21,17 +21,21 @@ export type ChangePassword = {
 }
 
 export function login(params: Login) {
-  return post(`/login/`, params);
+  return post(`/user/login/`, params);
 }
 
-export function register(params: register) {
-  return post(`/register/`, params);
+export function register(params: Register) {
+  return post(`/user/register/`, params);
 }
 
 export function change_password(params: ChangePassword) {
-  return put(`/change_password/`, params);
+  return put(`/user/change_password/`, params);
 }
 
 export function change_avatar(params: { avatar: string }) {
-  return put(`/change_avatar/`, params);
+  return put(`/user/change_avatar/`, params);
+}
+
+export function fetch_user() {
+  return get(`/user/info/`);
 }
