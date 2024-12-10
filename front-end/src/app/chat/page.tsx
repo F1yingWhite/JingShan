@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Live2d from '@/components/live2d'
 import { Avatar, Button, Divider, GetProp, message, Space, Spin, Typography } from 'antd';
 import { AudioOutlined, DeleteOutlined, EditOutlined, FireOutlined, LoadingOutlined, OpenAIOutlined, PlusOutlined, RedoOutlined, } from '@ant-design/icons';
-import { getChatDetail, getHistory, getHistoryLength, Message, postTTS } from '@/lib/chat';
+import { deleteChat, getChatDetail, getHistory, getHistoryLength, Message, postTTS } from '@/lib/chat';
 import { wss_host } from '@/lib/axios';
 import ReactMarkdown from 'react-markdown';
 import { Bubble, Conversations, ConversationsProps, Prompts, Sender, Welcome } from '@ant-design/x';
@@ -197,15 +197,16 @@ export default function Page() {
   const menuConfig: ConversationsProps['menu'] = (conversation) => ({
     items: [
       {
-        label: '修改名称',
-        key: 'Change',
-        icon: <EditOutlined />,
-      },
-      {
         label: '删除',
         key: 'Delete',
         icon: <DeleteOutlined />,
         danger: true,
+        onClick: (menuInfo) => {
+          deleteChat(conversation.key).then(() => {
+            setConversationList(conversationList.filter((item) => item.key !== conversation.key));
+            setChatLength(chatLength - 1);
+          });
+        },
       },
     ],
     onClick: (menuInfo) => {
@@ -278,7 +279,7 @@ export default function Page() {
         </InfiniteScroll>
       </div>
 
-      <div className='w-4/5 h-full flex flex-col'>
+      <div className='w-full h-full flex flex-col'>
         <div className='flex-1 overflow-y-auto p-4 space-y-4 h-full'>
           {
             chatHistory.length !== 0 ? (

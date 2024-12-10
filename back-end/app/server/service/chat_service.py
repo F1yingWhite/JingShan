@@ -8,7 +8,7 @@ import wave
 from typing import Any, Literal
 
 import requests
-from fastapi import APIRouter, Depends, Request, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, Request, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 from ...internal.bootstrap import config
@@ -272,6 +272,33 @@ async def get_chat_history_length(request: Request):
 
 
 @auth_chat_router.get("/history/{id}")
-async def get_chat_history_by_id(id: int):
+async def get_chat_history_by_id(id: int, request: Request):
     res = Chat_History.get_history_by_id(id)
+    user_info = request.state.user_info
+    if res.email != user_info["sub"]:
+        raise HTTPException(status_code=403, detail="无权访问")
     return ResponseModel(data=res.history)
+
+
+@auth_chat_router.delete("/history/{id}")
+async def delete_chat_history_by_id(id: int, request: Request):
+    user_info = request.state.user_info
+    res = Chat_History.get_history_by_id(id)
+    if res.email != user_info["sub"]:
+        raise HTTPException(status_code=403, detail="无权访问")
+    res.delete()
+    return ResponseModel(data={})
+
+
+class ChangeTitle(BaseModel):
+    title: str
+
+
+@auth_chat_router.put("/history/{id}")
+async def update_title_by_id(id: int, request: Request, title: ChangeTitle):
+    user_info = request.state.user_info
+    res = Chat_History.get_history_by_id(id)
+    if res.email != user_info["sub"]:
+        raise HTTPException(status_code=403, detail="无权访问")
+    res.update(history=None, title=title.title)
+    return ResponseModel(data={})

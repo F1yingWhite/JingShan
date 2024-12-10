@@ -61,3 +61,9 @@ class Chat_History(SQLModel, table=True):
             session.commit()
             session.refresh(self)
             return self
+
+    def delete(self):
+        with Session(engine) as session:
+            session.delete(self)
+            session.commit()
+            return self

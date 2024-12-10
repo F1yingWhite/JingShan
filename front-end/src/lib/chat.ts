@@ -1,5 +1,5 @@
 import { number } from "echarts";
-import { get, post } from "./axios";
+import { del, get, post, put } from "./axios";
 export type Message = {
   role: "user" | "assistant";
   content: string;
@@ -25,4 +25,12 @@ export function getHistory() {
 
 export function getChatDetail(id: string) {
   return get("/chat/history/" + id)
+}
+
+export function deleteChat(id: string) {
+  return del("/chat/history/" + id, {})
+}
+
+export function changeTitle(id: string, title: string) {
+  return put("/chat/history/" + id, { "title": title })
 }
