@@ -36,24 +36,8 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <div>
-      <div className='pl-8 pt-8'>
-        <Breadcrumb
-          separator=">>"
-          items={[
-            {
-              title: <a href='/'>主页</a>,
-            },
-            {
-              title: <a href="">径山藏</a>,
-            },
-            {
-              title: <a href="/overview/colophon">牌记</a>,
-            }
-          ]}
-        />
-      </div>
       <div
-        className="flex h-full flex-wrap overflow-auto"
+        className="flex h-full flex-wrap overflow-auto bg-white"
       >
         {
           +slug > 1 &&
@@ -72,7 +56,23 @@ export default function Page({ params }: { params: { slug: string } }) {
             style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
           />
         }
-        <div className="w-full md:w-2/3 p-8 bg-white overflow-y-auto">
+        <div className="w-full md:w-2/3 p-8  overflow-y-auto">
+          <div className='pb-8'>
+            <Breadcrumb
+              separator=">>"
+              items={[
+                {
+                  title: <a href='/'>主页</a>,
+                },
+                {
+                  title: <a href="">径山藏</a>,
+                },
+                {
+                  title: <a href="/overview/colophon">牌记</a>,
+                }
+              ]}
+            />
+          </div>
           {colophon && (
             <div>
               <div className="flex items-center gap-4">
@@ -83,30 +83,23 @@ export default function Page({ params }: { params: { slug: string } }) {
               </div>
               <p className="mb-6 mt-6 leading-relaxed">{colophon.content}</p>
               <div className="grid grid-cols-2 gap-8">
-                <div>
-                  <Tag text="经名" color="#DAA520" opacity={0.2} textColor='black' /> {colophon.scripture_name}
-                </div>
-                <div className="col-content">
-                  <Tag text="卷数" color="#DAA520" opacity={0.2} textColor='black' />  {colophon.volume_id}
-                </div>
-                <div>
-                  <Tag text="册数" color="#DAA520" opacity={0.2} textColor='black' />   {colophon.chapter_id}
-                </div>
-                <div>
-                  <Tag text="千字文" color="#DAA520" opacity={0.2} textColor='black' />   {colophon.qianziwen}
-                </div>
-                <div>
-                  <Tag text="刊刻时间" color="#DAA520" opacity={0.2} textColor='black' />  {colophon.time || "未知"}
-                </div>
-                <div>
-                  <Tag text="刊刻地点" color="#DAA520" opacity={0.2} textColor='black' />  {colophon.place || "未知"}
-                </div>
-                <div>
-                  <Tag text="计字" color="#DAA520" opacity={0.2} textColor='black' />  {colophon.words_num || "未知"}
-                </div>
-                <div>
-                  <Tag text="该银" color="#DAA520" opacity={0.2} textColor='black' />   {colophon.money || "未知"}
-                </div>
+                {[
+                  { label: "经名", value: colophon.scripture_name },
+                  { label: "卷数", value: colophon.volume_id },
+                  { label: "册数", value: colophon.chapter_id },
+                  { label: "千字文", value: colophon.qianziwen },
+                  { label: "刊刻时间", value: colophon.time },
+                  { label: "刊刻地点", value: colophon.place },
+                  { label: "计字", value: colophon.words_num },
+                  { label: "该银", value: colophon.money },
+                ].map((item, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <Tag text={item.label} color="#DAA520" opacity={0.2} textColor='black' />
+                    <div className="text-right">
+                      {item.value || "未知"}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )
