@@ -110,12 +110,12 @@ const NavItem: React.FC<NavItemProps> = ({ href, text, items }) => {
     <div className={`${hoverColor} ${bgColor} h-full flex justify-center items-center`}>
       {items ? (
         <Dropdown menu={{ items }} trigger={['hover']} placement="bottomLeft"
-          overlayStyle={{ width: '20vw' }}
+          overlayStyle={{ width: '20vw', maxWidth: "200px" }}
         // TODO:修改下拉菜单的样式
         >
           <Link
             href={href}
-            className={`sm:text-base md:text-lg lg:text-xl pt-2 pb-2 ${textColor} w-[10vw] flex justify-center`}
+            className={`sm:text-base md:text-lg lg:text-xl pt-2 pb-2 ${textColor} w-[10vw] max-w-[100px] flex justify-center `}
           >
             <span className="text-center">文库</span>
           </Link>
@@ -123,7 +123,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, text, items }) => {
       ) : (
         <Link
           href={href}
-          className={`sm:text-base md:text-lg lg:text-xl pt-2 pb-2 ${textColor} w-[10vw] flex justify-center`}
+          className={`sm:text-base md:text-lg lg:text-xl pt-2 pb-2 ${textColor} w-[10vw] max-w-[100px] flex justify-center`}
         >
           <span className="text-center">{text}</span>
         </Link>
@@ -209,7 +209,9 @@ export default function NavBar() {
           <div className='flex items-center justify-between'>
             <div className='flex items-center'>
               <UserAvatar user={user} />
-              {user ? user.username : null}
+              <div className='ml-4'>
+                {user ? user.username : null}
+              </div>
             </div>
             <CloseOutlined onClick={onClose} />
           </div>
