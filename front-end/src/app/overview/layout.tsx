@@ -10,7 +10,7 @@ const path_map = {
   "colophon": "径山藏/牌记",
   "individual": "径山藏/人物",
   "graph": "径山藏",
-  "story":"径山藏/故事",
+  "story": "径山藏/故事",
 };
 
 const getBreadcrumbs = (pathname) => {
@@ -34,12 +34,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const breadcrumbs = getBreadcrumbs(pathname);
   return (
-    <Layout className="h-full">
-      <Content className="p-6 bg-white overflow-auto">
+    <div className="h-full">
+      <div className="p-6 max-w-[1200px] mx-auto w-full">
         <div className='hidden md:block'>
           <ChatButton />
         </div>
-        <div className='mb-4'>
+        <div className='mb-4 w-full'>
           <Breadcrumb separator={<div className='text-lg'>&gt;&gt;</div>}>
             {breadcrumbs.map(({ path, breadcrumbName }, index) => (
               <Breadcrumb.Item key={index} className='text-lg'>
@@ -47,9 +47,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Breadcrumb.Item>
             ))}
           </Breadcrumb>
+          {children}
         </div>
-        {children}
-      </Content>
-    </Layout>
+      </div>
+    </div>
   );
 }

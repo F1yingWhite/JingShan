@@ -35,10 +35,10 @@ export default function Page({ params }: { params: { slug: string } }) {
 
 
   return (
-    <div>
-      <div
-        className="flex h-full flex-wrap overflow-auto bg-white"
-      >
+    <div
+      className="flex h-full flex-wrap overflow-auto  max-w-[1200px] mx-auto justify-center"
+    >
+      <div className="w-full flex flex-row">
         {
           +slug > 1 &&
           <Button
@@ -56,19 +56,19 @@ export default function Page({ params }: { params: { slug: string } }) {
             style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
           />
         }
-        <div className="w-full md:w-2/3 p-8  overflow-y-auto">
+        <div className="w-full  md:w-2/3 p-8  overflow-y-auto">
           <div className='pb-8'>
             <Breadcrumb
-              separator=">>"
+              separator={<div className='text-lg'>&gt;&gt;</div>}
               items={[
                 {
-                  title: <a href='/'>主页</a>,
+                  title: <a href='/' className='text-lg'>主页</a>,
                 },
                 {
-                  title: <a href="">径山藏</a>,
+                  title: <a href="" className='text-lg'>径山藏</a>,
                 },
                 {
-                  title: <a href="/overview/colophon">牌记</a>,
+                  title: <a href="/overview/colophon" className='text-lg'>牌记</a>,
                 }
               ]}
             />
@@ -114,41 +114,41 @@ export default function Page({ params }: { params: { slug: string } }) {
             </div>
           )}
         </div>
-        <div className='p-8'>
-          <div className='pb-8'>
-            <Tag text="相关人物" color="#DAA520" opacity={0.2} textColor='black' />
-          </div>
-          <ProTable
-            rowKey="title"
-            dataSource={colophon?.related_individuals}
-            search={false}
-            options={false}
-            columns={[
-              {
-                title: '人物姓名',
-                dataIndex: 'name',
-                render: (text, record) => (
-                  <Link className="text-[#c19d50]" href={`/individual/${record.id}`}>{record.name}</Link>
-                ),
-              },
-              {
-                title: '参与活动',
-                dataIndex: 'type',
-              },
-              {
-                title: '活动地点',
-                dataIndex: 'place',
-                ellipsis: true,
-              },
-            ]}
-            pagination={{
-              showSizeChanger: true,
-              pageSizeOptions: [5, 10, 20, 50],
-              defaultPageSize: 5,
-            }}
-          />
-        </div>
       </div>
-    </div >
+      <div className='p-8'>
+        <div className='pb-8'>
+          <Tag text="相关人物" color="#DAA520" opacity={0.2} textColor='black' />
+        </div>
+        <ProTable
+          rowKey="title"
+          dataSource={colophon?.related_individuals}
+          search={false}
+          options={false}
+          columns={[
+            {
+              title: '人物姓名',
+              dataIndex: 'name',
+              render: (text, record) => (
+                <Link className="text-[#c19d50]" href={`/individual/${record.id}`}>{record.name}</Link>
+              ),
+            },
+            {
+              title: '参与活动',
+              dataIndex: 'type',
+            },
+            {
+              title: '活动地点',
+              dataIndex: 'place',
+              ellipsis: true,
+            },
+          ]}
+          pagination={{
+            showSizeChanger: true,
+            pageSizeOptions: [5, 10, 20, 50],
+            defaultPageSize: 5,
+          }}
+        />
+      </div>
+    </div>
   );
 }
