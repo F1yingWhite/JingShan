@@ -1,12 +1,15 @@
 'use client'
+//TODO:后续拆分侧边栏组件减轻代码复杂度
 import React, { useState, useEffect, useRef } from 'react'
 import Live2d from '@/components/live2d'
-import { Avatar, GetProp, Space, Spin, Typography } from 'antd';
-import { AudioOutlined, FireOutlined, LoadingOutlined, OpenAIOutlined, } from '@ant-design/icons';
-import { Message, postTTS } from '@/lib/chat';
+import { Avatar, Button, Divider, GetProp, message, Space, Spin, Typography } from 'antd';
+import { AudioOutlined, DeleteOutlined, EditOutlined, FireOutlined, LoadingOutlined, OpenAIOutlined, PlusOutlined, RedoOutlined, } from '@ant-design/icons';
+import { getChatDetail, getHistory, getHistoryLength, Message, postTTS } from '@/lib/chat';
 import { wss_host } from '@/lib/axios';
 import ReactMarkdown from 'react-markdown';
-import { Bubble, Prompts, Sender, Welcome } from '@ant-design/x';
+import { Bubble, Conversations, ConversationsProps, Prompts, Sender, Welcome } from '@ant-design/x';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { Conversation } from '@ant-design/x/es/conversations';
 
 const renderTitle = (icon: React.ReactElement, title: string) => (
   <Space align="start">
@@ -38,17 +41,24 @@ const placeholderPromptsItems: GetProp<typeof Prompts, 'items'> = [
   },
 ];
 
+
+
 export default function Page() {
+  const PAGE_SIZE = 30;
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [conversationList, setConversationList] = useState<Conversation[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isTTSPlaying, setTTSPlaying] = useState(false);
   const [ttsLoading, setTTSLoading] = useState(false);
   const [wavFile, setWavFile] = useState<string>();
   const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null);
   const [clickIndex, setClickIndex] = useState<number | null>(null);
-  const [cur_chat_id, setChatID] = useState<number | null>(null);
+  const [curChatId, setChatID] = useState<string>();
+  const [chatLength, setChatLength] = useState<number | null>(null);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onPromptsItemClick = (info) => {
     handleSend(info.data.description);
@@ -67,10 +77,10 @@ export default function Page() {
 
       websocket.onopen = () => {
         const jwt = localStorage.getItem('jwt');
-        const chat_id = cur_chat_id;
+        const chat_id = curChatId;
         if (jwt) {
           if (chat_id) {
-            websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1), jwt, chat_id }));
+            websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1), jwt: jwt, id: chat_id }));
           }
           else {
             websocket.send(JSON.stringify({ messages: updatedChatHistory.slice(0, -1), jwt }));
@@ -88,9 +98,10 @@ export default function Page() {
           setIsSending(false);
         }
         else if (data.startsWith("[CHAT_ID]:")) {
-          const chat_id = parseInt(data.substring(10));
-          console.log("chat_id:", chat_id);
+          const chat_id = data.substring(10);
           setChatID(chat_id);
+          setChatLength(chatLength + 1);
+          setConversationList([{ key: chat_id, label: inputValues }, ...conversationList]);
         }
         else {
           setChatHistory((prevHistory) => {
@@ -144,6 +155,15 @@ export default function Page() {
   }, [chatHistory]);
 
   useEffect(() => {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      getHistoryLength().then((res) => {
+        setChatLength(res.length);
+      })
+      getHistory(1, PAGE_SIZE).then((res) => {
+        setConversationList(res);
+      });
+    }
     return () => {
       setTTSPlaying(false);
     };
@@ -175,11 +195,85 @@ export default function Page() {
   );
 
 
+  const menuConfig: ConversationsProps['menu'] = (conversation) => ({
+    items: [
+      {
+        label: '修改名称',
+        key: 'Change',
+        icon: <EditOutlined />,
+      },
+      {
+        label: '删除',
+        key: 'Delete',
+        icon: <DeleteOutlined />,
+        danger: true,
+      },
+    ],
+    onClick: (menuInfo) => {
+      console.log(`Click ${conversation.key} - ${menuInfo.key}`);
+    },
+  });
+
+  const handleNewConversion = () => {
+    if (isSending) {
+      messageApi.error('请等待当前消息发送完成');
+      return
+    }
+    setChatHistory([]);
+    setChatID(null);
+  }
+
+  const loadMoreData = () => {
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(true);
+    const page = conversationList.length / PAGE_SIZE + 1;
+    getHistory(page, PAGE_SIZE).then((res) => {
+      setConversationList([...conversationList, ...res]);
+      setIsLoading(false);
+    });
+  }
+
+  const getConversationDetail = (id: string) => {
+    getChatDetail(id).then((res) => {
+      setChatHistory(res);
+    });
+    setChatID(id);
+  }
+
   return (
     <div className='w-full h-full flex flex-row'>
-      {/* TODO:聊天历史管理 */}
-      <div className='h-full w-1/5 max-w-[200px] bg-cyan-200'>
-        我是聊天历史...
+      {contextHolder}
+      <div className='h-full w-1/4 max-w-[400px] bg-gray-100'>
+        <Button
+          icon={<PlusOutlined />}
+          onClick={handleNewConversion}
+          style={
+            {
+              background: "#1677ff0f",
+              border: "1px solid #1677ff34",
+              width: "calc(100% - 24px)",
+              margin: "24px 12px 24px 12px",
+            }
+          }
+        >
+          新的会话
+        </Button>
+        <InfiniteScroll
+          dataLength={conversationList.length}
+          next={loadMoreData}
+          hasMore={conversationList.length < chatLength}
+          loader={
+            <div style={{ textAlign: 'center' }}>
+              <Spin indicator={<RedoOutlined spin />} size="small" />
+            </div>
+          }
+          endMessage={<Divider plain>没有更多会话历史了 🤐</Divider>}
+          scrollableTarget="scrollableDiv"
+        >
+          <Conversations menu={menuConfig} items={conversationList} onActiveChange={getConversationDetail} activeKey={curChatId} />
+        </InfiniteScroll>
       </div>
 
       <div className='w-4/5 h-full flex flex-col'>
@@ -262,7 +356,7 @@ export default function Page() {
         }
         <div className="flex justify-center items-end pb-4">
           <Sender
-            style={{ width: '75vw' }}
+            style={{ width: '80%' }}
             value={inputValue}
             submitType="shiftEnter"
             onChange={setInputValue}

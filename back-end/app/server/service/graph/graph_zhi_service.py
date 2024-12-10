@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from ....internal.models.graph_database.zhi_graph import (
+    get_random_person,
     person_get_all_node_and_relation,
     person_get_identity_set,
     person_get_list,
@@ -179,3 +180,9 @@ async def get_identity():
     for result in results:
         res_dict.append(result["n.身份"])
     return ResponseModel(data=res_dict)
+
+
+@zhi_graph_router.get("/random")
+async def get_random():
+    result = get_random_person()
+    return ResponseModel(data=result)

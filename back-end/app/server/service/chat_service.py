@@ -114,6 +114,7 @@ def get_query(messages: list[Message]):
 
 async def process_websocket_data(websocket: WebSocket, data: dict):
     messages = data["messages"]
+    print(messages)
     jwt = data.get("jwt")
     # 非登录状态下,不需要更新
     history = None
@@ -126,29 +127,29 @@ async def process_websocket_data(websocket: WebSocket, data: dict):
                 await websocket.close()
         else:
             history = Chat_History.generate_new_history(user_info["sub"])
+            history.update(history=None, title=messages[0]["content"])
             content = "[CHAT_ID]:" + str(history.id)
             await websocket.send_text(content)
             await asyncio.sleep(0)  # 确保每条消息立即发送
     messages_with_system = [SYSTEM_MESSAGE] + messages
     cypher_data: list[dict[str, Any]] | None = get_query(messages)
-    if cypher_data is not None:
-        cypher_data = json.dumps(cypher_data, ensure_ascii=False)
-        # 如果cypher_data的数据大于4k,那么就删除第一项,直到满足要求
-        while len(cypher_data) > 4096:
-            cypher_data = cypher_data[cypher_data.find("}") + 1 :]
-        messages_with_system.append(
-            {
-                "role": "user",
-                "content": "上面的问题从数据库中查询得到的结果如下,请你将他组织为一段话" + cypher_data,
-            }
-        )
+    cypher_data = json.dumps(cypher_data, ensure_ascii=False)
+    # 如果cypher_data的数据大于4k,那么就删除第一项,直到满足要求
+    while len(cypher_data) > 4096:
+        cypher_data = cypher_data[cypher_data.find("}") + 1 :]
+    messages_with_system.append(
+        {
+            "role": "user",
+            "content": "上面的问题从数据库中查询得到的结果如下,请你将他组织为一段话" + cypher_data,
+        }
+    )
     await send_response(websocket, messages_with_system, history)
 
 
-async def send_response(websocket: WebSocket, messages_with_system: list, history: Chat_History):
+async def send_response(websocket: WebSocket, messages: list, history: Chat_History):
     data = {
         "model": config.SPARKAI.DOMAIN,
-        "messages": messages_with_system,
+        "messages": messages,
         "stream": True,
         "presence_penalty": 1,
         "max_tokens": 8192,
@@ -164,9 +165,9 @@ async def send_response(websocket: WebSocket, messages_with_system: list, histor
             if line == "[DONE]":
                 await websocket.close()
                 if history is not None:
-                    messages_with_system = messages_with_system[1:-1]
-                    messages_with_system.append({"role": "assistant", "content": res})
-                    history.update(messages_with_system)
+                    messages = messages[1:-1]
+                    messages.append({"role": "assistant", "content": res})
+                    history.update(messages, title=None)
                 return
             try:
                 data = json.loads(line)
@@ -259,11 +260,18 @@ async def tts(request: TTSRequest):
 @auth_chat_router.get("/history")
 async def get_chat_history(request: Request, page: int = 1, page_size: int = 20):
     user_info = request.state.user_info
-    res = Chat_History.get_history_by_email(user_info["sub"], page, page_size)
-    return ResponseModel(data=res)
+    items = Chat_History.get_history_title_by_email(user_info["sub"], page, page_size)
+    return ResponseModel(data=items)
+
+
+@auth_chat_router.get("/history/length")
+async def get_chat_history_length(request: Request):
+    user_info = request.state.user_info
+    res = Chat_History.get_history_length_by_email(user_info["sub"])
+    return ResponseModel(data={"length": res})
 
 
 @auth_chat_router.get("/history/{id}")
 async def get_chat_history_by_id(id: int):
     res = Chat_History.get_history_by_id(id)
-    return ResponseModel(data=res)
+    return ResponseModel(data=res.history)

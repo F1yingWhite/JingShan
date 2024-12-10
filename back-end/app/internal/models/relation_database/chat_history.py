@@ -16,7 +16,14 @@ class Chat_History(SQLModel, table=True):
     title: str | None = Field(default=None, max_length=255)
 
     @classmethod
-    def get_history_by_email(cls, email: EmailStr, page: int, page_size: int):
+    def get_history_length_by_email(cls, email: EmailStr):
+        with Session(engine) as session:
+            statement = select(cls).where(cls.email == email)
+            result = session.exec(statement).all()
+            return len(result)
+
+    @classmethod
+    def get_history_title_by_email(cls, email: EmailStr, page: int, page_size: int):
         with Session(engine) as session:
             page_size = min(page_size, 100)
             offset = (page - 1) * page_size
@@ -29,7 +36,11 @@ class Chat_History(SQLModel, table=True):
                 .offset(offset)
             )
             result = session.exec(statement)
-            return result.all()
+            results = result.all()
+            res = []
+            for item in results:
+                res.append({"key": str(item[0]), "label": item[1]})
+            return res
 
     @classmethod
     def get_history_by_id(cls, id: int):
@@ -48,9 +59,12 @@ class Chat_History(SQLModel, table=True):
             session.refresh(new_history)
             return new_history
 
-    def update(self, history: str):
+    def update(self, history: str | None, title: str | None):
         with Session(engine) as session:
-            self.history = history
+            if history is not None:
+                self.history = history
+            if title is not None:
+                self.title = title
             session.add(self)
             session.commit()
             session.refresh(self)
