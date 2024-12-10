@@ -45,7 +45,7 @@ export default function RootLayout({
               },
             }}
           >
-            <div className="overflow-auto h-[100vh]">
+            <div className="overflow-y-auto h-[100vh] overflow-x-hidden">
               <div className="top-0 left-0 w-full z-10">
                 <NavBar />
               </div>

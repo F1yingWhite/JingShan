@@ -36,7 +36,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <div
-      className="flex h-full flex-wrap overflow-auto  max-w-[1200px] mx-auto justify-center"
+      className="flex h-full flex-wrap max-w-[1200px] mx-auto justify-center"
     >
       <div className="w-full flex flex-row">
         {
@@ -56,7 +56,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
           />
         }
-        <div className="w-full  md:w-2/3 p-8  overflow-y-auto">
+        <div className="w-full  md:w-2/3 p-8">
           <div className='pb-8'>
             <Breadcrumb
               separator={<div className='text-lg'>&gt;&gt;</div>}

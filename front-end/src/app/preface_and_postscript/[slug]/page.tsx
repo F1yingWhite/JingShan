@@ -46,7 +46,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
         />
       )}
-      <div className="w-full md:w-3/5 p-8  overflow-y-auto">
+      <div className="w-full md:w-3/5 p-8">
         <div className='pb-8'>
           <Breadcrumb
             separator={<div className='text-lg'>&gt;&gt;</div>}
@@ -103,7 +103,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           </div>
         )}
       </div>
-      <div className="w-full md:w-2/5 flex items-center justify-center overflow-auto" ref={containerRef}>
+      <div className="w-full md:w-2/5 flex items-center justify-center" ref={containerRef}>
         {pdfPage ? (
           <Image src={pdfPage} alt={`Page ${slug}`} style={{ maxHeight: '100%', maxWidth: '100%' }} />
         ) : (

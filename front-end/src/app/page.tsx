@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Layout, Input, notification, Carousel, Image, Space, List } from 'antd';
-import { Footer, Content } from 'antd/es/layout/layout';
+import { Input, notification, Image, Space, List } from 'antd';
+import { Content } from 'antd/es/layout/layout';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getScriptureListRandom } from '@/lib/colophon';
@@ -103,7 +103,6 @@ export default function Page() {
 
     getScriptureListRandom(15).then((res) => {
       setColophon(res.data);
-      console.log(res.data[0].name)
       getByScriptureName(res.data[0].name, 0, 10).then((res) => {
         if (res.graph) {
           setGraphScripture(res.graph);
@@ -213,10 +212,12 @@ export default function Page() {
             <div
               className={`w-full flex ${isSmallScreen ? 'flex-col items-center' : 'justify-center'} gap-4`}
             >
-              <div className={`h-[700px] ${isSmallScreen ? 'w-[90%]' : 'w-[45%]'} bg-gray-300 rounded-lg shadow-lg`}>
+              <div className={`h-[700px] ${isSmallScreen ? 'w-[90%]' : 'w-[45%]'} bg-gray-300 rounded-lg shadow-lg flex flex-col items-center`}>
+                {colophon.length != 0 && <div className="w-full text-center mt-2">{colophon[0].name}</div>}
                 <RelationChart graph={graph_scripture} layout='none' emphasis={true} zoom={0.8} />
               </div>
-              <div className={`h-[700px] ${isSmallScreen ? 'w-[90%]' : 'w-[45%]'} bg-gray-300 rounded-lg shadow-lg`}>
+              <div className={`h-[700px] ${isSmallScreen ? 'w-[90%]' : 'w-[45%]'} bg-gray-300 rounded-lg shadow-lg flex flex-col items-center`}>
+                {individual.length != 0 && <div className="w-full text-center mt-2">{individual[0].name}</div>}
                 <RelationChart graph={graph_individual} layout='none' emphasis={true} zoom={0.8} />
               </div>
             </div>

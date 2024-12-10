@@ -49,7 +49,7 @@ const items: MenuProps['items'] = [
     key: '径山藏',
     type: 'group',
     label: (
-      <Link href={'/overview'}>
+      <Link href={'/overview'} className='sm:text-sm md:text-base lg:text-lg text-black'>
         径山藏
       </Link>
     ),
@@ -57,7 +57,7 @@ const items: MenuProps['items'] = [
       {
         key: '牌记',
         label: (
-          <Link href={'/overview/colophon'}>
+          <Link href={'/overview/colophon'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
             牌记
           </Link>
         ),
@@ -65,7 +65,7 @@ const items: MenuProps['items'] = [
       {
         key: '序跋',
         label: (
-          <Link href={'/overview/preface_and_postscript'}>
+          <Link href={'/overview/preface_and_postscript'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
             序跋
           </Link>
         ),
@@ -73,7 +73,7 @@ const items: MenuProps['items'] = [
       {
         key: '人物',
         label: (
-          <Link href={'/overview/individual'}>
+          <Link href={'/overview/individual'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
             人物
           </Link>
         )
@@ -81,7 +81,7 @@ const items: MenuProps['items'] = [
       {
         key: '故事',
         label: (
-          <Link href={'/overview/story'}>
+          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
             故事
           </Link>
         ),
@@ -91,7 +91,7 @@ const items: MenuProps['items'] = [
   {
     key: '径山志',
     label: (
-      <Link href={'/overview/graph'}>
+      <Link href={'/overview/graph'} className='sm:text-sm md:text-base lg:text-lg'>
         径山志
       </Link>
     ),
