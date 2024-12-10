@@ -258,9 +258,9 @@ async def tts(request: TTSRequest):
 
 
 @auth_chat_router.get("/history")
-async def get_chat_history(request: Request, page: int = 1, page_size: int = 20):
+async def get_chat_history(request: Request):
     user_info = request.state.user_info
-    items = Chat_History.get_history_title_by_email(user_info["sub"], page, page_size)
+    items = Chat_History.get_history_title_by_email(user_info["sub"])
     return ResponseModel(data=items)
 
 

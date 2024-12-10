@@ -23,18 +23,10 @@ class Chat_History(SQLModel, table=True):
             return len(result)
 
     @classmethod
-    def get_history_title_by_email(cls, email: EmailStr, page: int, page_size: int):
+    def get_history_title_by_email(cls, email: EmailStr):
         with Session(engine) as session:
-            page_size = min(page_size, 100)
-            offset = (page - 1) * page_size
             # 根据时间戳降序排序
-            statement = (
-                select(cls.id, cls.title)
-                .where(cls.email == email)
-                .order_by(cls.timestamp.desc())
-                .limit(page_size)
-                .offset(offset)
-            )
+            statement = select(cls.id, cls.title).where(cls.email == email).order_by(cls.timestamp.desc())
             result = session.exec(statement)
             results = result.all()
             res = []

@@ -44,7 +44,6 @@ const placeholderPromptsItems: GetProp<typeof Prompts, 'items'> = [
 
 
 export default function Page() {
-  const PAGE_SIZE = 30;
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [conversationList, setConversationList] = useState<Conversation[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -160,7 +159,7 @@ export default function Page() {
       getHistoryLength().then((res) => {
         setChatLength(res.length);
       })
-      getHistory(1, PAGE_SIZE).then((res) => {
+      getHistory().then((res) => {
         setConversationList(res);
       });
     }
@@ -224,15 +223,18 @@ export default function Page() {
   }
 
   const loadMoreData = () => {
-    if (isLoading) {
-      return;
-    }
-    setIsLoading(true);
-    const page = conversationList.length / PAGE_SIZE + 1;
-    getHistory(page, PAGE_SIZE).then((res) => {
-      setConversationList([...conversationList, ...res]);
-      setIsLoading(false);
-    });
+    console.log("正在加载")
+    // if (isLoading) {
+    //   return;
+    // }
+    // setIsLoading(true);
+    // const page = conversationList.length / PAGE_SIZE + 1;
+    // getHistory(page, PAGE_SIZE).then((res) => {
+    //   setConversationList([...conversationList, ...res]);
+    //   setIsLoading(false);
+    // }).catch(() => {
+    //   setIsLoading(false);
+    // });
   }
 
   const getConversationDetail = (id: string) => {

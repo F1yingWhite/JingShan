@@ -19,8 +19,8 @@ export function getHistoryLength() {
   return get("/chat/history/length")
 }
 
-export function getHistory(page: number, page_size: number) {
-  return get("/chat/history?page=" + page + "&page_size=" + page_size)
+export function getHistory() {
+  return get("/chat/history")
 }
 
 export function getChatDetail(id: string) {
