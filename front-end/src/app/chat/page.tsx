@@ -245,7 +245,7 @@ export default function Page() {
   return (
     <div className='w-full h-full flex flex-row'>
       {contextHolder}
-      <div className='h-full w-1/4 max-w-[400px] bg-gray-100'>
+      <div className='h-full w-1/4 max-w-[400px] bg-gray-100 overflow-auto'>
         <Button
           icon={<PlusOutlined />}
           onClick={handleNewConversion}
@@ -277,7 +277,7 @@ export default function Page() {
       </div>
 
       <div className='w-4/5 h-full flex flex-col'>
-        <div className='flex-1 overflow-y-auto p-4 space-y-4  h-full'>
+        <div className='flex-1 overflow-y-auto p-4 space-y-4 h-full'>
           {
             chatHistory.length !== 0 ? (
               chatHistory.map((message, index) => (
@@ -333,7 +333,7 @@ export default function Page() {
                 </div>
               ))
             ) : (
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-center mt-20">
                 <Bubble.List
                   className='z-10'
                   items={[{ content: placeholderNode, variant: 'borderless' }]}
