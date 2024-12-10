@@ -1,12 +1,13 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
-import { FloatButton, Image, Spin } from 'antd';
+import { Breadcrumb, Button, FloatButton, Image, Spin } from 'antd';
 import { getPdf } from '@/lib/pdf';
 import { getColophonById, Colophon } from '@/lib/colophon';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import ProTable from '@ant-design/pro-table';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Tag from '@/components/Tag';
 
 export default function Page({ params }: { params: { slug: string } }) {
   const slug = params.slug;
@@ -14,7 +15,6 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [colophon, setColophon] = useState<Colophon>();
   const [pdf_id, setPdfId] = useState<number>(0);
   const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,65 +36,94 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <div
-      className="flex h-full flex-wrap md:flex-nowrap"
+      className="flex h-full flex-wrap max-w-[1200px] mx-auto justify-center"
     >
-      {+slug > 1 &&
-        <FloatButton
-          onClick={() => { router.push(`/colophon/${+slug - 1}`) }}
-          icon={<LeftOutlined />}
-          style={{ position: 'fixed', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
-        />
-      }
-      {+slug < 9160 &&
-        <FloatButton
-          onClick={() => { router.push(`/colophon/${+slug + 1}`) }}
-          icon={<RightOutlined />}
-          style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9 }}
-        />
-      }
-      <div className="w-full md:w-2/3 p-8 bg-[#F8F5ED] overflow-y-auto">
-        {colophon && (
-          <div>
-            <h2 className="text-2xl font-bold mb-6 text-[#A48F6A]">碑记内容</h2>
-            <p className="mb-6 leading-relaxed text-[#7C6955]">{colophon.content}</p>
-            <hr className="my-8 border-t border-[#D9CDBF]" />
-            <div className="grid grid-cols-2 gap-8 text-[#7C6955]">
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">经名：</strong> {colophon.scripture_name}
+      <div className="w-full flex flex-row">
+        {
+          +slug > 1 &&
+          <Button
+            className="rounded-full"
+            onClick={() => { router.push(`/colophon/${+slug - 1}`) }}
+            icon={<LeftOutlined style={{ color: 'white' }} />}
+            style={{ position: 'fixed', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
+          />
+        }
+        {
+          +slug < 9160 &&
+          <Button
+            onClick={() => { router.push(`/colophon/${+slug + 1}`) }}
+            icon={<RightOutlined style={{ color: 'white' }} />}
+            style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
+          />
+        }
+        <div className="w-full  md:w-2/3 p-8">
+          <div className='pb-8'>
+            <Breadcrumb
+              separator={<div className='text-lg'>&gt;&gt;</div>}
+              items={[
+                {
+                  title: <a href='/' className='text-lg'>主页</a>,
+                },
+                {
+                  title: <a href="" className='text-lg'>径山藏</a>,
+                },
+                {
+                  title: <a href="/overview/colophon" className='text-lg'>牌记</a>,
+                }
+              ]}
+            />
+          </div>
+          {colophon && (
+            <div>
+              <div className="flex items-center gap-4">
+                <Tag text="牌记" color="#1A2B5C" opacity={0.7} />
+                <div className='text-4xl font-bold'>
+                  {colophon.scripture_name}
+                </div>
               </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">卷数：</strong> {colophon.volume_id}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">册数：</strong> {colophon.chapter_id}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">千字文：</strong> {colophon.qianziwen}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">刊刻时间：</strong> {colophon.time || "未知"}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">刊刻地点：</strong> {colophon.place || "未知"}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">刊刻寺庙：</strong> {colophon.temple || "未知"}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">计字：</strong> {colophon.words_num || "未知"}
-              </div>
-              <div>
-                <strong className="font-semibold text-[#A48F6A]">该银：</strong> {colophon.money || "未知"}
+              <p className="mb-6 mt-6 leading-relaxed">{colophon.content}</p>
+              <div className="grid grid-cols-2 gap-8">
+                {[
+                  { label: "经名", value: colophon.scripture_name },
+                  { label: "卷数", value: colophon.volume_id },
+                  { label: "册数", value: colophon.chapter_id },
+                  { label: "千字文", value: colophon.qianziwen },
+                  { label: "刊刻时间", value: colophon.time },
+                  { label: "刊刻地点", value: colophon.place },
+                  { label: "计字", value: colophon.words_num },
+                  { label: "该银", value: colophon.money },
+                ].map((item, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <Tag text={item.label} color="#DAA520" opacity={0.2} textColor='black' />
+                    <div className="text-right">
+                      {item.value || "未知"}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-        )}
-        <hr className="my-8 border-t border-[#D9CDBF]" />
-        <h2 className="text-2xl font-bold mb-6 text-[#A48F6A]">相关人物</h2>
+          )
+          }
+        </div >
+        <div className="w-full md:w-1/3 flex items-center justify-center overflow-auto">
+          {pdfPage ? (
+            <Image src={pdfPage} alt={`Page ${slug}`} style={{ maxHeight: '100%', maxWidth: '100%' }} />
+          ) : (
+            <div className="flex justify-center items-center" style={{ height: 'auto', width: '100%' }}>
+              <Spin />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className='p-8'>
+        <div className='pb-8'>
+          <Tag text="相关人物" color="#DAA520" opacity={0.2} textColor='black' />
+        </div>
         <ProTable
           rowKey="title"
           dataSource={colophon?.related_individuals}
-          headerTitle="相关人物"
+          search={false}
+          options={false}
           columns={[
             {
               title: '人物姓名',
@@ -119,15 +148,6 @@ export default function Page({ params }: { params: { slug: string } }) {
             defaultPageSize: 5,
           }}
         />
-      </div>
-      <div className="w-full md:w-1/3 flex items-center justify-center overflow-auto" ref={containerRef}>
-        {pdfPage ? (
-          <Image src={pdfPage} alt={`Page ${slug}`} style={{ maxHeight: '100%', maxWidth: '100%' }} />
-        ) : (
-          <div className="flex justify-center items-center" style={{ height: 'auto', width: '100%' }}>
-            <Spin />
-          </div>
-        )}
       </div>
     </div>
   );

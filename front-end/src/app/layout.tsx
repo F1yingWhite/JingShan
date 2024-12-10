@@ -1,9 +1,8 @@
 'use client'
-import { ConfigProvider, Layout } from "antd";
+import { ConfigProvider  } from "antd";
 import "./globals.css";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import NavBar from "@/components/NavBar";
-import { Content } from "antd/es/layout/layout";
 import { Noto_Sans_SC } from "next/font/google";
 import Script from "next/script";
 import { fetch_user } from "@/lib/user";
@@ -46,14 +45,16 @@ export default function RootLayout({
               },
             }}
           >
-            <Layout className="overflow-auto h-[100vh]">
+            <div className="overflow-y-auto h-[100vh] overflow-x-hidden">
               <div className="top-0 left-0 w-full z-10">
                 <NavBar />
               </div>
-              <Content className="flex-1 bg-white">
+              <div style={{
+                height: `calc(100% - 64px)`
+              }}>
                 {children}
-              </Content>
-            </Layout>
+              </div>
+            </div>
           </ConfigProvider>
         </AntdRegistry>
         <Script src="/Core/live2dcubismcore.js" strategy='beforeInteractive' />

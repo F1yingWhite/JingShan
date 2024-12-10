@@ -205,13 +205,12 @@ export default function Page() {
           deleteChat(conversation.key).then(() => {
             setConversationList(conversationList.filter((item) => item.key !== conversation.key));
             setChatLength(chatLength - 1);
+            setChatID(null);
+            setChatHistory([]);
           });
         },
       },
     ],
-    onClick: (menuInfo) => {
-      console.log(`Click ${conversation.key} - ${menuInfo.key}`);
-    },
   });
 
   const handleNewConversion = () => {
