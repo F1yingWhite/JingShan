@@ -1,13 +1,93 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Image, Space, Spin } from 'antd';
+import { Breadcrumb, Button, Form, Image, message, Space, Spin } from 'antd';
 import { getPdf } from '@/lib/pdf';
-import { getPrefaceAndPostscriptById, getPrefaceAndPostscriptTitleList, PrefaceAndPostscript } from '@/lib/preface_and_postscript';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { getPrefaceAndPostscriptById, getPrefaceAndPostscriptTitleList, PrefaceAndPostscript, putPrefaceAndPostscript } from '@/lib/preface_and_postscript';
+import { EditOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import Tag from '@/components/Tag';
 import ScollList from '@/components/ScrollList';
 import { useUserStore } from '@/store/useStore';
+import { ModalForm, ProForm, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
+import { MessageInstance } from 'antd/es/message/interface';
+
+const PrefaceEditForm = ({ preface, setPreface, messageApi }: { preface: PrefaceAndPostscript, setPreface: React.Dispatch<React.SetStateAction<PrefaceAndPostscript>>, messageApi: MessageInstance }) => {
+  const [form] = Form.useForm<PrefaceAndPostscript>();
+  return (
+    <ModalForm<PrefaceAndPostscript>
+      title="修改序跋信息"
+      initialValues={preface}
+      trigger={
+        <Button icon={<EditOutlined />}>修改</Button>
+      }
+      form={form}
+      autoFocusFirstInput
+      submitTimeout={3000}
+      onFinish={async (values) => {
+        values.last_modify = preface.last_modify
+        putPrefaceAndPostscript(preface.id, values).then(() => {
+          messageApi.success('修改成功');
+          getPrefaceAndPostscriptById(preface.id).then((res) => {
+            setPreface(res);
+          })
+        }).catch((err) => {
+          if (err.status === 403) {
+            messageApi.error('权限不足');
+          } else if (err.response.data.detail === "Last modify time not match") {
+            messageApi.error('数据已被修改，请刷新页面后重试');
+          } else {
+            messageApi.error('修改失败');
+          }
+        });
+        return true;
+      }}
+    >
+      <ProForm.Group>
+        <ProFormText
+          name="title"
+          label="篇名"
+          width="md"
+          placeholder="请输入篇名"
+        />
+        <ProFormText
+          name="classic"
+          width="md"
+          label="典籍"
+          placeholder="请输入典籍"
+        />
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormText
+          width="md"
+          name="author"
+          label="作者"
+          placeholder="请输入作者"
+        />
+        <ProFormText
+          width="md"
+          name="translator"
+          label="译者"
+          placeholder="请输入译者"
+        />
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormText
+          width="md"
+          name="category"
+          label="类别"
+          placeholder="请输入类别"
+        />
+        <ProFormText
+          width="md"
+          name="dynasty"
+          label="朝代"
+          placeholder="请输入朝代"
+        />
+      </ProForm.Group>
+    </ModalForm>
+  );
+};
+
 
 export default function Page({ params }: { params: { slug: string } }) {
   const slug = params.slug;
@@ -15,7 +95,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [preface_and_postscript, setPrefaceAndPostscript] = useState<PrefaceAndPostscript>();
   const router = useRouter();
   const { user } = useUserStore();
-
+  const [messageApi, contextHolder] = message.useMessage();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,6 +128,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <div className="flex h-full flex-col max-w-[1200px] mx-auto">
+      {contextHolder}
       {+slug > 1 && (
         <Button
           className="rounded-full"
@@ -95,6 +176,11 @@ export default function Page({ params }: { params: { slug: string } }) {
                 <div className='text-4xl font-bold'>
                   {preface_and_postscript.title}
                 </div>
+                {
+                  user && user.privilege > 0 && (
+                    <PrefaceEditForm preface={preface_and_postscript} setPreface={setPrefaceAndPostscript} messageApi={message} />
+                  )
+                }
               </div>
               <div className='flex pl-2' style={{ alignItems: 'flex-start' }}>
                 {[
@@ -104,8 +190,8 @@ export default function Page({ params }: { params: { slug: string } }) {
                   { label: "译者", value: preface_and_postscript.translator },
                   { label: "类别", value: preface_and_postscript.category },
                   { label: "朝代", value: preface_and_postscript.dynasty },
-                  { label: "册", value: preface_and_postscript.copy_id },
-                  { label: "页", value: preface_and_postscript.page_id },
+                  // { label: "册", value: preface_and_postscript.copy_id },
+                  // { label: "页", value: preface_and_postscript.page_id },
                   // ...(user && user.privilege > 0 ? [{ label: "上次修改", value:preface_and_postscript.last_modify }] : [])
                 ].map((item, index) => (
                   <div
@@ -120,7 +206,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                     <div style={{ writingMode: "vertical-rl" }}>
                       <Tag text={item.label} color="#DAA520" opacity={0.2} textColor="black" />
                     </div>
-                    <div className="pt-2" style={{ writingMode: "vertical-rl",textOrientation: "upright" }}>
+                    <div className="pt-2" style={{ writingMode: "vertical-rl", textOrientation: "upright" }}>
                       {item.value || "未知"}
                     </div>
                   </div>

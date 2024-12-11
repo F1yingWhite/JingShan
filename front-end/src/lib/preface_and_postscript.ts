@@ -1,4 +1,4 @@
-import { get, post } from './axios'
+import { get, post, put } from './axios'
 
 export type PrefaceAndPostscript = {
     id: number;
@@ -37,4 +37,8 @@ export function getPrefaceAndPostscriptListRandom(size: number) {
 
 export function getPrefaceAndPostscriptTitleList(page: number, page_size: number) {
     return get(`/preface_and_postscript/title/?page=${page}&page_size=${page_size}`)
+}
+
+export function putPrefaceAndPostscript(id: number, data: any) {
+    return put(`/preface_and_postscript/update/${id}`, data)
 }

@@ -8,8 +8,11 @@ from ...internal.models.relation_database.user import User
 from ..dependencies.user_auth import user_auth
 from . import ResponseModel
 
+colophon_router = APIRouter(prefix="/colophon")
+auth_colophon_router = APIRouter(prefix="/colophon", dependencies=[Depends(user_auth)])
 
-class ColophonSearchParams(BaseModel):
+
+class ColophonUpdateParams(BaseModel):
     chapter_id: str | None = None
     content: str | None = None
     id: int | None = None
@@ -18,13 +21,9 @@ class ColophonSearchParams(BaseModel):
     volume_id: str | None = None
 
 
-colophon_router = APIRouter(prefix="/colophon")
-auth_colophon_router = APIRouter(prefix="/colophon", dependencies=[Depends(user_auth)])
-
-
 @colophon_router.post("/")
 async def get_colophon(
-    params: ColophonSearchParams,
+    params: ColophonUpdateParams,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1),
 ):
@@ -92,7 +91,7 @@ async def search_colophon(keyword: str, page: int = 1, page_size: int = 20):
     return ResponseModel(data={"data": colophons, "total": total_num, "success": True})
 
 
-class ColophonSearchParams(BaseModel):
+class ColophonUpdateParams(BaseModel):
     content: str | None = None
     qianziwen: str | None = None
     place: str | None = None
@@ -104,16 +103,16 @@ class ColophonSearchParams(BaseModel):
 
 
 @auth_colophon_router.put("/update/{id}")
-async def update_colophon(request: Request, id: int, params: ColophonSearchParams):
+async def update_colophon(request: Request, id: int, params: ColophonUpdateParams):
     user_info = request.state.user_info
     user = User.get_user_by_email(user_info["sub"])
     if user.privilege == 0:
-        raise HTTPException(status_code=400, detail="Permission denied")
+        raise HTTPException(status_code=403, detail="Permission denied")
     colophon = Colophon.get_by_id(id)
     if not colophon:
         raise HTTPException(status_code=400, detail="Colophon not found")
     if params.last_modify:
-        params.last_modify = datetime.strptime(params.last_modify, "%Y-%m-%d %H:%M:%S")
+        params.last_modify = datetime.strptime(params.last_modify, "%Y-%m-%dT%H:%M:%S")
         if params.last_modify != colophon.last_modify:
             raise HTTPException(status_code=400, detail="Last modify time not match")
     colophon.update(

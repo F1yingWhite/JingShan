@@ -133,3 +133,12 @@ class Preface_And_Postscript(SQLModel, table=True):
             total_count = results[0].total_count if results else 0
 
             return {"total_num": total_count, "results": results}
+
+    def update(self, **kwargs):
+        with Session(engine) as session:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            session.add(self)
+            session.commit()
+            session.refresh(self)
+            return self

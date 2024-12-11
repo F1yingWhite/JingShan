@@ -17,8 +17,6 @@ import {
 } from '@ant-design/pro-components';
 import { MessageInstance } from 'antd/es/message/interface';
 
-
-
 const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Colophon, setColophon: React.Dispatch<React.SetStateAction<Colophon>>, messageApi: MessageInstance }) => {
   const [form] = Form.useForm<Colophon>();
   return (

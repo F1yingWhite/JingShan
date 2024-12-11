@@ -20,7 +20,8 @@ except Exception as e:
 class CJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
-            return obj.strftime("%Y-%m-%d %H:%M:%S")
+            # 转换的格式应该为2024-12-11T07:21:17
+            return obj.strftime("%Y-%m-%dT%H:%M:%S")
         elif isinstance(obj, date):
             return obj.strftime("%Y-%m-%d")
         else:
