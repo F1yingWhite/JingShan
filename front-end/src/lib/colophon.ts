@@ -48,3 +48,7 @@ export function getColophonById(id: number) {
 export function getScriptureListRandom(size: number) {
     return get(`/colophon/scripture_name/random/?size=${size}`)
 }
+
+export function getScriptureList(page: number, page_size: number) {
+    return get(`/colophon/scripture_name/?page=${page}&page_size=${page_size}`)
+}

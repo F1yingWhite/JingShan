@@ -2,12 +2,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Breadcrumb, Button, FloatButton, Image, Spin } from 'antd';
 import { getPdf } from '@/lib/pdf';
-import { getColophonById, Colophon } from '@/lib/colophon';
+import { getColophonById, Colophon, getScriptureList } from '@/lib/colophon';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import ProTable from '@ant-design/pro-table';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Tag from '@/components/Tag';
+import ScollList from '@/components/ScrollList';
 
 export default function Page({ params }: { params: { slug: string } }) {
   const slug = params.slug;
@@ -36,43 +37,44 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <div
-      className="flex h-full flex-wrap max-w-[1200px] mx-auto justify-center"
+      className="flex h-full flex-col max-w-[1200px] mx-auto"
     >
-      <div className="w-full flex flex-row">
-        {
-          +slug > 1 &&
-          <Button
-            className="rounded-full"
-            onClick={() => { router.push(`/colophon/${+slug - 1}`) }}
-            icon={<LeftOutlined style={{ color: 'white' }} />}
-            style={{ position: 'fixed', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
-          />
-        }
-        {
-          +slug < 9160 &&
-          <Button
-            onClick={() => { router.push(`/colophon/${+slug + 1}`) }}
-            icon={<RightOutlined style={{ color: 'white' }} />}
-            style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
-          />
-        }
+      {
+        +slug > 1 &&
+        <Button
+          className="rounded-full"
+          onClick={() => { router.push(`/colophon/${+slug - 1}`) }}
+          icon={<LeftOutlined style={{ color: 'white' }} />}
+          style={{ position: 'fixed', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
+        />
+      }
+      {
+        +slug < 9160 &&
+        <Button
+          onClick={() => { router.push(`/colophon/${+slug + 1}`) }}
+          icon={<RightOutlined style={{ color: 'white' }} />}
+          style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
+        />
+      }
+      <div className='p-8'>
+        <Breadcrumb
+          separator={<div className='text-lg'>&gt;&gt;</div>}
+          items={[
+            {
+              title: <a href='/' className='text-lg'>主页</a>,
+            },
+            {
+              title: <a href="" className='text-lg'>径山藏</a>,
+            },
+            {
+              title: <a href="/overview/colophon" className='text-lg'>牌记</a>,
+            }
+          ]}
+        />
+      </div>
+      <ScollList loadDataApi={getScriptureList}/>
+      <div className="w-full flex flex-col md:flex-row">
         <div className="w-full  md:w-2/3 p-8">
-          <div className='pb-8'>
-            <Breadcrumb
-              separator={<div className='text-lg'>&gt;&gt;</div>}
-              items={[
-                {
-                  title: <a href='/' className='text-lg'>主页</a>,
-                },
-                {
-                  title: <a href="" className='text-lg'>径山藏</a>,
-                },
-                {
-                  title: <a href="/overview/colophon" className='text-lg'>牌记</a>,
-                }
-              ]}
-            />
-          </div>
           {colophon && (
             <div>
               <div className="flex items-center gap-4">

@@ -30,6 +30,47 @@ class Colophon(SQLModel, table=True):
             return results
 
     @classmethod
+    def get_scripture_name(cls, page: int, page_size: int):
+        with Session(engine) as session:
+            page_size = min(page_size, 100)
+            offset = (page - 1) * page_size
+            # 查询总数
+            total_statement = select(func.count(cls.scripture_name.distinct()))
+            total_count = session.exec(total_statement).one()
+
+            # 查询分页数据并按 scripture_name 排序
+            statement = (
+                select(cls.scripture_name, func.min(cls.id))
+                .group_by(cls.scripture_name)
+                .order_by(cls.scripture_name)  # 按 scripture_name 排序
+                .offset(offset)
+                .limit(page_size)
+            )
+            results = session.exec(statement).all()
+
+            return {"total_num": total_count, "results": results}
+
+    @classmethod
+    def get_name_rank(cls, target_name: str):
+        with Session(engine) as session:
+            # 获取 distinct 的 scripture_name 列表，按所需顺序排序
+            distinct_statement = (
+                select(cls.scripture_name).distinct().order_by(cls.scripture_name)  # 根据需要的字段排序
+            )
+            subquery = distinct_statement.subquery()
+
+            # 增加排序索引
+            rank_statement = select(
+                subquery.c.scripture_name, func.row_number().over(order_by=subquery.c.scripture_name).label("rank")
+            ).subquery()
+
+            # 查找目标 name 的 rank
+            statement = select(rank_statement.c.rank).where(rank_statement.c.scripture_name == target_name)
+            rank = session.exec(statement).one_or_none()
+
+            return rank if rank else -1
+
+    @classmethod
     def get_colphon_with_num(
         cls,
         page: int,

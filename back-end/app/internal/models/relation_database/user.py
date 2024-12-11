@@ -1,9 +1,17 @@
 # 用户
 
+from enum import Enum
+
 from sqlmodel import Field, Session, SQLModel, select
 
 from ...utils.encryption import encrypt_password
 from . import engine
+
+
+class UserPrivilege(Enum):
+    USER = 0
+    ADMIN = 1
+    SUPERADMIN = 2
 
 
 class User(SQLModel, table=True):
@@ -13,6 +21,7 @@ class User(SQLModel, table=True):
     password: str | None = Field(default=None, max_length=255)
     avatar: str | None = Field(default=None)
     verified: bool = Field(default=False)
+    privilege: UserPrivilege = Field(default=UserPrivilege.USER)
 
     @classmethod
     def register(cls, name: str, email: str, password: str):

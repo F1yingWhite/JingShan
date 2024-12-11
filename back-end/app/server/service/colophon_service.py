@@ -38,11 +38,28 @@ async def get_colophon(
 
 
 @colophon_router.get("/scripture_name/random")
-async def get_scripture_name(size: int = 20):
+async def get_scripture_name_random(size: int = 20):
     results = Colophon.random_get_scripture_name(size)
     for i, result in enumerate(results):
         results[i] = {"name": result, "url": "/graph/scripture/" + result}
     return ResponseModel(data={"data": results})
+
+
+@colophon_router.get("/scripture_name")
+async def get_scripture_name(page: int = 1, page_size: int = 20):
+    results = Colophon.get_scripture_name(page=page, page_size=page_size)
+    for i, result in enumerate(results["results"]):
+        results["results"][i] = {"name": result[0], "url": "/colophon/" + str(result[1])}
+    return ResponseModel(data=results)
+
+
+# 暂时不需要
+@colophon_router.get("/scripture_name/id")
+async def get_scripture_name_index(name: str):
+    result = Colophon.get_name_rank(name)
+    if result == -1:
+        raise HTTPException(status_code=400, detail="Scripture name not found")
+    return ResponseModel(data=result)
 
 
 @colophon_router.get("/detail")
