@@ -33,6 +33,7 @@ dependencies = [
     "pyjwt>=2.10.1",
     "yagmail>=0.15.293",
     "cryptography>=44.0.0",
+    "sqlalchemy-utils>=0.41.2",
 ]
 
 [tool.ruff]

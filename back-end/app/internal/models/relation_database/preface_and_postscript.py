@@ -1,4 +1,6 @@
-from sqlalchemy import func
+from datetime import datetime
+
+from sqlalchemy import TIMESTAMP, Column, func
 from sqlmodel import Field, Session, SQLModel, select
 
 from . import engine
@@ -13,6 +15,7 @@ class Preface_And_Postscript(SQLModel, table=True):
     dynasty: str | None = Field(default=None, max_length=30)
     author: str | None = Field(default=None, max_length=50)
     copy_id: int | None = Field(default=None)
+    last_modify: datetime = Field(sa_column=Column(TIMESTAMP, default=func.now(), onupdate=func.now()))
     page_id: int | None = Field(default=None)
 
     @classmethod
@@ -35,7 +38,7 @@ class Preface_And_Postscript(SQLModel, table=True):
 
             statement = select(
                 cls,
-                func.count().over().label("total_count"),  # 添加总数为窗口函数的一部分
+                func.count().over().label("total_count"),
             )
 
             # 根据提供的参数动态添加条件

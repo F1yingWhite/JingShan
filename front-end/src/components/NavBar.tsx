@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUserStore } from '@/store/useStore';
 import LoginPage, { tabsType } from './LoginFrom';
-import { CloseOutlined, LogoutOutlined } from '@ant-design/icons';
+import { CloseOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 const { Header } = Layout;
 
 interface UserAvatarProps {
@@ -176,15 +176,16 @@ const DrawerItem: React.FC<DrawerItemProps> = ({ text, icon, onClick }) => {
 export default function NavBar() {
   const router = useRouter();
   const { user, setUser } = useUserStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [type, setType] = useState<tabsType>('account');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
+  const handleLoginOk = () => {
+    setIsLoginModalOpen(false);
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const handleLoginCancel = () => {
+    setIsLoginModalOpen(false);
   };
 
   const onClose = () => {
@@ -196,8 +197,8 @@ export default function NavBar() {
   return (
     <Header className="flex items-center justify-between" style={{ backgroundColor: "#1A2B5C", height: "64px", paddingLeft: "10px", paddingRight: "10px" }}>
       {contextHolder}
-      <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
-        <LoginPage type={type} setType={setType} setIsModalOpen={setIsModalOpen} ></LoginPage>
+      <Modal open={isLoginModalOpen} onOk={handleLoginOk} onCancel={handleLoginCancel} footer={null}>
+        <LoginPage type={type} setType={setType} setIsModalOpen={setIsLoginModalOpen} ></LoginPage>
       </Modal>
 
       <Drawer
@@ -217,11 +218,19 @@ export default function NavBar() {
           </div>
         }
       >
-        <DrawerItem icon={<LogoutOutlined />} text='退出登录' onClick={() => {
-          setUser(null);
-          messageApi.success('注销成功,请重新登陆');
-          setIsDrawerOpen(false);
-        }} />
+        <Space direction='vertical'>
+          <DrawerItem icon={<UserOutlined />} text='修改头像' onClick={() => {
+            messageApi.success('修改头像成功(还没做呢)');
+            setIsDrawerOpen(false);
+          }} />
+
+          <DrawerItem icon={<LogoutOutlined />} text='退出登录' onClick={() => {
+            setUser(null);
+            messageApi.success('注销成功,请重新登陆');
+            setIsDrawerOpen(false);
+          }} />
+        </Space>
+
       </Drawer>
 
       <div className='hidden md:block'>
@@ -260,7 +269,7 @@ export default function NavBar() {
             <div className="cursor-pointer"
               onClick={() => {
                 setType('account');
-                setIsModalOpen(true)
+                setIsLoginModalOpen(true)
               }}>
               登录
             </div>
@@ -268,7 +277,7 @@ export default function NavBar() {
             <div className="cursor-pointer"
               onClick={() => {
                 setType('register');
-                setIsModalOpen(true)
+                setIsLoginModalOpen(true)
               }}>
               注册
             </div>

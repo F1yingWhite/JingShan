@@ -11,6 +11,7 @@ export type PrefaceAndPostscript = {
     page_id: number;
     dynasty: string;
     copy_id: number;
+    last_modify: String;
 }
 
 export type PrefaceAndPostscriptClassic = {

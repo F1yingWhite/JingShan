@@ -108,7 +108,12 @@ async def login_user(params: LoginParams):
             return ResponseModel(
                 data={
                     "jwt": generate_jwt(user.email),
-                    "user": {"username": user.name, "email": user.email, "avatar": user.avatar},
+                    "user": {
+                        "username": user.name,
+                        "email": user.email,
+                        "avatar": user.avatar,
+                        "privilege": user.privilege,
+                    },
                 }
             )
         else:
@@ -162,4 +167,6 @@ async def change_avatar(request: Request, params: ChangeAvatar):
 async def get_user_info(request: Request):
     current_user = request.state.user_info
     user = User.get_user_by_email(current_user["sub"])
-    return ResponseModel(data={"username": user.name, "email": user.email, "avatar": user.avatar})
+    return ResponseModel(
+        data={"username": user.name, "email": user.email, "avatar": user.avatar, "privilege": user.privilege}
+    )

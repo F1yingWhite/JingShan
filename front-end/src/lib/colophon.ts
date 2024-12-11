@@ -1,4 +1,4 @@
-import { get, post } from './axios'
+import { get, post, put } from './axios'
 
 export type RelatedIndividuals = {
     name: string;
@@ -10,6 +10,7 @@ export type RelatedIndividuals = {
 export type Colophon = {
     id: number;
     content: string;
+    last_modify: String;
     scripture_name: string;
     volume_id: number;
     chapter_id: number;
@@ -51,4 +52,8 @@ export function getScriptureListRandom(size: number) {
 
 export function getScriptureList(page: number, page_size: number) {
     return get(`/colophon/scripture_name/?page=${page}&page_size=${page_size}`)
+}
+
+export function putColophon(id: number, data: any) {
+    return put(`/colophon/update/${id}`, data)
 }

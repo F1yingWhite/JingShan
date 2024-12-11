@@ -1,9 +1,10 @@
 # 牌记
 import json
+from datetime import datetime
 
-from sqlmodel import Field, Session, SQLModel, distinct, func, select
+from sqlmodel import TIMESTAMP, Column, Field, Session, SQLModel, distinct, func, select
 
-from . import engine
+from . import CJsonEncoder, engine
 
 
 class Colophon(SQLModel, table=True):
@@ -20,6 +21,7 @@ class Colophon(SQLModel, table=True):
     temple: str | None = Field(default=None, max_length=255)
     words_num: str | None = Field(default=None, max_length=255)
     money: str | None = Field(default=None, max_length=255)
+    last_modify: datetime = Field(sa_column=Column(TIMESTAMP, default=func.now(), onupdate=func.now()))
 
     @classmethod
     def random_get_scripture_name(cls, size: int):
@@ -153,7 +155,7 @@ class Colophon(SQLModel, table=True):
             return results
 
     @classmethod
-    def get_by_id(cls, colophon_id: int):
+    def get_with_related_by_id(cls, colophon_id: int):
         from .ind_col import Ind_Col
         from .individual import Individual
 
@@ -171,13 +173,13 @@ class Colophon(SQLModel, table=True):
                 if not result:
                     return None
                 colophon_dict = {key: value for key, value in result[0].__dict__.items() if key != "_sa_instance_state"}
-                colophon_json = json.dumps(colophon_dict)
+                colophon_json = json.dumps(colophon_dict, cls=CJsonEncoder)
                 colophon_json = json.loads(colophon_json)
                 colophon_json["related_individuals"] = []
                 return colophon_json
 
             colophon_dict = {key: value for key, value in result[0][0].__dict__.items() if key != "_sa_instance_state"}
-            colophon_json = json.dumps(colophon_dict)
+            colophon_json = json.dumps(colophon_dict, cls=CJsonEncoder)
             colophon_json = json.loads(colophon_json)
             colophon_json["related_individuals"] = [
                 {
@@ -189,3 +191,19 @@ class Colophon(SQLModel, table=True):
                 for row in result
             ]
             return colophon_json
+
+    @classmethod
+    def get_by_id(cls, id: int):
+        with Session(engine) as session:
+            statement = select(cls).where(cls.id == id)
+            result = session.exec(statement).first()
+            return result
+
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        with Session(engine) as session:
+            session.add(self)
+            session.commit()
+            session.refresh(self)
+            return self

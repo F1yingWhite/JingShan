@@ -1,14 +1,16 @@
 # 用户
 
-from enum import Enum
+from enum import IntEnum
 
+from sqlalchemy import Column, Integer
+from sqlalchemy_utils import ChoiceType
 from sqlmodel import Field, Session, SQLModel, select
 
 from ...utils.encryption import encrypt_password
 from . import engine
 
 
-class UserPrivilege(Enum):
+class UserPrivilege(IntEnum):
     USER = 0
     ADMIN = 1
     SUPERADMIN = 2
@@ -21,7 +23,9 @@ class User(SQLModel, table=True):
     password: str | None = Field(default=None, max_length=255)
     avatar: str | None = Field(default=None)
     verified: bool = Field(default=False)
-    privilege: UserPrivilege = Field(default=UserPrivilege.USER)
+    privilege: UserPrivilege = Field(
+        default=UserPrivilege.USER, sa_column=Column(ChoiceType(UserPrivilege, impl=Integer()))
+    )
 
     @classmethod
     def register(cls, name: str, email: str, password: str):

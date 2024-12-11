@@ -7,12 +7,14 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import Tag from '@/components/Tag';
 import ScollList from '@/components/ScrollList';
+import { useUserStore } from '@/store/useStore';
 
 export default function Page({ params }: { params: { slug: string } }) {
   const slug = params.slug;
   const [pdfPage, setPdfPage] = useState<string | null>(null);
   const [preface_and_postscript, setPrefaceAndPostscript] = useState<PrefaceAndPostscript>();
   const router = useRouter();
+  const { user } = useUserStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,6 +106,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   { label: "朝代", value: preface_and_postscript.dynasty },
                   { label: "册", value: preface_and_postscript.copy_id },
                   { label: "页", value: preface_and_postscript.page_id },
+                  // ...(user && user.privilege > 0 ? [{ label: "上次修改", value:preface_and_postscript.last_modify }] : [])
                 ].map((item, index) => (
                   <div
                     key={index}
@@ -117,7 +120,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                     <div style={{ writingMode: "vertical-rl" }}>
                       <Tag text={item.label} color="#DAA520" opacity={0.2} textColor="black" />
                     </div>
-                    <div className="pt-2" style={{ writingMode: "vertical-rl" }}>
+                    <div className="pt-2" style={{ writingMode: "vertical-rl",textOrientation: "upright" }}>
                       {item.value || "未知"}
                     </div>
                   </div>
