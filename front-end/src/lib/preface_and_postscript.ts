@@ -33,3 +33,7 @@ export function getPrefaceAndPostscriptById(id: number) {
 export function getPrefaceAndPostscriptListRandom(size: number) {
     return get(`/preface_and_postscript/title/random/?size=${size}`)
 }
+
+export function getPrefaceAndPostscriptTitleList(page: number, page_size: number) {
+    return get(`/preface_and_postscript/title/?page=${page}&page_size=${page_size}`)
+}

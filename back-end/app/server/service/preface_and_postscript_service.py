@@ -61,3 +61,11 @@ async def get_preface_and_postscript_title(size: int = 20):
     for i, result in enumerate(results):
         results[i] = {"name": result[0], "url": "/preface_and_postscript/" + str(result[1])}
     return ResponseModel(data={"data": results})
+
+
+@preface_and_postscript_router.get("/title")
+async def get_preface_and_postscript_title_by_page(page: int = 1, page_size: int = 20):
+    results = Preface_And_Postscript.get_title_with_num(page, page_size)
+    for i, result in enumerate(results["results"]):
+        results["results"][i] = {"name": result[0], "url": "/preface_and_postscript/" + str(result[1])}
+    return ResponseModel(data=results)

@@ -36,9 +36,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
 
   return (
-    <div
-      className="flex h-full flex-col max-w-[1200px] mx-auto"
-    >
+    <div className="flex h-full flex-col max-w-[1200px] mx-auto">
       {
         +slug > 1 &&
         <Button
@@ -72,9 +70,8 @@ export default function Page({ params }: { params: { slug: string } }) {
           ]}
         />
       </div>
-      <ScollList loadDataApi={getScriptureList}/>
       <div className="w-full flex flex-col md:flex-row">
-        <div className="w-full  md:w-2/3 p-8">
+        <div className="w-full md:w-2/3 pl-8">
           {colophon && (
             <div>
               <div className="flex items-center gap-4">
@@ -107,11 +104,11 @@ export default function Page({ params }: { params: { slug: string } }) {
           )
           }
         </div >
-        <div className="w-full md:w-1/3 flex items-center justify-center overflow-auto">
+        <div className="w-full md:w-1/3 overflow-auto">
           {pdfPage ? (
             <Image src={pdfPage} alt={`Page ${slug}`} style={{ maxHeight: '100%', maxWidth: '100%' }} />
           ) : (
-            <div className="flex justify-center items-center" style={{ height: 'auto', width: '100%' }}>
+            <div className="flex justify-center items-center" style={{ height: '100%', width: '100%' }}>
               <Spin />
             </div>
           )}

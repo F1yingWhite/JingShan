@@ -113,3 +113,20 @@ class Preface_And_Postscript(SQLModel, table=True):
             statement = select(cls.title, cls.id).order_by(func.random()).limit(size)
             results = session.exec(statement).all()
             return results
+
+    @classmethod
+    def get_title_with_num(cls, page: int, page_size: int):
+        with Session(engine) as session:
+            page_size = min(page_size, 100)
+            offset = (page - 1) * page_size
+
+            statement = (
+                select(cls.title, cls.id, func.count(cls.id).over().label("total_count"))
+                .offset(offset)
+                .limit(page_size)
+            )
+
+            results = session.exec(statement).all()
+            total_count = results[0].total_count if results else 0
+
+            return {"total_num": total_count, "results": results}
