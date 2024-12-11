@@ -51,8 +51,8 @@
 
         // 发送请求获得数据
         async function fetchIndividualData() {
-            const url = `http://127.0.0.1:5001/api/individuals/detail?id=${id}`;
-            <!-- const url = `https://jingshanback.cpolar.top/api/individuals/detail?id=${id}` -->
+            <!-- const url = `http://127.0.0.1:5001/api/individuals/detail?id=${id}`; -->
+            const url = `https://jingshanback.cpolar.top/api/individuals/detail?id=${id}`
 
             try {
                 const response = await fetch(url);
