@@ -94,3 +94,28 @@ class Individual(SQLModel, table=True):
             # 提取总数
             total_count = results[0].total_count if results else 0
             return individuals, total_count
+
+    @classmethod
+    def get_individuals_hybrid(cls, page: int, page_size: int, name: str | None, works: list[str], place: list[str]):
+        from .ind_col import Ind_Col
+
+        with Session(engine) as session:
+            # 基础查询
+            base_query = select(cls).join(Ind_Col, cls.id == Ind_Col.ind_id).distinct()
+
+            if name:
+                base_query = base_query.where(cls.name.like(f"%{name}%"))
+            if works:
+                base_query = base_query.where(Ind_Col.type.in_(works))
+            if place:
+                base_query = base_query.where(Ind_Col.place.in_(place))
+
+            # 获取总数
+            count_query = select(func.count().label("total")).select_from(base_query)
+            total = session.exec(count_query).one()
+
+            # 获取分页数据
+            statement = base_query.offset((page - 1) * page_size).limit(page_size)
+            results = session.exec(statement).all()
+
+            return results, total

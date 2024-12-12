@@ -164,7 +164,7 @@ export default function Page() {
       getHistory().then((res) => {
         setConversationList(res);
       });
-    }else{
+    } else {
       setChatLength(0);
       setChatHistory([]);
       setConversationList([]);
@@ -230,6 +230,7 @@ export default function Page() {
 
   const loadMoreData = () => {
     console.log("正在加载")
+    // TODO:异步加载
     // if (isLoading) {
     //   return;
     // }

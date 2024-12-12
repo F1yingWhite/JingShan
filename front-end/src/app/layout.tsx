@@ -9,8 +9,6 @@ import { fetchUser } from "@/lib/user";
 import { useEffect } from "react";
 import { useUserStore } from "@/store/useStore";
 
-
-
 const noto_sans_sc = Noto_Sans_SC({
   display: 'swap',
   subsets: ['vietnamese'],

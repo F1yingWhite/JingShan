@@ -221,12 +221,12 @@ export default function NavBar() {
   const router = useRouter();
   const { user, setUser } = useUserStore();
   const [searchValue, setSearchValue] = useState('');
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [type, setType] = useState<tabsType>('account');
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [utilsType, setUtilsType] = useState<utilsType>('password');
-  const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const searchItems: MenuProps['items'] = [
     {
@@ -246,19 +246,19 @@ export default function NavBar() {
   ]
 
   const handleLoginOk = () => {
-    setIsLoginModalOpen(false);
+    setLoginModalOpen(false);
   };
 
   const handleLoginCancel = () => {
-    setIsLoginModalOpen(false);
+    setLoginModalOpen(false);
   };
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
-    setOpen(true);
+    setSearchOpen(true);
   };
   const handleOpenChange: DropdownProps['onOpenChange'] = (nextOpen, info) => {
     if (info.source === 'trigger' || nextOpen) {
-      setOpen(nextOpen);
+      setSearchOpen(nextOpen);
     }
   };
   const [messageApi, contextHolder] = message.useMessage();
@@ -272,13 +272,13 @@ export default function NavBar() {
   return (
     <Header className="flex items-center justify-between" style={{ backgroundColor: "#1A2B5C", height: "64px", paddingLeft: "10px", paddingRight: "10px" }}>
       {contextHolder}
-      <Modal open={isLoginModalOpen} onOk={handleLoginOk} onCancel={handleLoginCancel} footer={null}>
-        <LoginModal type={type} setType={setType} setIsModalOpen={setIsLoginModalOpen} ></LoginModal>
+      <Modal open={loginModalOpen} onOk={handleLoginOk} onCancel={handleLoginCancel} footer={null}>
+        <LoginModal type={type} setType={setType} setIsModalOpen={setLoginModalOpen} ></LoginModal>
       </Modal>
       <SiderDrawer
         user={user}
-        isDrawerOpen={isDrawerOpen}
-        setIsDrawerOpen={setIsDrawerOpen}
+        isDrawerOpen={drawerOpen}
+        setIsDrawerOpen={setDrawerOpen}
         setUtilsType={setUtilsType}
         setUserModalOpen={setUserModalOpen}
         setUser={setUser}
@@ -329,7 +329,7 @@ export default function NavBar() {
             menu={{ items: searchItems, onClick: handleMenuClick }}
             placement="bottomRight"
             trigger={['click']}
-            open={open}
+            open={searchOpen}
             onOpenChange={handleOpenChange}
           >
             <div className='h-full'>
@@ -345,7 +345,7 @@ export default function NavBar() {
             <div className="cursor-pointer"
               onClick={() => {
                 setType('account');
-                setIsLoginModalOpen(true)
+                setLoginModalOpen(true)
               }}>
               登录
             </div>
@@ -353,13 +353,13 @@ export default function NavBar() {
             <div className="cursor-pointer"
               onClick={() => {
                 setType('register');
-                setIsLoginModalOpen(true)
+                setLoginModalOpen(true)
               }}>
               注册
             </div>
           </>) : null
           }
-          <UserAvatar user={user} onClick={() => setIsDrawerOpen(true)} />
+          <UserAvatar user={user} onClick={() => setDrawerOpen(true)} />
         </Space>
       </Flex>
     </Header >

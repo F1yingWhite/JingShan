@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from ...internal.models.relation_database.ind_col import Ind_Col
 from ...internal.models.relation_database.individual import Individual
 from ...internal.utils.get_time_place import (
     TIME_LIST,
@@ -73,8 +74,32 @@ async def search_individuals(name: str):
 
 
 @individual_router.get("/random")
-async def get_random_individuals(size:int):
+async def get_random_individuals(size: int):
     individuals = Individual.get_random_individuals(size)
     for i, individual in enumerate(individuals):
         individuals[i] = {"name": individual.name, "url": "/individual/" + str(individual.id)}
     return ResponseModel(data={"data": individuals})
+
+
+@individual_router.get("/works")
+async def get_individuals_works(key: str | None = None):
+    works = Ind_Col.get_works_type(key)
+    return ResponseModel(data=works)
+
+
+@individual_router.get("/places")
+async def get_individuals_places(key: str | None = None):
+    works = Ind_Col.get_works_place(key)
+    return ResponseModel(data=works)
+
+
+class IndividualHybridQueryParams(BaseModel):
+    works: list[str] = []
+    place: list[str] = []
+    name: str | None = None
+
+
+@individual_router.post("/hybrid")
+async def get_individuals_hybrid(page: int, page_size: int, params: IndividualHybridQueryParams):
+    individuals, count = Individual.get_individuals_hybrid(page, page_size, params.name, params.works, params.place)
+    return ResponseModel(data={"data": individuals, "total": count})

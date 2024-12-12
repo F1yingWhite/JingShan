@@ -40,3 +40,25 @@ export function searchIndividuals(name: string) {
 export function getIndividualRandom(size: number) {
     return get(`/individuals/random?size=${size}`);
 }
+
+
+export function getWorksList(key: string) {
+    if (key === "") {
+        return get(`/individuals/works/`);
+    } else {
+        return get(`/individuals/works/?key=${key}`);
+    }
+}
+
+
+export function getPlaceList(key: string) {
+    if (key === "") {
+        return get(`/individuals/places/`);
+    } else {
+        return get(`/individuals/places/?key=${key}`);
+    }
+}
+
+export function getIndividualHybrid(places: string[], works: string[], name: string, page: number, page_size: number) {
+    return post(`/individuals/hybrid/?page=${page}&page_size=${page_size}`, { "places": places, "works": works, "name": name });
+}
