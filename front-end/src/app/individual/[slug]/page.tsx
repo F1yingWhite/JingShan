@@ -53,7 +53,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <div className="h-full flex-wrap max-w-[1200px] mx-auto justify-center"
+    <div className="h-full pl-8 pr-8 flex-wrap max-w-[1200px] mx-auto justify-center"
     >
       < div className="pt-8 pb-8" >
         <Breadcrumb
@@ -172,6 +172,5 @@ export default function Page({ params }: { params: { slug: string } }) {
         </div>
       </div>
     </div>
-
   );
 }

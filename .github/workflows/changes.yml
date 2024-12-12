@@ -1,3 +1,4 @@
+# Does it work?
 name: Show Changes on Tag Push
 
 on:
@@ -11,8 +12,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'  # 确保所有的历史都被下载下来
 
       - name: Show changes
         run: |
+          # 获取所有标签并按版本号排序
           git fetch --tags
-          git log --oneline ${GITHUB_SHA}..$(git describe --tags --abbrev=0)
+          tags=$(git tag --sort=-creatordate)
+          echo "All tags: $tags"
+
+          # 分割标签列表，获得最新和次新的标签
+          IFS=$'\n' read -r -a sorted_tags <<< "$tags"
+          latest_tag=${sorted_tags[0]}
+          previous_tag=${sorted_tags[1]}
+
+          if [ -n "$previous_tag" ]; then
+            echo "Comparing changes from $previous_tag to $latest_tag"
+            git log --oneline $previous_tag..$latest_tag
+          else
+            echo "No previous tag found, showing all changes up to $latest_tag"
+            git log --oneline $latest_tag
+          fi

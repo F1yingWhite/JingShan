@@ -73,3 +73,11 @@ class User(SQLModel, table=True):
             session.commit()
             session.refresh(self)
             return self
+
+    def change_username(self, username: str):
+        self.name = username
+        with Session(engine) as session:
+            session.add(self)
+            session.commit()
+            session.refresh(self)
+            return self
