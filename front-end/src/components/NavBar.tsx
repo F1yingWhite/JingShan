@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUserStore } from '@/store/useStore';
-import LoginPage, { tabsType } from './LoginFrom';
+import LoginModal, { tabsType } from './LoginModal';
 import { CloseOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 const { Header } = Layout;
 
@@ -179,7 +179,6 @@ export default function NavBar() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [type, setType] = useState<tabsType>('account');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
   const handleLoginOk = () => {
     setIsLoginModalOpen(false);
   };
@@ -198,8 +197,9 @@ export default function NavBar() {
     <Header className="flex items-center justify-between" style={{ backgroundColor: "#1A2B5C", height: "64px", paddingLeft: "10px", paddingRight: "10px" }}>
       {contextHolder}
       <Modal open={isLoginModalOpen} onOk={handleLoginOk} onCancel={handleLoginCancel} footer={null}>
-        <LoginPage type={type} setType={setType} setIsModalOpen={setIsLoginModalOpen} ></LoginPage>
+        <LoginModal type={type} setType={setType} setIsModalOpen={setIsLoginModalOpen} ></LoginModal>
       </Modal>
+
 
       <Drawer
         className='rounded-l-xl'

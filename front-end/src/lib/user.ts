@@ -39,3 +39,11 @@ export function change_avatar(params: { avatar: string }) {
 export function fetch_user() {
   return get(`/user/info/`);
 }
+
+export function getResetCode(email: string) {
+  return get(`/user/reset_password/code/?email=${email}`);
+}
+
+export function resetPassword(params: any) {
+  return put(`/user/reset_password/`, params);
+}
