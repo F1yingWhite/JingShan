@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import { Bubble, Conversations, ConversationsProps, Prompts, Sender, Welcome } from '@ant-design/x';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Conversation } from '@ant-design/x/es/conversations';
+import { useUserStore } from '@/store/useStore';
 
 const renderTitle = (icon: React.ReactElement, title: string) => (
   <Space align="start">
@@ -58,6 +59,7 @@ export default function Page() {
   const [curChatId, setChatID] = useState<string>();
   const [chatLength, setChatLength] = useState<number | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
+  const { user } = useUserStore();
 
   const onPromptsItemClick = (info) => {
     handleSend(info.data.description);
@@ -162,12 +164,16 @@ export default function Page() {
       getHistory().then((res) => {
         setConversationList(res);
       });
+    }else{
+      setChatLength(0);
+      setChatHistory([]);
+      setConversationList([]);
+      setChatID(null);
     }
     return () => {
       setTTSPlaying(false);
     };
-  }, []);
-
+  }, [user]);
 
   const placeholderNode = (
     <Space direction="vertical" size={14} >

@@ -1,11 +1,11 @@
 'use client'
-import { ConfigProvider  } from "antd";
+import { ConfigProvider } from "antd";
 import "./globals.css";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import NavBar from "@/components/NavBar";
 import { Noto_Sans_SC } from "next/font/google";
 import Script from "next/script";
-import { fetch_user } from "@/lib/user";
+import { fetchUser } from "@/lib/user";
 import { useEffect } from "react";
 import { useUserStore } from "@/store/useStore";
 
@@ -27,7 +27,7 @@ export default function RootLayout({
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
     if (!jwt) return;
-    fetch_user().then((res) => {
+    fetchUser().then((res) => {
       setUser(res)
     }).catch((err) => {
       localStorage.removeItem('jwt')

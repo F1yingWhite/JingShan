@@ -16,4 +16,4 @@ docker run -d -p 3306:3306 --name jingshan-db -e MYSQL_ROOT_PASSWORD=你的密�
 - [ ]  live2d找人画
 - [ ]  RAG
 - [ ]  雕塑站起来
-- [ ]  聊天历史管理
+- [x]  聊天历史管理

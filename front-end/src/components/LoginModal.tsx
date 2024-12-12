@@ -121,7 +121,7 @@ export function ResetPasswordModal({ passwordModalOpen, setPasswordModalOpen, se
               },
               ({ getFieldValue }) => ({
                 validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
+                  if (!value || getFieldValue('new_password') === value) {
                     return Promise.resolve();
                   }
                   return Promise.reject(new Error('两次输入的密码不一致！'));

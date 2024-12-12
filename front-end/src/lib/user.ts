@@ -15,7 +15,6 @@ export type User = Register & {
 }
 
 export type ChangePassword = {
-  email: string,
   old_password: string,
   new_password: string
 }
@@ -28,15 +27,19 @@ export function register(params: Register) {
   return post(`/user/register/`, params);
 }
 
-export function change_password(params: ChangePassword) {
+export function changePassword(params: ChangePassword) {
   return put(`/user/change_password/`, params);
 }
 
-export function change_avatar(params: { avatar: string }) {
+export function changerAvatar(params: { avatar: string }) {
   return put(`/user/change_avatar/`, params);
 }
 
-export function fetch_user() {
+export function changeUsername(params: { username: string }) {
+  return put(`/user/change_username/`, params);
+}
+
+export function fetchUser() {
   return get(`/user/info/`);
 }
 
