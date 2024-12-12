@@ -1,15 +1,16 @@
 'use client'
 import React, { useState } from 'react';
-import { Avatar, Flex, Layout, Modal, Space, Drawer, MenuProps, Dropdown, Menu, message, Tabs, Button, } from 'antd';
+import { Avatar, Flex, Layout, Modal, Space, Drawer, MenuProps, Dropdown, Menu, message, Tabs, Button, Input, DropdownProps, } from 'antd';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUserStore } from '@/store/useStore';
 import LoginModal, { tabsType } from './LoginModal';
-import { CloseOutlined, FontColorsOutlined, LockOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { CloseOutlined, FontColorsOutlined, LockOutlined, LogoutOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { MessageInstance } from 'antd/es/message/interface';
 import { LoginForm, ProFormText, ProFormUploadButton } from '@ant-design/pro-components';
 import { changePassword, changerAvatar, changeUsername, fetchUser } from '@/lib/user';
+import Search from 'antd/lib/input/Search';
 const { Header } = Layout;
 
 interface UserAvatarProps {
@@ -46,59 +47,7 @@ interface NavItemProps {
   items?: MenuProps['items']
 }
 
-const items: MenuProps['items'] = [
-  {
-    key: '径山藏',
-    type: 'group',
-    label: (
-      <Link href={'/overview'} className='sm:text-sm md:text-base lg:text-lg text-black'>
-        径山藏
-      </Link>
-    ),
-    children: [
-      {
-        key: '牌记',
-        label: (
-          <Link href={'/overview/colophon'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
-            牌记
-          </Link>
-        ),
-      },
-      {
-        key: '序跋',
-        label: (
-          <Link href={'/overview/preface_and_postscript'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
-            序跋
-          </Link>
-        ),
-      },
-      {
-        key: '人物',
-        label: (
-          <Link href={'/overview/individual'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
-            人物
-          </Link>
-        )
-      },
-      {
-        key: '故事',
-        label: (
-          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
-            故事
-          </Link>
-        ),
-      },
-    ]
-  },
-  {
-    key: '径山志',
-    label: (
-      <Link href={'/overview/graph'} className='sm:text-sm md:text-base lg:text-lg'>
-        径山志
-      </Link>
-    ),
-  }
-];
+
 
 const NavItem: React.FC<NavItemProps> = ({ href, text, items }) => {
   const path = usePathname();
@@ -354,14 +303,89 @@ export function UserPasswordModal({ userModalOpen, setUserModalOpen, messageApi,
   </Modal>
 }
 
+const items: MenuProps['items'] = [
+  {
+    key: '径山藏',
+    type: 'group',
+    label: (
+      <Link href={'/overview'} className='sm:text-sm md:text-base lg:text-lg text-black'>
+        径山藏
+      </Link>
+    ),
+    children: [
+      {
+        key: '牌记',
+        label: (
+          <Link href={'/overview/colophon'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
+            牌记
+          </Link>
+        ),
+      },
+      {
+        key: '序跋',
+        label: (
+          <Link href={'/overview/preface_and_postscript'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
+            序跋
+          </Link>
+        ),
+      },
+      {
+        key: '人物',
+        label: (
+          <Link href={'/overview/individual'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
+            人物
+          </Link>
+        )
+      },
+      {
+        key: '故事',
+        label: (
+          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
+            故事
+          </Link>
+        ),
+      },
+    ]
+  },
+  {
+    key: '径山志',
+    label: (
+      <Link href={'/overview/graph'} className='sm:text-sm md:text-base lg:text-lg'>
+        径山志
+      </Link>
+    ),
+  }
+];
+
+
+
 export default function NavBar() {
   const router = useRouter();
   const { user, setUser } = useUserStore();
+  const [searchValue, setSearchValue] = useState('');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [type, setType] = useState<tabsType>('account');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [utilsType, setUtilsType] = useState<utilsType>('password');
+  const [open, setOpen] = useState(false);
+
+  const searchItems: MenuProps['items'] = [
+    {
+      key: 'search',
+      label: (
+        <Input
+          placeholder="搜索"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onPressEnter={_ => {
+            search(searchValue);
+            setSearchValue('')
+          }}
+        />
+      )
+    }
+  ]
   const handleLoginOk = () => {
     setIsLoginModalOpen(false);
   };
@@ -373,9 +397,21 @@ export default function NavBar() {
   const onClose = () => {
     setIsDrawerOpen(false);
   };
-
+  const handleMenuClick: MenuProps['onClick'] = (e) => {
+    setOpen(true);
+  };
+  const handleOpenChange: DropdownProps['onOpenChange'] = (nextOpen, info) => {
+    if (info.source === 'trigger' || nextOpen) {
+      setOpen(nextOpen);
+    }
+  };
   const [messageApi, contextHolder] = message.useMessage();
-
+  const search = (value: string) => {
+    if (value.trim()) {
+      value = encodeURIComponent(value);
+      router.push(`/search/${value}/hybrid`);
+    }
+  };
   return (
     <Header className="flex items-center justify-between" style={{ backgroundColor: "#1A2B5C", height: "64px", paddingLeft: "10px", paddingRight: "10px" }}>
       {contextHolder}
@@ -464,7 +500,24 @@ export default function NavBar() {
       </Flex>
 
       <Flex justify="end" className='h-full text-white flex items-center'>
-        <Space wrap size={16}>
+        <Space wrap size={8}>
+          <Dropdown
+            arrow
+            menu={{ items: searchItems, onClick: handleMenuClick }}
+            placement="bottomRight"
+            trigger={['click']}
+            open={open}
+            onOpenChange={handleOpenChange}
+          >
+            <div className='h-full'>
+              <SearchOutlined style={{
+                color: "#DAA520",
+                fontSize: "20px",
+                paddingRight: "5px"
+              }}
+              />
+            </div>
+          </Dropdown>
           {!user ? (<>
             <div className="cursor-pointer"
               onClick={() => {
