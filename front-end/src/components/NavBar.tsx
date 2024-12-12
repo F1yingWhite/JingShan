@@ -1,16 +1,14 @@
 'use client'
 import React, { useState } from 'react';
-import { Avatar, Flex, Layout, Modal, Space, Drawer, MenuProps, Dropdown, Menu, message, Tabs, Button, Input, DropdownProps, } from 'antd';
+import { Avatar, Flex, Layout, Modal, Space, Drawer, MenuProps, Dropdown, message, Input, DropdownProps, } from 'antd';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUserStore } from '@/store/useStore';
-import LoginModal, { tabsType } from './LoginModal';
+import LoginModal, { tabsType } from './modal/LoginModal';
 import { CloseOutlined, FontColorsOutlined, LockOutlined, LogoutOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
-import { MessageInstance } from 'antd/es/message/interface';
-import { LoginForm, ProFormText, ProFormUploadButton } from '@ant-design/pro-components';
-import { changePassword, changerAvatar, changeUsername, fetchUser } from '@/lib/user';
-import Search from 'antd/lib/input/Search';
+import { UserPasswordModal, utilsType } from '@/components/modal/UserModal';
+
 const { Header } = Layout;
 
 interface UserAvatarProps {
@@ -40,13 +38,11 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, onClick }) => {
   );
 };
 
-
 interface NavItemProps {
   href: string;
   text: string;
   items?: MenuProps['items']
 }
-
 
 
 const NavItem: React.FC<NavItemProps> = ({ href, text, items }) => {
@@ -114,7 +110,6 @@ interface DrawerItemProps {
 }
 
 const DrawerItem: React.FC<DrawerItemProps> = ({ text, icon, onClick }) => {
-
   return <>
     <div className='flex items-center cursor-pointer rounded-md hover:bg-gray-200' onClick={onClick}>
       <div className='mr-2'>{icon}</div>
@@ -123,184 +118,49 @@ const DrawerItem: React.FC<DrawerItemProps> = ({ text, icon, onClick }) => {
   </>
 }
 
-export type utilsType = 'password' | 'avatar' | 'username';
-
-interface UserModalProps {
-  userModalOpen: boolean;
-  setUserModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  messageApi: MessageInstance
-  utilsType: utilsType;
-  setUtilsType: React.Dispatch<React.SetStateAction<utilsType>>;
-}
-
-export function UserPasswordModal({ userModalOpen, setUserModalOpen, messageApi, utilsType, setUtilsType }: UserModalProps) {
-  const { user, setUser } = useUserStore();
-  const handleChangePassword = async (values) => {
-    changePassword(values).then((res) => {
-      fetchUser().then((res) => {
-        setUser(res.data);
-      })
-      messageApi.success('修改成功');
-      setUserModalOpen(false);
-    }).catch((err) => {
-      messageApi.error("修改失败");
-    })
-  }
-
-  const handleChangeAvatar = async (values) => {
-    changerAvatar({ avatar: values.avatar[0].thumbUrl }).then((res) => {
-      messageApi.success('修改成功');
-      fetchUser().then((res) => {
-        setUser(res);
-      }).catch((err) => {
-        messageApi.error("获取用户信息失败");
-      })
-      setUserModalOpen(false);
-    }).catch((err) => {
-      messageApi.error("修改失败");
-    })
-  }
-
-  const handleChangeUsername = async (values) => {
-    changeUsername({ username: values.username }).then((res) => {
-      messageApi.success('修改成功');
-      fetchUser().then((res) => {
-        setUser(res);
-      }).catch((err) => {
-        messageApi.error("获取用户信息失败");
-      })
-      setUserModalOpen(false);
-    }).catch((err) => {
-      messageApi.error("修改失败");
-    })
-  }
-
-  return <Modal open={userModalOpen}
-    onOk={() => {
-      setUserModalOpen(false)
-    }}
-    onCancel={() => {
-      setUserModalOpen(false);
-    }}
-    destroyOnClose={true}
-    footer={null}>
-    <LoginForm
-      logo="/logo.svg"
-      title={<><span>求是</span><span className='text-[#DAA520]'>智藏</span></>}
-      submitter={false}
-      onFinish={(values) => {
-        if (utilsType === 'password') {
-          handleChangePassword(values);
-        } else if (utilsType === 'avatar') {
-          handleChangeAvatar(values);
-        } else if (utilsType === 'username') {
-          handleChangeUsername(values);
-        }
-      }}
-    >
-      <Tabs
-        centered
-        activeKey={utilsType}
-        onChange={(activeKey) => setUtilsType(activeKey as utilsType)}
-      >
-        <Tabs.TabPane key={'password'} tab={'修改密码'} />
-        <Tabs.TabPane key={'avatar'} tab={'头像'} />
-        <Tabs.TabPane key={'username'} tab={'用户名'} />
-      </Tabs>
-      {utilsType === 'password' && (
-        <>
-          <ProFormText.Password
-            name="old_password"
-            fieldProps={{
-              size: 'large',
-              prefix: <LockOutlined className={'prefixIcon'} />,
-            }}
-            placeholder={'原始密码: '}
-            rules={[
-              {
-                required: true,
-                message: '请输入原始密码！',
-              },
-              {
-                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,}$/,
-                message: '密码必须包含数字、大小写，至少8位字符。',
-              },
-            ]}
-          />
-          <ProFormText.Password
-            name="new_password"
-            fieldProps={{
-              size: 'large',
-              prefix: <LockOutlined className={'prefixIcon'} />,
-            }}
-            placeholder={'修改密码: '}
-            rules={[
-              {
-                required: true,
-                message: '请输入修改的密码！',
-              },
-              {
-                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,}$/,
-                message: '密码必须包含数字、大小写，至少8位字符。',
-              },
-            ]}
-          />
-          <ProFormText.Password
-            name="confirmPassword"
-            fieldProps={{
-              size: 'large',
-              prefix: <LockOutlined className={'prefixIcon'} />,
-            }}
-            placeholder={'确认密码: '}
-            rules={[
-              {
-                required: true,
-                message: '请再次输入密码！',
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('new_password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('两次输入的密码不一致！'));
-                },
-              }),
-            ]}
-          />
-          <Button type='primary' className='w-full' htmlType="submit">
-            修改
-          </Button>
-        </>
-      )}
-      {utilsType === 'avatar' && (
-        <div className='flex items-center flex-col'>
-          <ProFormUploadButton
-            name="avatar"
-            max={1}
-            fieldProps={{
-              name: 'file',
-              listType: 'picture-card',
-            }}
-          // action="/upload.do"
-          />
-          <Button type='primary' className='w-full' htmlType="submit">
-            修改
-          </Button>
+const SiderDrawer = ({ user, isDrawerOpen, setIsDrawerOpen, setUtilsType, setUserModalOpen, setUser, messageApi }) => {
+  return <Drawer
+    className='rounded-l-xl'
+    closeIcon={false}
+    onClose={() => { setIsDrawerOpen(false) }}
+    open={isDrawerOpen}
+    title={
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center'>
+          <UserAvatar user={user} />
+          <div className='ml-4'>
+            {user ? user.username : null}
+          </div>
         </div>
-      )}
-      {utilsType === 'username' && (
-        <div className='flex items-center flex-col'>
-          <ProFormText
-            name="username"
-            placeholder="请输入用户名"
-          />
-          <Button type='primary' className='w-full' htmlType="submit">
-            修改
-          </Button>
-        </div>
-      )}
-    </LoginForm>
-  </Modal>
+        <CloseOutlined onClick={() => { setIsDrawerOpen(false) }} />
+      </div>
+    }
+  >
+    <Space direction='vertical'>
+      <DrawerItem icon={<UserOutlined />} text='修改头像' onClick={() => {
+        setUtilsType('avatar');
+        setUserModalOpen(true);
+        setIsDrawerOpen(false);
+      }} />
+      <DrawerItem icon={<LockOutlined />} text='修改密码' onClick={() => {
+        setUtilsType('password');
+        setUserModalOpen(true);
+        setIsDrawerOpen(false);
+      }} />
+      <DrawerItem icon={<FontColorsOutlined />} text='修改用户名' onClick={() => {
+        setUtilsType('username');
+        setUserModalOpen(true);
+        setIsDrawerOpen(false);
+      }} />
+
+      <DrawerItem icon={<LogoutOutlined />} text='退出登录' onClick={() => {
+        setUser(null);
+        window.localStorage.removeItem('autoLogin');
+        messageApi.success('注销成功,请重新登陆');
+        setIsDrawerOpen(false);
+      }} />
+    </Space>
+  </Drawer>
 }
 
 const items: MenuProps['items'] = [
@@ -357,8 +217,6 @@ const items: MenuProps['items'] = [
   }
 ];
 
-
-
 export default function NavBar() {
   const router = useRouter();
   const { user, setUser } = useUserStore();
@@ -386,6 +244,7 @@ export default function NavBar() {
       )
     }
   ]
+
   const handleLoginOk = () => {
     setIsLoginModalOpen(false);
   };
@@ -394,9 +253,6 @@ export default function NavBar() {
     setIsLoginModalOpen(false);
   };
 
-  const onClose = () => {
-    setIsDrawerOpen(false);
-  };
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     setOpen(true);
   };
@@ -412,13 +268,22 @@ export default function NavBar() {
       router.push(`/search/${value}/hybrid`);
     }
   };
+
   return (
     <Header className="flex items-center justify-between" style={{ backgroundColor: "#1A2B5C", height: "64px", paddingLeft: "10px", paddingRight: "10px" }}>
       {contextHolder}
       <Modal open={isLoginModalOpen} onOk={handleLoginOk} onCancel={handleLoginCancel} footer={null}>
         <LoginModal type={type} setType={setType} setIsModalOpen={setIsLoginModalOpen} ></LoginModal>
       </Modal>
-
+      <SiderDrawer
+        user={user}
+        isDrawerOpen={isDrawerOpen}
+        setIsDrawerOpen={setIsDrawerOpen}
+        setUtilsType={setUtilsType}
+        setUserModalOpen={setUserModalOpen}
+        setUser={setUser}
+        messageApi={messageApi}
+      />
       <UserPasswordModal
         utilsType={utilsType}
         setUtilsType={setUtilsType}
@@ -426,48 +291,6 @@ export default function NavBar() {
         messageApi={messageApi}
         setUserModalOpen={setUserModalOpen}
       />
-
-      <Drawer
-        className='rounded-l-xl'
-        closeIcon={false}
-        onClose={onClose}
-        open={isDrawerOpen}
-        title={
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center'>
-              <UserAvatar user={user} />
-              <div className='ml-4'>
-                {user ? user.username : null}
-              </div>
-            </div>
-            <CloseOutlined onClick={onClose} />
-          </div>
-        }
-      >
-        <Space direction='vertical'>
-          <DrawerItem icon={<UserOutlined />} text='修改头像' onClick={() => {
-            setUtilsType('avatar');
-            setUserModalOpen(true);
-            setIsDrawerOpen(false);
-          }} />
-          <DrawerItem icon={<LockOutlined />} text='修改密码' onClick={() => {
-            setUtilsType('password');
-            setUserModalOpen(true);
-            setIsDrawerOpen(false);
-          }} />
-          <DrawerItem icon={<FontColorsOutlined />} text='修改用户名' onClick={() => {
-            setUtilsType('username');
-            setUserModalOpen(true);
-            setIsDrawerOpen(false);
-          }} />
-
-          <DrawerItem icon={<LogoutOutlined />} text='退出登录' onClick={() => {
-            setUser(null);
-            messageApi.success('注销成功,请重新登陆');
-            setIsDrawerOpen(false);
-          }} />
-        </Space>
-      </Drawer>
 
       <div className='hidden md:block'>
         <Flex justify="start" className="items-center ml-0 h-full cursor-pointer" onClick={() => { router.push(`/`) }}>

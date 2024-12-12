@@ -39,7 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className='hidden md:block'>
           <ChatButton />
         </div>
-        <div className='mb-4 w-full'>
+        <div className='w-full'>
           <Breadcrumb separator={<div className='text-lg'>&gt;&gt;</div>}>
             {breadcrumbs.map(({ path, breadcrumbName }, index) => (
               <Breadcrumb.Item key={index} className='text-lg'>

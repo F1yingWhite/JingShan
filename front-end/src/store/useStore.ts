@@ -21,7 +21,6 @@ export const useUserStore = create<BearState>((set, get) => ({
   setUser: (user) => {
     if (user) {
       set({ user: user, isLogin: true })
-      console.log(user)
     } else {
       window.localStorage.removeItem("jwt")
       set({ user: null, isLogin: false })

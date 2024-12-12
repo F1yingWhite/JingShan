@@ -21,10 +21,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { setUser, user } = useUserStore();
-
+  const { setUser } = useUserStore();
 
   useEffect(() => {
+    const autoLogin = localStorage.getItem('autoLogin');
+    if (!autoLogin)
+      localStorage.removeItem('jwt');
     const jwt = localStorage.getItem('jwt');
     if (!jwt) return;
     fetchUser().then((res) => {
@@ -32,7 +34,13 @@ export default function RootLayout({
     }).catch((err) => {
       localStorage.removeItem('jwt')
     })
+    return () => {
+      const autoLogin = localStorage.getItem('autoLogin');
+      if (!autoLogin)
+        localStorage.removeItem('jwt');
+    };
   }, [])
+
   return (
     <html lang="cn">
       <body className={noto_sans_sc.className}>
