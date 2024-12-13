@@ -8,35 +8,11 @@ import { useUserStore } from '@/store/useStore';
 import LoginModal, { tabsType } from './modal/LoginModal';
 import { CloseOutlined, FontColorsOutlined, LockOutlined, LogoutOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { UserPasswordModal, utilsType } from '@/components/modal/UserModal';
+import UserAvatar from './UserAvatar';
 
 const { Header } = Layout;
 
-interface UserAvatarProps {
-  user: {
-    avatar?: string;
-    username: string;
-  } | null;
-  onClick?: () => void;
-}
 
-const UserAvatar: React.FC<UserAvatarProps> = ({ user, onClick }) => {
-  const cursorClass = onClick ? 'cursor-pointer' : '';
-  return (
-    <>
-      {user ? (
-        user.avatar ? (
-          <Avatar className={`mx-2 ${cursorClass}`} size={45} src={user.avatar} onClick={onClick} />
-        ) : (
-          <Avatar className={`mx-2 ${cursorClass}`} style={{ backgroundColor: '#fde3cf', color: '#f56a00' }} size={45} onClick={onClick}>
-            {user.username[0]}
-          </Avatar>
-        )
-      ) : (
-        <Avatar className={`mx-2 ${cursorClass}`} size={45} src={"/heshang.png"} />
-      )}
-    </>
-  );
-};
 
 interface NavItemProps {
   href: string;

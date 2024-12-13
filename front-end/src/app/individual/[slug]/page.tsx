@@ -108,7 +108,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                         key: record.title,
                         label: (
                           <span>
-                            <a className="text-[#c19d50]">{record.title}</a>
+                              <a className="text-[#1A2B5C]">{record.title}</a>
                             {renderBadge(record.count)}
                           </span>
                         ),

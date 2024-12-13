@@ -11,6 +11,7 @@ import { Bubble, Conversations, ConversationsProps, Prompts, Sender, Welcome } f
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Conversation } from '@ant-design/x/es/conversations';
 import { useUserStore } from '@/store/useStore';
+import UserAvatar from '@/components/UserAvatar';
 
 const renderTitle = (icon: React.ReactElement, title: string) => (
   <Space align="start">
@@ -300,7 +301,9 @@ export default function Page() {
                   >
                     {
                       message.role === 'assistant' && (
-                        <Avatar className="flex-shrink-0 w-8 h-8">径</Avatar>
+                        <Avatar className="mx-2 flex-shrink-0" style={{ backgroundColor: '#fde3cf', color: '#f56a00' }} size={40} >
+                          径
+                        </Avatar>
                       )
                     }
                     <div className="bg-[#DBD0BE] p-2 rounded-md shadow-md relative">
@@ -335,7 +338,7 @@ export default function Page() {
                     </div>
                     {
                       message.role === 'user' && (
-                        <Avatar className="flex-shrink-0 w-8 h-8">我</Avatar>
+                        <UserAvatar width={40} user={user} />
                       )
                     }
                   </div>

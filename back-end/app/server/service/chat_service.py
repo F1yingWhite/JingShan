@@ -133,20 +133,22 @@ async def process_websocket_data(websocket: WebSocket, data: dict):
             await asyncio.sleep(0)  # 确保每条消息立即发送
     messages_with_system = [SYSTEM_MESSAGE] + messages
     cypher_data: list[dict[str, Any]] | None = get_query(messages)
-    cypher_data = json.dumps(cypher_data, ensure_ascii=False)
-    # 如果cypher_data的数据大于4k,那么就删除第一项,直到满足要求
-    while len(cypher_data) > 4096:
-        cypher_data = cypher_data[cypher_data.find("}") + 1 :]
-    messages_with_system.append(
-        {
-            "role": "user",
-            "content": "上面的问题从数据库中查询得到的结果如下,请你将他组织为一段话" + cypher_data,
-        }
-    )
-    await send_response(websocket, messages_with_system, history)
+    has_cypher = False
+    if cypher_data:
+        cypher_data = json.dumps(cypher_data, ensure_ascii=False)
+        while len(cypher_data) > 4096:
+            cypher_data = cypher_data[cypher_data.find("}") + 1 :]
+        messages_with_system.append(
+            {
+                "role": "user",
+                "content": "上面的问题从数据库中查询得到的结果如下,请你将他组织为一段话" + cypher_data,
+            }
+        )
+        has_cypher = True
+    await send_response(websocket, messages_with_system, history, has_cypher)
 
 
-async def send_response(websocket: WebSocket, messages: list, history: Chat_History):
+async def send_response(websocket: WebSocket, messages: list, history: Chat_History, has_cypher: bool):
     data = {
         "model": config.SPARKAI.DOMAIN,
         "messages": messages,
@@ -165,7 +167,10 @@ async def send_response(websocket: WebSocket, messages: list, history: Chat_Hist
             if line == "[DONE]":
                 await websocket.close()
                 if history is not None:
-                    messages = messages[1:-1]
+                    if has_cypher:
+                        messages = messages[1:-1]
+                    else:
+                        messages = messages[1:]
                     messages.append({"role": "assistant", "content": res})
                     history.update(messages, title=None)
                 return
