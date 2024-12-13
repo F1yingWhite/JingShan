@@ -1,8 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
 import { getIndividualHybrid, getPlaceList, getWorksList, Person } from '@/lib/individual'
-import { useRouter } from 'next/navigation';
-import { Button, Checkbox, Col, Input, Pagination, Row } from 'antd';
+import { Checkbox, Input, Pagination } from 'antd';
 import Search from 'antd/es/input/Search';
 import { SearchOutlined } from '@ant-design/icons';
 import Link from 'next/link';

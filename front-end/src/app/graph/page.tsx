@@ -28,7 +28,7 @@ export default function Page() {
       items={[
         {
           key: '1',
-          label: <div className="text-2xl font-bold text-center my-4 text-[#c19d50]">人物关系图</div>,
+          label: <div className="text-2xl font-bold text-center my-4 text-[#1A2B5C]">人物关系图</div>,
           children: (
             <div>
               <div className='h-screen w-screen'>
@@ -42,7 +42,7 @@ export default function Page() {
         },
         {
           key: '2',
-          label: <div className="text-2xl font-bold text-center my-4 text-[#c19d50]">牌记图谱</div>,
+          label: <div className="text-2xl font-bold text-center my-4 text-[#1A2B5C]">牌记图谱</div>,
           children: (
             <div>
               <div className='h-screen w-screen'>

@@ -44,7 +44,7 @@ class Individual(SQLModel, table=True):
             return individuals, total_count
 
     @classmethod
-    def get_individuals_by_id(cls, user_id: int):
+    def get_by_id_with_related(cls, user_id: int):
         from .colophon import Colophon
         from .ind_col import Ind_Col
 
@@ -65,6 +65,22 @@ class Individual(SQLModel, table=True):
             )
             results = session.exec(statement)
             return results.all()
+
+    @classmethod
+    def get_by_name(cls, name: str):
+        with Session(engine) as session:
+            statement = select(cls).where(cls.name == name)
+            result = session.exec(statement).first()
+            return result
+
+    @classmethod
+    def create(cls, name: str):
+        with Session(engine) as session:
+            individual = cls(name=name)
+            session.add(individual)
+            session.commit()
+            session.refresh(individual)
+            return individual
 
     @classmethod
     def search_individuals(cls, name: str = None):
@@ -118,3 +134,11 @@ class Individual(SQLModel, table=True):
             results = session.exec(statement).all()
 
             return results, total
+
+    @classmethod
+    def delete(cls, id: int):
+        with Session(engine) as session:
+            statement = select(cls).where(cls.id == id)
+            individual = session.exec(statement).first()
+            session.delete(individual)
+            session.commit()

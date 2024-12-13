@@ -26,7 +26,7 @@ async def get_all_individuals(page: int, pageSize: int, params: IndividualQueryP
 
 @individual_router.get("/detail")
 async def get_individuals_detail(id: int):
-    individuals = Individual.get_individuals_by_id(id)
+    individuals = Individual.get_by_id_with_related(id)
     time_cnt = dict.fromkeys(TIME_LIST, 0)
     individuals_dict = {"details": {}}
     place_dict = {}

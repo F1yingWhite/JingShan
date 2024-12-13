@@ -1,6 +1,6 @@
 import { get, post, put } from './axios'
 
-export type RelatedIndividuals = {
+export type RelatedIndividual = {
     name: string;
     id: number;
     place: string;
@@ -22,7 +22,7 @@ export type Colophon = {
     temple?: string;
     words_num?: string;
     money?: string
-    related_individuals?: RelatedIndividuals[];
+    related_individuals?: RelatedIndividual[];
 }
 
 export type ContentItem = {
@@ -56,4 +56,8 @@ export function getScriptureList(page: number, page_size: number) {
 
 export function putColophon(id: number, data: any) {
     return put(`/colophon/update/${id}`, data)
+}
+
+export function updateRelatedIndividual(id: number, data: RelatedIndividual[]) {
+    return put(`/colophon/related_individuals/${id}`, { "individuals": data })
 }

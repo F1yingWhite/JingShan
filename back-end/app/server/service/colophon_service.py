@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
@@ -124,4 +125,53 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
         words_num=params.words_num,
         money=params.money,
     )
+    return ResponseModel(data={})
+
+
+class Individual(BaseModel):
+    id: int
+    name: str | None
+    type: Literal["书", "刻工", "募", "对", ""]
+    place: str | None
+
+
+class RelatedIndividuals(BaseModel):
+    individuals: list[Individual]
+
+
+@auth_colophon_router.put("/related_individuals/{id}")
+async def update_related_individuals(request: Request, id: int, params: RelatedIndividuals):  # noqa: C901
+    from ...internal.models.relation_database.ind_col import Ind_Col
+    from ...internal.models.relation_database.individual import Individual
+
+    user_info = request.state.user_info
+    user = User.get_user_by_email(user_info["sub"])
+    if user.privilege == 0:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    colophon = Colophon.get_with_related_by_id(id)
+    if not colophon:
+        raise HTTPException(status_code=400, detail="Colophon not found")
+    # 关系数据库更新
+    for individual in params.individuals:
+        if individual.name != "":
+            individual_obj = Individual.get_by_name(individual.name)
+            if not individual_obj:
+                individual_obj = Individual.create(individual.name)
+            # 查看是否已经存在关联
+            ind_col = Ind_Col.get_by_ids(individual_obj.id, id)
+            if not ind_col:
+                Ind_Col.create(individual_obj.id, id, individual.type, individual.place)
+            # 如果关系不一致更新
+            elif ind_col.type != individual.type or ind_col.place != individual.place:
+                ind_col.update(individual.type, individual.place)
+
+    for original_individual in colophon["related_individuals"]:
+        if original_individual["name"] not in [individual.name for individual in params.individuals]:
+            ind_col = Ind_Col.get_by_ids(original_individual["id"], id)
+            Ind_Col.delete(ind_col.ind_id, ind_col.col_id)
+            individual = Individual.get_by_id_with_related(original_individual["id"])
+            if not individual:
+                Individual.delete(original_individual["id"])
+    # 图数据库更新
+
     return ResponseModel(data={})

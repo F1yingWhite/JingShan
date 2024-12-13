@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button, Form, Image, message, Spin } from 'antd';
 import { getPdf } from '@/lib/pdf';
-import { getColophonById, Colophon, putColophon } from '@/lib/colophon';
+import { getColophonById, Colophon, putColophon, RelatedIndividual, updateRelatedIndividual } from '@/lib/colophon';
 import { EditOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
-import ProTable from '@ant-design/pro-table';
+import ProTable, { EditableProTable, ProColumns } from '@ant-design/pro-table';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Tag from '@/components/Tag';
@@ -53,8 +53,7 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
           name="scripture_name"
           label="牌记名"
           width="md"
-          placeholder="请输入牌记名"
-        />
+          placeholder="请输入牌记名" />
         <ProFormText
           name="qianziwen"
           width="md"
@@ -100,6 +99,99 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
   );
 };
 
+const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: Colophon, setColophon: React.Dispatch<React.SetStateAction<Colophon>>, messageApi: MessageInstance }) => {
+  const [form] = Form.useForm<RelatedIndividual[]>();
+  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
+    colophon.related_individuals.map((item) => item.id),
+  );
+  const columns: ProColumns<RelatedIndividual>[] = [
+    {
+      title: '人名',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '地点',
+      key: 'place',
+      dataIndex: 'place',
+    },
+    {
+      title: '活动',
+      dataIndex: 'type',
+      key: 'type',
+      valueType: 'select',
+      valueEnum: {
+        刻工: { text: '刻工', status: '刻工' },
+        书: { text: '书', status: '书' },
+        对: { text: '对', status: '对' },
+        募: { text: '募', status: '募' },
+      },
+    },
+    {
+      title: '操作',
+      valueType: 'option',
+    },
+  ];
+
+  return (
+    <ModalForm<RelatedIndividual[]> title="修改牌记信息"
+      initialValues={colophon}
+      trigger={
+        <Button icon={<EditOutlined />}>修改</Button>
+      }
+      form={form}
+      autoFocusFirstInput
+      submitTimeout={3000}
+      onFinish={async (values) => {
+        updateRelatedIndividual(colophon.id, values.dataSource).then(() => {
+          messageApi.success('修改成功');
+          getColophonById(colophon.id).then((res) => {
+            setColophon(res);
+          });
+        }).catch((err) => {
+          if (err.status === 403) {
+            messageApi.error('权限不足');
+          } else {
+            messageApi.error('修改失败');
+          }
+        });
+        return true;
+      }}
+    >
+      <ProForm.Item
+        label="相关人物列表"
+        name="dataSource"
+        initialValue={colophon.related_individuals}
+        trigger="onValuesChange"
+      >
+        <EditableProTable<RelatedIndividual>
+          rowKey="id"
+          toolBarRender={false}
+          columns={columns}
+          recordCreatorProps={{
+            newRecordType: 'dataSource',
+            position: 'bottom',
+            record: (index, dataSource) => ({
+              id: dataSource.length + 1,
+              name: "",
+              place: "",
+              type: "",
+            }),
+          }}
+          editable={{
+            type: 'multiple',
+            editableKeys,
+            onChange: setEditableRowKeys,
+            actionRender: (row, _, dom) => {
+              return [dom.delete];
+            },
+          }}
+        />
+      </ProForm.Item>
+    </ModalForm >
+  )
+}
+
 export default function Page({ params }: { params: { slug: string } }) {
   const slug = params.slug;
   const [pdfPage, setPdfPage] = useState<string | null>(null);
@@ -112,7 +204,6 @@ export default function Page({ params }: { params: { slug: string } }) {
     const fetchData = async () => {
       try {
         const res: Colophon = await getColophonById(+slug);
-        console.log(res)
         setColophon(res);
         setPdfId(res.pdf_id);
         const page = res.page_id;
@@ -136,7 +227,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           className="rounded-full"
           onClick={() => { router.push(`/colophon/${+slug - 1}`) }}
           icon={<LeftOutlined style={{ color: 'white' }} />}
-          style={{ position: 'fixed', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
+          style={{ position: 'fixed', top: '50%', left: '30px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
         />
       }
       {
@@ -144,7 +235,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         <Button
           onClick={() => { router.push(`/colophon/${+slug + 1}`) }}
           icon={<RightOutlined style={{ color: 'white' }} />}
-          style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
+          style={{ position: 'fixed', top: '50%', right: '30px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
         />
       }
       <div className='p-8'>
@@ -189,7 +280,6 @@ export default function Page({ params }: { params: { slug: string } }) {
                   { label: "刊刻地点", value: colophon.place },
                   { label: "计字", value: colophon.words_num },
                   { label: "该银", value: colophon.money },
-                  // ...(user && user.privilege > 0 ? [{ label: "上次修改", value: colophon.last_modify }] : [])
                 ].map((item, index) => (
                   <div key={index} className="flex justify-between items-center">
                     <Tag text={item.label} color="#DAA520" opacity={0.2} textColor='black' />
@@ -219,7 +309,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           {
             user && user.privilege > 0 && (
               // TODO:修改人物信息
-              <ColophonEditForm colophon={colophon} setColophon={setColophon} messageApi={messageApi} />
+              <IndividualEditForm colophon={colophon} setColophon={setColophon} messageApi={messageApi} />
             )
           }
         </div>

@@ -134,7 +134,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           className="rounded-full"
           onClick={() => router.push(`/preface_and_postscript/${+slug - 1}`)}
           icon={<LeftOutlined style={{ color: 'white' }} />}
-          style={{ position: 'fixed', top: '50%', left: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
+          style={{ position: 'fixed', top: '50%', left: '30px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
         />
       )}
       {+slug < 4777 && (
@@ -142,7 +142,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           className="rounded-full"
           onClick={() => router.push(`/preface_and_postscript/${+slug + 1}`)}
           icon={<RightOutlined style={{ color: 'white' }} />}
-          style={{ position: 'fixed', top: '50%', right: '10px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
+          style={{ position: 'fixed', top: '50%', right: '30px', transform: 'translateY(-50%)', zIndex: 9, backgroundColor: "#1A2B5C", borderRadius: "9999px" }}
         />
       )}
       <div className='p-8'>
