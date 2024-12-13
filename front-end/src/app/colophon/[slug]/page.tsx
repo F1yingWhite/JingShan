@@ -102,7 +102,7 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
 const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: Colophon, setColophon: React.Dispatch<React.SetStateAction<Colophon>>, messageApi: MessageInstance }) => {
   const [form] = Form.useForm<RelatedIndividual[]>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
-    colophon.related_individuals.map((item) => item.id),
+    colophon.related_individuals ? colophon.related_individuals.map((item) => item.id) : [],
   );
   const columns: ProColumns<RelatedIndividual>[] = [
     {
@@ -172,7 +172,7 @@ const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: C
             newRecordType: 'dataSource',
             position: 'bottom',
             record: (index, dataSource) => ({
-              id: dataSource.length + 1,
+              id: dataSource ? 1 : dataSource.length + 1,
               name: "",
               place: "",
               type: "",
@@ -307,7 +307,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         <div className='pb-8 space-x-4'>
           <Tag text="相关人物" color="#DAA520" opacity={0.2} textColor='black' />
           {
-            user && user.privilege > 0 && (
+            user && user.privilege > 0 && colophon && (
               // TODO:修改人物信息
               <IndividualEditForm colophon={colophon} setColophon={setColophon} messageApi={messageApi} />
             )
