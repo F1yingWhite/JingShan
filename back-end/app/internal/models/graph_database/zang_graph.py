@@ -184,3 +184,19 @@ def update_related_individuals(
                 place=individual.place,
                 type=individual.type,
             )
+
+
+def get_random_individuals_with_colophon_and_scripture(size: int):
+    with neo4j_driver.session() as session:
+        result = session.run(
+            """
+            MATCH (m:Person)
+            WITH m ORDER BY rand() LIMIT $size
+            MATCH (m)-[r1:RELATION]-(n:Colophon)-[r2]->(p:Scripture)
+            WITH m, COLLECT(n)[..50] AS colophons, p, r1
+            UNWIND colophons AS n
+            RETURN n, m, p, r1.place AS place, r1.type AS type
+            """,
+            size=size,
+        )
+        return result.data()
