@@ -14,7 +14,7 @@ export default function Page() {
   const [locationValues, setLocationValues] = React.useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = React.useState<string[]>([]);
   const [individuals, setIndividuals] = React.useState<Person[]>([]);
-  const [pageSize, setPageSize] = React.useState<number>(50);
+  const [pageSize, setPageSize] = React.useState<number>(100);
   const [totalNum, setTotalNum] = React.useState<number>(0);
   const [currentPage, setCurrentPage] = React.useState<number>(1);
 
@@ -73,8 +73,8 @@ export default function Page() {
   }
 
   return (
-    <div className='flex flex-row w-full h-[100vh] p-6'>
-      <div className='w-1/4 h-full flex flex-col text-[#1A2B5C] pr-6'>
+    <div className='flex flex-col sm:flex-row w-full h-[100vh] p-6'>
+      <div className='sm:w-full md:w-1/4 h-full flex flex-col text-[#1A2B5C] pr-6'>
         <div>
           <span className='mb-1 mr-2'>精确筛选</span>
           <SearchOutlined
@@ -84,7 +84,6 @@ export default function Page() {
             onClick={handleSearch}
           />
         </div>
-
         <div className='h-px bg-gray-400'></div>
         <div className='flex flex-row mt-4 justify-between'>
           <span>姓名:</span>
@@ -140,7 +139,7 @@ export default function Page() {
         </div>
 
       </div>
-      <div className='w-3/4  h-full'>
+      <div className='sm:w-full md:w-3/4 h-full'>
         <span className='text-base text-[#1A2B5C] pb-6'>共 {totalNum}条结果</span>
         <div className='flex flex-col w-full items-center pb-8'>
           {
@@ -150,8 +149,7 @@ export default function Page() {
                   <Link
                     key={individual.id}
                     href={`/individual/${individual.id}`}
-                    className="w-1/3 p-2 box-border"
-                    style={{ writingMode: 'horizontal-tb'}}
+                    className={`p-2 box-border ${individuals.length <= 2 ? 'w-1/2' : 'w-1/2 lg:w-1/3'}`}
                   >
                     {individual.name}
                   </Link>
