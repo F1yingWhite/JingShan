@@ -1,23 +1,27 @@
 'use client'
 import React, { useEffect } from 'react'
-import { getAllIndividuals, getIndividualHybrid, getPlaceList, getWorksList, Person } from '@/lib/individual'
+import { getIndividualHybrid, getPlaceList, getWorksList, Person } from '@/lib/individual'
 import { useRouter } from 'next/navigation';
-import { Button, Checkbox, Col, Input, Row } from 'antd';
+import { Button, Checkbox, Col, Input, Pagination, Row } from 'antd';
 import Search from 'antd/es/input/Search';
 import { SearchOutlined } from '@ant-design/icons';
+import Link from 'next/link';
 
 export default function Page() {
-  const router = useRouter();
   const [name, setName] = React.useState<string>('');
   const [workValues, setWorkValues] = React.useState<string[]>([]);
   const [selectedWork, setSelectedWork] = React.useState<string[]>([]);
   const [locationValues, setLocationValues] = React.useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = React.useState<string[]>([]);
   const [individuals, setIndividuals] = React.useState<Person[]>([]);
+  const [pageSize, setPageSize] = React.useState<number>(50);
+  const [totalNum, setTotalNum] = React.useState<number>(0);
+  const [currentPage, setCurrentPage] = React.useState<number>(1);
 
   useEffect(() => {
-    getAllIndividuals(1, 10, '').then((data) => {
-      setIndividuals(data);
+    getIndividualHybrid(locationValues, workValues, name, currentPage, pageSize).then((data) => {
+      setIndividuals(data.data.data);
+      setTotalNum(data.data.total);
     });
     getPlaceList('').then((data) => {
       setLocationValues(data);
@@ -37,6 +41,14 @@ export default function Page() {
     );
   }
 
+  const onShowSizeChange = (current, pageSize) => {
+    setPageSize(pageSize);
+    setCurrentPage(current);
+    getIndividualHybrid(selectedLocation, selectedWork, name, current, pageSize).then((data) => {
+      setIndividuals(data.data.data);
+      setTotalNum(data.data.total);
+    });
+  }
 
   const handleWorkChange = (checkedValues) => {
     setSelectedWork(checkedValues);
@@ -53,14 +65,15 @@ export default function Page() {
   }
 
   const handleSearch = () => {
-    getIndividualHybrid(selectedLocation, selectedWork, name, 1, 20).then((data) => {
-      setIndividuals(data.data);
-      console.log(data);
+    setCurrentPage(1);
+    getIndividualHybrid(selectedLocation, selectedWork, name, 1, pageSize).then((data) => {
+      setIndividuals(data.data.data);
+      setTotalNum(data.data.total);
     });
   }
 
   return (
-    <div className='flex flex-row w-full h-[100vh] overflow-auto p-6'>
+    <div className='flex flex-row w-full h-[100vh] p-6'>
       <div className='w-1/4 h-full flex flex-col text-[#1A2B5C] pr-6'>
         <div>
           <span className='mb-1 mr-2'>精确筛选</span>
@@ -127,7 +140,36 @@ export default function Page() {
         </div>
 
       </div>
-      <div className='w-3/4 bg-blue-200 h-full'></div>
+      <div className='w-3/4  h-full'>
+        <span className='text-base text-[#1A2B5C] pb-6'>共 {totalNum}条结果</span>
+        <div className='flex flex-col w-full items-center pb-8'>
+          {
+            individuals.length > 0 && (
+              <div className="flex flex-wrap">
+                {individuals.map((individual) => (
+                  <Link
+                    key={individual.id}
+                    href={`/individual/${individual.id}`}
+                    className="w-1/3 p-2 box-border"
+                    style={{ writingMode: 'horizontal-tb'}}
+                  >
+                    {individual.name}
+                  </Link>
+                ))}
+              </div>
+            )
+          }
+          <Pagination
+            responsive={true}
+            current={currentPage}
+            showSizeChanger
+            pageSize={pageSize}
+            onChange={onShowSizeChange}
+            total={totalNum}
+          />
+        </div>
+      </div>
     </div>
+
   )
 }

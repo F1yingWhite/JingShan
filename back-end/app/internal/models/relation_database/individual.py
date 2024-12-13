@@ -102,7 +102,6 @@ class Individual(SQLModel, table=True):
         with Session(engine) as session:
             # 基础查询
             base_query = select(cls).join(Ind_Col, cls.id == Ind_Col.ind_id).distinct()
-
             if name:
                 base_query = base_query.where(cls.name.like(f"%{name}%"))
             if works:

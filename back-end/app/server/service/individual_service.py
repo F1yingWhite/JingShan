@@ -95,11 +95,11 @@ async def get_individuals_places(key: str | None = None):
 
 class IndividualHybridQueryParams(BaseModel):
     works: list[str] = []
-    place: list[str] = []
+    places: list[str] = []
     name: str | None = None
 
 
 @individual_router.post("/hybrid")
 async def get_individuals_hybrid(page: int, page_size: int, params: IndividualHybridQueryParams):
-    individuals, count = Individual.get_individuals_hybrid(page, page_size, params.name, params.works, params.place)
+    individuals, count = Individual.get_individuals_hybrid(page, page_size, params.name, params.works, params.places)
     return ResponseModel(data={"data": individuals, "total": count})
