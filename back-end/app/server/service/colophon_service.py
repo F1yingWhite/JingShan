@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from ...internal.models.graph_database.zang_graph import update_colophon as graph_update_colophon
+from ...internal.models.graph_database.zang_graph import update_related_individuals as graph_update_related_individuals
 from ...internal.models.relation_database.colophon import Colophon
 from ...internal.models.relation_database.user import User
 from ..dependencies.user_auth import user_auth
@@ -188,7 +189,7 @@ async def update_related_individuals(request: Request, id: int, params: RelatedI
     colophon = Colophon.get_with_related_by_id(id)
     if not colophon:
         raise HTTPException(status_code=400, detail="Colophon not found")
-
+    graph_update_related_individuals(colophon["volume_id"], colophon["chapter_id"], params.individuals)
     await update_individuals(params.individuals, id)
     await remove_unrelated_individuals(colophon["related_individuals"], params.individuals, id)
 

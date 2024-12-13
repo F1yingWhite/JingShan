@@ -28,7 +28,7 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
       }
       form={form}
       autoFocusFirstInput
-      submitTimeout={3000}
+      submitTimeout={5000}
       onFinish={async (values) => {
         values.last_modify = colophon.last_modify
         putColophon(colophon.id, values).then(() => {
@@ -141,7 +141,7 @@ const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: C
       }
       form={form}
       autoFocusFirstInput
-      submitTimeout={3000}
+      submitTimeout={5000}
       onFinish={async (values) => {
         updateRelatedIndividual(colophon.id, values.dataSource).then(() => {
           messageApi.success('修改成功');

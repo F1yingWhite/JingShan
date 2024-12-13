@@ -1,3 +1,7 @@
+from typing import Literal
+
+from pydantic import BaseModel
+
 from . import neo4j_driver
 
 
@@ -129,3 +133,54 @@ def update_colophon(
                 place=place,
             )
         return result.data()
+
+
+class Individual(BaseModel):
+    id: int
+    name: str | None
+    type: Literal["书", "刻工", "募", "对", ""]
+    place: str | None
+
+
+def update_related_individuals(
+    volume_id: str,
+    chapter_id: str,
+    individuals: list[Individual],
+):
+    # 更新关联的Individual, Person-[RELATION:place,type]->Colophon
+    with neo4j_driver.session() as session:
+        # 先删除之前的关联
+        session.run(
+            """
+            MATCH (n:Colophon {volume_id: $volume_id, chapter_id: $chapter_id})-[r]-(m:Person)
+            DELETE r
+            """,
+            volume_id=volume_id,
+            chapter_id=chapter_id,
+        )
+        for individual in individuals:
+            individual_node = session.run(
+                """
+                MATCH (n:Person {name: $name})
+                RETURN n
+                """,
+                name=individual.name,
+            )
+            if not individual_node.data():
+                session.run(
+                    """
+                    CREATE (n:Person {name: $name})
+                    """,
+                    name=individual.name,
+                )
+            session.run(
+                """
+                MATCH (n:Colophon {volume_id: $volume_id, chapter_id: $chapter_id}), (m:Person {name: $name})
+                MERGE (m)-[r:RELATION {place: $place, type: $type}]->(n)
+                """,
+                volume_id=volume_id,
+                chapter_id=chapter_id,
+                name=individual.name,
+                place=individual.place,
+                type=individual.type,
+            )
