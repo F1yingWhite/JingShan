@@ -9,7 +9,7 @@ from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, EmailStr, field_validator
 
 from ...internal.bootstrap import config
-from ...internal.models.relation_database.user import User
+from ...internal.models import User
 from ...internal.utils.encryption import generate_jwt, reversible_decrypt, reversible_encrypt, verify_password
 from ..dependencies.user_auth import user_auth
 from . import ResponseModel

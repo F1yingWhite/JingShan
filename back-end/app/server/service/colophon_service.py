@@ -4,10 +4,9 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
+from ...internal.models import Colophon, User
 from ...internal.models.graph_database.zang_graph import update_colophon as graph_update_colophon
 from ...internal.models.graph_database.zang_graph import update_related_individuals as graph_update_related_individuals
-from ...internal.models.relation_database.colophon import Colophon
-from ...internal.models.relation_database.user import User
 from ..dependencies.user_auth import user_auth
 from . import ResponseModel
 
@@ -140,7 +139,7 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
     return ResponseModel(data={})
 
 
-class Individual(BaseModel):
+class IndividualParams(BaseModel):
     id: int
     name: str | None
     type: Literal["书", "刻工", "募", "对", ""]
@@ -148,7 +147,7 @@ class Individual(BaseModel):
 
 
 class RelatedIndividuals(BaseModel):
-    individuals: list[Individual]
+    individuals: list[IndividualParams]
 
 
 async def update_individuals(individuals, colophon_id):

@@ -1,19 +1,22 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .server.service.chat_service import auth_chat_router, chat_router
-from .server.service.colophon_service import auth_colophon_router, colophon_router
-from .server.service.graph.graph_zang_service import zang_graph_router
-from .server.service.graph.graph_zhi_service import zhi_graph_router
-from .server.service.hybrid_service import hybrid_router
-from .server.service.individual_service import individual_router
-from .server.service.pdf_service import pdf_router
-from .server.service.preface_and_postscript_service import (
+from .server import (
+    auth_chat_router,
+    auth_colophon_router,
     auth_preface_and_postscript_router,
+    auth_user_router,
+    chat_router,
+    colophon_router,
+    hybrid_router,
+    individual_router,
+    pdf_router,
     preface_and_postscript_router,
+    story_router,
+    user_router,
+    zang_graph_router,
+    zhi_graph_router,
 )
-from .server.service.story_service import story_router
-from .server.service.user_service import auth_user_router, user_router
 
 app = FastAPI()
 

@@ -4,6 +4,7 @@ from ....internal.models.graph_database.zang_graph import (
     get_by_scripture_name_with_colophon,
     get_colophon_with_person,
     get_colophon_with_related_data,
+    get_random_individuals_with_colophon_and_scripture,
 )
 from .. import ResponseModel
 
@@ -121,3 +122,86 @@ async def get_graph_by_scripture_name(scripture_name: str, begin: int, length: i
         )
         node["symbolSize"] = 10.0 * node["value"] ** 0.5
     return ResponseModel(data={"graph": res_dict, "total": total_len})
+
+
+@zang_graph_router.get("/colophon/all")
+async def get_colophon_graph(page_size: int = 20):
+    # 随机抽取page_size个人以及他们的关联牌记
+    results = get_random_individuals_with_colophon_and_scripture(page_size)
+    res_dict = {
+        "type": "line",
+        "categories": [],
+        "nodes": [],
+        "links": [],
+    }
+    category_list = ["人物", "卷数", "牌记"]
+    for category in category_list:
+        res_dict["categories"].append({"name": category, "keyword": {}, "base": category})
+    # n是牌记,m是人物,p是卷数
+    colophon_set = set()
+    individual_set = set()
+    scripture_set = set()
+    nodes = []
+    links = []
+
+    for result in results:
+        if result["n"]["volume_id"] not in colophon_set:
+            colophon_set.add(result["n"]["volume_id"])
+            nodes.append(
+                {"name": result["n"]["volume_id"], "type": "牌记", "url": "/colophon/" + str(result["n"]["id"])}
+            )
+        if result["m"]["name"] not in individual_set:
+            individual_set.add(result["m"]["name"])
+            nodes.append({"name": result["m"]["name"], "type": "人物", "url": "/individual/" + str(result["m"]["id"])})
+        if result["p"]["name"] not in scripture_set:
+            scripture_set.add(result["p"]["name"])
+            nodes.append(
+                {"name": result["p"]["name"], "type": "卷数", "url": "/graph/scripture/" + result["p"]["name"]}
+            )
+        links.append(
+            {
+                "source": result["n"]["volume_id"],
+                "target": result["p"]["name"],
+                "value": "牌记",
+            }
+        )
+        links.append(
+            {
+                "source": result["m"]["name"],
+                "target": result["n"]["volume_id"],
+                "value": f"{result['place']}-{result['type']}" if result.get("place") else result["type"],
+            }
+        )
+
+    # 先添加所有的节点
+    for node in nodes:
+        new_node = {
+            "name": node["name"],
+            "category": category_list.index(node["type"]),
+            "label": {"show": True},
+            "value": 1,
+            "url": node["url"],
+        }
+        res_dict["nodes"].append(new_node)
+
+    # 然后添加所有的链接
+    for link in links:
+        res_dict["links"].append(
+            {
+                "source": next(
+                    (index for index, node in enumerate(res_dict["nodes"]) if node["name"] == link["source"]), None
+                ),
+                "target": next(
+                    (index for index, node in enumerate(res_dict["nodes"]) if node["name"] == link["target"]), None
+                ),
+                "value": link["value"],
+            }
+        )
+    for node in res_dict["nodes"]:
+        node["value"] = sum(
+            link["source"] == res_dict["nodes"].index(node) or link["target"] == res_dict["nodes"].index(node)
+            for link in res_dict["links"]
+        )
+        node["symbolSize"] = 10.0 * node["value"] ** 0.5
+
+    return ResponseModel(data=res_dict)

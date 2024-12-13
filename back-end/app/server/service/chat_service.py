@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 from ...internal.bootstrap import config
 from ...internal.models.graph_database import execute_cypher
-from ...internal.models.relation_database.chat_history import Chat_History
+from ...internal.models import Chat_History
 from ...internal.utils.encryption import decode_jwt
 from ..dependencies.user_auth import user_auth
 from . import ResponseModel

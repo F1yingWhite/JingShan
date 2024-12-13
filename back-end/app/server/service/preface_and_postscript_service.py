@@ -3,8 +3,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query,Request
 from pydantic import BaseModel
 
-from ...internal.models.relation_database.preface_and_postscript import Preface_And_Postscript
-from ...internal.models.relation_database.user import User
+from ...internal.models import Preface_And_Postscript
+from ...internal.models import User
 from ..dependencies.user_auth import user_auth
 from . import ResponseModel
 

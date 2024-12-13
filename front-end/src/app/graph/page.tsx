@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react'
 import RelationChart from '@/components/RelationChart'
 import { Graph, getAllGraph } from '@/lib/graph_zhi';
 import { Tabs } from 'antd';
+import { getColophonGraph } from '@/lib/graph_zang';
 
 export default function Page() {
-  const [individualGraph, setIndividualGraph] = useState<Graph>()
-
+  const [individualGraph, setIndividualGraph] = useState<Graph>(undefined);
+  const [colophonGraph, setColophonGraph] = useState<Graph>(undefined);
   useEffect(() => {
     getAllGraph().then(graph => {
       setIndividualGraph(graph);
@@ -22,6 +23,12 @@ export default function Page() {
           setIndividualGraph(undefined);
           getAllGraph().then(graph => {
             setIndividualGraph(graph);
+          });
+        }else if (activateKey === '2') {
+          setColophonGraph(undefined);
+          getColophonGraph(20).then(graph => {
+            console.log(graph);
+            setColophonGraph(graph);
           });
         }
       }}
@@ -46,7 +53,10 @@ export default function Page() {
           children: (
             <div>
               <div className='h-screen w-screen'>
-                <RelationChart graph={individualGraph} layout={'force'} emphasis={true} zoom={0.1} />
+                {
+                  colophonGraph &&
+                  <RelationChart graph={colophonGraph} layout={'force'} emphasis={true} zoom={0.5} />
+                }
               </div>
             </div>
           )

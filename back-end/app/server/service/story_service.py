@@ -4,7 +4,7 @@ from time import sleep
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
 
-from ...internal.models.relation_database.story import Story
+from ...internal.models import Story
 from . import ResponseModel
 
 
