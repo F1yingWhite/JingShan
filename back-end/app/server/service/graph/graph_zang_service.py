@@ -134,13 +134,11 @@ async def get_colophon_graph(page_size: int = 20):
         "nodes": [],
         "links": [],
     }
-    category_list = ["人物", "卷数", "牌记"]
-    for category in category_list:
-        res_dict["categories"].append({"name": category, "keyword": {}, "base": category})
-    # n是牌记,m是人物,p是卷数
+    # n是卷数,m是人物,p是牌记
     colophon_set = set()
     individual_set = set()
     scripture_set = set()
+    scripture_set.add("人物")
     nodes = []
     links = []
 
@@ -148,36 +146,33 @@ async def get_colophon_graph(page_size: int = 20):
         if result["n"]["volume_id"] not in colophon_set:
             colophon_set.add(result["n"]["volume_id"])
             nodes.append(
-                {"name": result["n"]["volume_id"], "type": "牌记", "url": "/colophon/" + str(result["n"]["id"])}
+                {
+                    "name": result["p"]["name"] + "-" + result["n"]["volume_id"],
+                    "type": result["p"]["name"],
+                    "url": "/colophon/" + str(result["n"]["id"]),
+                }
             )
         if result["m"]["name"] not in individual_set:
             individual_set.add(result["m"]["name"])
             nodes.append({"name": result["m"]["name"], "type": "人物", "url": "/individual/" + str(result["m"]["id"])})
         if result["p"]["name"] not in scripture_set:
             scripture_set.add(result["p"]["name"])
-            nodes.append(
-                {"name": result["p"]["name"], "type": "卷数", "url": "/graph/scripture/" + result["p"]["name"]}
-            )
-        links.append(
-            {
-                "source": result["n"]["volume_id"],
-                "target": result["p"]["name"],
-                "value": "牌记",
-            }
-        )
         links.append(
             {
                 "source": result["m"]["name"],
-                "target": result["n"]["volume_id"],
+                "target": result["p"]["name"] + "-" + result["n"]["volume_id"],
                 "value": f"{result['place']}-{result['type']}" if result.get("place") else result["type"],
             }
         )
+    scripture_set = list(scripture_set)
+    for scripture in scripture_set:
+        res_dict["categories"].append({"name": scripture, "keyword": {}, "base": scripture})
 
     # 先添加所有的节点
     for node in nodes:
         new_node = {
             "name": node["name"],
-            "category": category_list.index(node["type"]),
+            "category": scripture_set.index(node["type"]),
             "label": {"show": True},
             "value": 1,
             "url": node["url"],

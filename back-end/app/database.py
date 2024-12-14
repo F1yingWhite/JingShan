@@ -373,6 +373,27 @@ def generate_neo4j(create):
 
 
 if __name__ == "__main__":
-    # 先构建人物节点
-    create = True
-    generate_neo4j(create)
+
+    def list_attr_to_str(tx):
+        """
+        在事务内执行Cypher语句，将“人物”节点中列表类型的属性值转换为字符串
+        """
+        query = """
+        MATCH (p:人物)
+        WITH p, keys(p) AS keys
+        UNWIND keys AS key
+        WITH p, key
+        WHERE p[key] IS NOT NULL
+        AND (CASE WHEN type(p[key]) IN ['List', 'String'] OR type(p[key]) IS NULL THEN false ELSE true END)
+        AND (type(p[key]) IN ['List', 'String'])
+        WITH p, key, CASE WHEN type(p[key]) = 'List' THEN p[key] ELSE [] END AS attr_value
+        WITH p, key, reduce(s = "", x IN attr_value | s + x + ",") AS combined_str
+        SET p[key] = substring(combined_str, 0, size(combined_str) - 1)
+        RETURN p
+        """
+        result = tx.run(query)
+        return result
+
+    with neo4j_driver.session() as session:
+        # 把所有的人物节点的属性中是列表的属性转换成字符串
+        session.execute_write(list_attr_to_str)

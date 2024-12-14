@@ -44,7 +44,7 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, 
         layout: layoutType,
         force: layoutType === 'force' ? {
           repulsion: 1000,
-          edgeLength: 100
+          edgeLength: 50
         } : undefined,
         draggable: true,
         circular: {

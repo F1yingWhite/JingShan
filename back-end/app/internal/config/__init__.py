@@ -1,3 +1,5 @@
+from typing import Literal
+
 import yaml
 from cryptography.fernet import Fernet
 from pydantic import AnyUrl, BaseModel, EmailStr, ValidationError
@@ -34,6 +36,12 @@ class EnvConfig(BaseModel):
     FRONT_URL: AnyUrl
 
 
+class DOUBAO(BaseModel):
+    BASE_URL: AnyUrl
+    API_KEY: str
+    MODEL: str
+
+
 class Config(BaseModel):
     DEBUG: bool
     SECRET_KEY: str
@@ -44,11 +52,14 @@ class Config(BaseModel):
     VOLCENGINE: VolcengineConfig
     EMAIL: EmailConfig
     ENV: dict[str, EnvConfig]
+    DOUBAO: DOUBAO
+    MODEL: Literal["DOUBAO", "SPARKAI"]
 
     @classmethod
     def load(cls, file_path: str) -> "Config":
         default_config = {
             "DATABASE_URL": "mysql+mysqldb://root:1234567@127.0.0.1:3306/jingshan",
+            "MODEL": "DOUBAO",
             "LOG_FILE": "app.log",
             "DEBUG": True,
             "SECRET_KEY": Fernet.generate_key().decode(),
@@ -69,6 +80,11 @@ class Config(BaseModel):
             "ENV": {
                 "DEBUG": {"URL": "http://localhost:5001", "FRONT_URL": "http://localhost:3000"},
                 "NODEBUG": {"URL": "https://jingshanback.cpolar.top", "FRONT_URL": "https://jingshan.cpolar.top"},
+            },
+            "DOUBAO": {
+                "BASE_URL": "https://api.douban.com/v2/movie/search",
+                "API_KEY": "your api",
+                "MODEL": "model",
             },
         }
 

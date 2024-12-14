@@ -35,6 +35,7 @@ dependencies = [
     "cryptography>=44.0.0",
     "sqlalchemy-utils>=0.41.2",
     "cachetools>=5.5.0",
+    "volcengine-python-sdk[ark]>=1.0.103",
 ]
 
 [tool.ruff]
