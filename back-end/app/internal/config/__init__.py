@@ -40,6 +40,8 @@ class DOUBAO(BaseModel):
     BASE_URL: AnyUrl
     API_KEY: str
     MODEL: str
+    ACCESS_KEY: str
+    SECRET_KEY: str
 
 
 class Config(BaseModel):
@@ -85,6 +87,8 @@ class Config(BaseModel):
                 "BASE_URL": "https://api.douban.com/v2/movie/search",
                 "API_KEY": "your api",
                 "MODEL": "model",
+                "ACCESS_KEY": "your access key",
+                "SECRET_KEY": "your secret key",
             },
         }
 

@@ -24,7 +24,7 @@ export default function Page() {
           getAllGraph().then(graph => {
             setIndividualGraph(graph);
           });
-        }else if (activateKey === '2') {
+        } else if (activateKey === '2') {
           setColophonGraph(undefined);
           getColophonGraph(50).then(graph => {
             console.log(graph);
@@ -55,7 +55,7 @@ export default function Page() {
               <div className='h-screen w-screen'>
                 {
                   colophonGraph &&
-                  <RelationChart graph={colophonGraph} layout={'force'} emphasis={true} zoom={0.1} />
+                  <RelationChart graph={colophonGraph} layout={'force'} emphasis={true} zoom={0.1} showTitle={false} />
                 }
               </div>
             </div>

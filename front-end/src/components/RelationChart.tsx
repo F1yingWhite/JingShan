@@ -6,10 +6,11 @@ type RelationChartProps = {
   graph: Graph;
   layout: "force" | "circular" | "none";
   emphasis: boolean;
-  zoom: number
+  zoom: number;
+  showTitle?: boolean;
 };
 
-const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, zoom }) => {
+const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, zoom, showTitle = true }) => {
   if (!graph) {
     return null;
   }
