@@ -137,8 +137,7 @@ async def get_colophon_graph(page_size: int = 20):
     # n是卷数,m是人物,p是牌记
     colophon_set = set()
     individual_set = set()
-    scripture_set = set()
-    scripture_set.add("人物")
+    scripture_set =["人物","牌记"]
     nodes = []
     links = []
 
@@ -148,15 +147,16 @@ async def get_colophon_graph(page_size: int = 20):
             nodes.append(
                 {
                     "name": result["p"]["name"] + "-" + result["n"]["volume_id"],
-                    "type": result["p"]["name"],
+                    # "type": result["p"]["name"],
+                    "type": "牌记",
                     "url": "/colophon/" + str(result["n"]["id"]),
                 }
             )
         if result["m"]["name"] not in individual_set:
             individual_set.add(result["m"]["name"])
             nodes.append({"name": result["m"]["name"], "type": "人物", "url": "/individual/" + str(result["m"]["id"])})
-        if result["p"]["name"] not in scripture_set:
-            scripture_set.add(result["p"]["name"])
+        # if result["p"]["name"] not in scripture_set:
+        #     scripture_set.add(result["p"]["name"])
         links.append(
             {
                 "source": result["m"]["name"],

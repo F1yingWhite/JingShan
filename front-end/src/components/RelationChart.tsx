@@ -8,9 +8,10 @@ type RelationChartProps = {
   emphasis: boolean;
   zoom: number;
   showTitle?: boolean;
+  draggable?: boolean;
 };
 
-const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, zoom, showTitle = true }) => {
+const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, zoom, showTitle = true, draggable = true }) => {
   if (!graph) {
     return null;
   }
@@ -47,7 +48,7 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, 
           repulsion: 1000,
           edgeLength: 50
         } : undefined,
-        draggable: true,
+        draggable: draggable,
         circular: {
           rotateLabel: true
         },

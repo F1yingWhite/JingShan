@@ -48,14 +48,6 @@ GRAPH_MESSAGE = {
 
 # 关系三元组
 [人物 r 人物]
-
-
-比如我问径山寺包含哪些禅师,你返回
-```cypher
-MATCH (p:人物)
-WHERE ANY(别名 IN p.别名 WHERE 别名 CONTAINS "禅师")
-RETURN p
-```
 """,  # noqa: E501
 }
 
@@ -119,16 +111,14 @@ async def spark_send_response(websocket: WebSocket, messages: list, history: Cha
         if line:
             if line == "[DONE]":
                 await websocket.close()
-                if history is not None:
-                    if has_cypher:
-                        messages = messages[1:-1]
-                    else:
-                        messages = messages[1:]
-                    messages.append({"role": "assistant", "content": res})
-                    history.update(messages, title=None)
-                return
+                break
             try:
                 data = json.loads(line)
+                if data["code"] != 0:
+                    res+=data["message"]
+                    await websocket.send_text(data["message"])
+                    await websocket.close()
+                    break
                 print(data)
                 content = data["choices"][0]["delta"]["content"]
                 res += content
@@ -136,6 +126,15 @@ async def spark_send_response(websocket: WebSocket, messages: list, history: Cha
                 await asyncio.sleep(0)  # 确保每条消息立即发送
             except json.JSONDecodeError as e:
                 print(f"JSONDecodeError: {e} - Line: {line}")
+    print(history)
+    if history is not None:
+        if has_cypher:
+            messages = messages[1:-1]
+        else:
+            messages = messages[1:]
+        messages.append({"role": "assistant", "content": res})
+        history.update(messages, title=None)
+    return
 
 
 def doubao_get_once(message: list[Message]):

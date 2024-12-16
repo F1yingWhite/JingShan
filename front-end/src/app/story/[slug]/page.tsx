@@ -1,13 +1,15 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Story, generatePicture, getStoryDetail } from "@/lib/story"
-import { Breadcrumb, Image, Spin } from 'antd'
+import { Breadcrumb, Image, Skeleton, Spin } from 'antd'
 import Tag from '@/components/Tag'
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [story, setStory] = useState<Story>()
   const [img, setImg] = useState<string>()
   const [loading, setLoading] = useState<boolean>(true)
+  const [dimensions, setDimensions] = useState<{ width: number, height: number }>({ width: 0, height: 0 })
+  const containerRef = useRef<HTMLDivElement>(null)
   const slug = params.slug;
 
   useEffect(() => {
@@ -20,12 +22,28 @@ export default function Page({ params }: { params: { slug: string } }) {
     })
   }, [slug])
 
+  const updateDimensions = () => {
+    if (containerRef.current) {
+      const { offsetWidth, offsetHeight } = containerRef.current
+      const minDimension = Math.min(offsetWidth, offsetHeight) - 24
+      setDimensions({ width: minDimension, height: minDimension })
+    }
+  }
+
+  useEffect(() => {
+    updateDimensions()
+    window.addEventListener('resize', updateDimensions)
+    return () => {
+      window.removeEventListener('resize', updateDimensions)
+    }
+  }, [])
+
   return (
     <div
       className="flex h-full flex-wrap max-w-[1200px] mx-auto justify-center"
     >
       <div className="w-full flex flex-row">
-        <div className="w-full  md:w-1/3 p-8  overflow-y-auto">
+        <div className="w-1/3 p-8  overflow-y-auto">
           <div className='pb-8'>
             <Breadcrumb
               separator={<div className='text-lg'>&gt;&gt;</div>}
@@ -50,7 +68,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   {story.title}
                 </div>
               </div>
-              <p className="mb-6 mt-6 leading-relaxed flex flex-col items-center">
+              <p className="m-6 leading-relaxed flex flex-col items-center">
                 {story.content.split(/。/).map((line, index) => (
                   <React.Fragment key={index}>
                     {line.trim()}
@@ -59,11 +77,10 @@ export default function Page({ params }: { params: { slug: string } }) {
                 ))}
               </p>
             </div>
-          )
-          }
-        </div >
-        <div className="w-full md:w-2/3  pt-20">
-          {loading ? <Spin /> : <Image src={img} />}
+          )}
+        </div>
+        <div className="w-2/3 pt-20 pr-6" ref={containerRef}>
+          {loading ? <Skeleton.Image active={loading} style={{ width: dimensions.width, height: dimensions.height }} /> : <Image src={img} />}
         </div>
       </div>
     </div>

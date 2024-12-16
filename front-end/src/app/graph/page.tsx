@@ -55,7 +55,7 @@ export default function Page() {
               <div className='h-screen w-screen'>
                 {
                   colophonGraph &&
-                  <RelationChart graph={colophonGraph} layout={'force'} emphasis={true} zoom={0.1} showTitle={false} />
+                  <RelationChart graph={colophonGraph} layout={'force'} emphasis={false} zoom={0.1} draggable={false} showTitle={false} />
                 }
               </div>
             </div>

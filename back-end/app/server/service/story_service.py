@@ -1,4 +1,6 @@
+import base64
 import json
+from time import sleep
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
@@ -42,11 +44,15 @@ async def get_story_detail(id: int):
     return ResponseModel(data=story)
 
 
-# TODO:文生图的后续调用
 @story_router.post("/generate_picture")
 async def generate_picture(content_model: ContentModel):
     content = content_model.content
-    print(content)
+    img_test_path = "./assets/test.jpg"
+    sleep(2)
+    with open(img_test_path, "rb") as f:
+        img = f.read()
+        img_base64 = base64.b64encode(img).decode()
+    return ResponseModel(data={"img": img_base64})
     access_key = config.DOUBAO.ACCESS_KEY
     secret_key = config.DOUBAO.SECRET_KEY
     service = "cv"
@@ -71,7 +77,7 @@ async def generate_picture(content_model: ContentModel):
         "use_sr": True,
         "return_url": False,
         "logo_info": {
-            "add_logo": False,
+            "add_logo": True,
             "position": 0,
             "language": 0,
             "opacity": 0.3,
@@ -83,9 +89,8 @@ async def generate_picture(content_model: ContentModel):
     response = request_handler.request(
         service, version, region, host, content_type, method, query, header, action, body
     )
-    # 保存图片
     if response.status_code != 200:
         print(response.text)
         raise HTTPException(status_code=400, detail="Failed to generate picture")
-    base64 = json.loads(response.text)["data"]["binary_data_base64"][0]
-    return ResponseModel(data={"img": base64})
+    base64_pic = json.loads(response.text)["data"]["binary_data_base64"][0]
+    return ResponseModel(data={"img": base64_pic})
