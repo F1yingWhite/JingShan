@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { Graph } from '@/lib/graph_zhi';
