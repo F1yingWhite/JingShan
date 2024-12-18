@@ -144,6 +144,7 @@ class IndividualParams(BaseModel):
     name: str | None
     type: Literal["书", "刻工", "募", "对", ""]
     place: str | None
+    note: str | None = None
 
 
 class RelatedIndividuals(BaseModel):
@@ -161,9 +162,11 @@ async def update_individuals(individuals, colophon_id):
                 individual_obj = Individual.create(individual.name)
             ind_col = Ind_Col.get_by_ids(individual_obj.id, colophon_id)
             if not ind_col:
-                Ind_Col.create(individual_obj.id, colophon_id, individual.type, individual.place)
-            elif ind_col.type != individual.type or ind_col.place != individual.place:
-                ind_col.update(individual.type, individual.place)
+                Ind_Col.create(individual_obj.id, colophon_id, individual.type, individual.place, individual.note)
+            elif (
+                ind_col.type != individual.type or ind_col.place != individual.place or ind_col.note != individual.note
+            ):
+                ind_col.update(individual.type, individual.place, individual.note)
 
 
 async def remove_unrelated_individuals(original_individuals, new_individuals, colophon_id):

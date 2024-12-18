@@ -186,6 +186,7 @@ class Colophon(SQLModel, table=True):
                     "name": row[2],
                     "type": row[1].type,
                     "place": row[1].place,
+                    "note": row[1].note,
                     "id": row[1].ind_id,
                 }
                 for row in result

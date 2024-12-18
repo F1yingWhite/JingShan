@@ -5,6 +5,7 @@ export type RelatedIndividual = {
     id: number;
     place: string;
     type: string;
+    note: string;
 }
 
 export type Colophon = {

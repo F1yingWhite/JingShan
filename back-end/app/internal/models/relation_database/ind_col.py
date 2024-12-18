@@ -8,6 +8,7 @@ class Ind_Col(SQLModel, table=True):
     col_id: int | None = Field(default=None, primary_key=True)
     type: str | None = Field(default=None, max_length=255)
     place: str | None = Field(default=None, max_length=255)
+    note: str | None = Field(default=None, max_length=1000)
 
     @classmethod
     def get_works_type(cls, key: None | str):
@@ -43,9 +44,9 @@ class Ind_Col(SQLModel, table=True):
             return ind_col
 
     @classmethod
-    def create(cls, ind_id: int, col_id: int, type: str, place: str):
+    def create(cls, ind_id: int, col_id: int, type: str, place: str, note: str):
         with Session(engine) as session:
-            ind_col = cls(ind_id=ind_id, col_id=col_id, type=type, place=place)
+            ind_col = cls(ind_id=ind_id, col_id=col_id, type=type, place=place, note=note)
             session.add(ind_col)
             session.commit()
             session.refresh(ind_col)
@@ -59,10 +60,11 @@ class Ind_Col(SQLModel, table=True):
             session.delete(ind_col)
             session.commit()
 
-    def update(self, type: str, place: str):
+    def update(self, type: str, place: str, note: str):
         with Session(engine) as session:
             self.type = type
             self.place = place
+            self.note = note
             session.add(self)
             session.commit()
             session.refresh(self)

@@ -170,7 +170,7 @@ async def get_graph_detail(name: str):
         for key in result["n"]:
             temp_dict[key] = result["n"][key]
         res_dict.append(temp_dict)
-    return ResponseModel(ata=res_dict)
+    return ResponseModel(data=res_dict)
 
 
 @zhi_graph_router.get("/identity")

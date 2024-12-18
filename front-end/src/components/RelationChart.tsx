@@ -7,11 +7,10 @@ type RelationChartProps = {
   layout: "force" | "circular" | "none";
   emphasis: boolean;
   zoom: number;
-  showTitle?: boolean;
   draggable?: boolean;
 };
 
-const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, zoom, showTitle = true, draggable = true }) => {
+const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, zoom, draggable = true }) => {
   if (!graph) {
     return null;
   }
@@ -35,7 +34,7 @@ const RelationChart: React.FC<RelationChartProps> = ({ graph, layout, emphasis, 
       {
         data: graph.categories.map(function (a: { name: string }) {
           return a.name;
-        })
+        }),
       }
     ],
     animationDurationUpdate: 1500,

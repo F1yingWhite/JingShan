@@ -128,6 +128,11 @@ const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: C
       },
     },
     {
+      title: '备注',
+      key: 'note',
+      dataIndex: 'note',
+    },
+    {
       title: '操作',
       valueType: 'option',
     },
@@ -176,6 +181,7 @@ const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: C
               name: "",
               place: "",
               type: "",
+              note: "",
             }),
           }}
           editable={{
@@ -335,6 +341,11 @@ export default function Page({ params }: { params: { slug: string } }) {
               dataIndex: 'place',
               ellipsis: true,
             },
+            {
+              title: '备注',
+              dataIndex: 'note',
+              ellipsis: true,
+            }
           ]}
           pagination={{
             showSizeChanger: true,
