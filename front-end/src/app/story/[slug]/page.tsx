@@ -42,8 +42,8 @@ export default function Page({ params }: { params: { slug: string } }) {
     <div
       className="flex h-full flex-wrap max-w-[1200px] mx-auto justify-center"
     >
-      <div className="w-full flex flex-row">
-        <div className="w-1/3 p-8  overflow-y-auto">
+      <div className="w-full flex flex-col sm:flex-row">
+        <div className="w-full sm:w-1/3 p-8 pr-4  overflow-y-auto">
           <div className='pb-8'>
             <Breadcrumb
               separator={<div className='text-lg'>&gt;&gt;</div>}
@@ -68,7 +68,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   {story.title}
                 </div>
               </div>
-              <p className="m-6 leading-relaxed flex flex-col items-center">
+              <p className="m-6 leading-relaxed flex flex-col items-center text-center">
                 {story.content.split(/。/).map((line, index) => (
                   <React.Fragment key={index}>
                     {line.trim()}
@@ -79,7 +79,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             </div>
           )}
         </div>
-        <div className="w-2/3 pt-20 pr-6" ref={containerRef}>
+        <div className="w-full sm:w-2/3 pt-20 pl-4 pr-4" ref={containerRef}>
           {loading ? <Skeleton.Image active={loading} style={{ width: dimensions.width, height: dimensions.height }} /> : <Image src={img} />}
         </div>
       </div>
