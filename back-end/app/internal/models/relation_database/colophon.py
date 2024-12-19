@@ -143,7 +143,7 @@ class Colophon(SQLModel, table=True):
     @classmethod
     def search_by_content_no_page(cls, content: str):
         with Session(engine) as session:
-            statement = select(cls.scripture_name).where(cls.content.like(f"%{content}%")).group_by(cls.scripture_name)
+            statement = select(distinct(cls.scripture_name)).where(cls.content.like(f"%{content}%"))
 
             results = session.exec(statement).all()
             return results

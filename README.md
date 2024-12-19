@@ -13,4 +13,4 @@ docker run -d -p 3306:3306 --name jingshan-db -e MYSQL_ROOT_PASSWORD=你的密�
 - [ ] 竺阳子冯洪业/竺阳氏冯洪业 同一个人物有多个重名
 - [ ] live2d小人样式以及找人绘画
 - [x] not found改空
-- [ ] 增删改查 加祈愿
+- [x] 增删改查 加祈愿

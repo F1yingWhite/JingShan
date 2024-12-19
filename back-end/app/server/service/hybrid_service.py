@@ -9,4 +9,4 @@ hybrid_router = APIRouter(prefix="/hybrid")
 @hybrid_router.get("/search")
 async def search(keyword: str, current: int, pageSize: int):
     res, num = hybird_search(keyword, current, pageSize)
-    return ResponseModel(data={"data": res, "success": True, "total": num})
+    return ResponseModel(data={"data": res, "total": num})
