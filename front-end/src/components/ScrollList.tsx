@@ -1,3 +1,4 @@
+'use client'
 import { Divider, List, Skeleton } from 'antd'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
@@ -21,7 +22,7 @@ export default function ScollList({ loadDataApi, title }: ScollListProps) {
   const loadMoreData = () => {
     if (loading) return
     setLoading(true)
-    loadDataApi(Math.ceil(data.length / 20) + 1, 20).then((res) => {
+    loadDataApi(Math.ceil(data.length / 100) + 1, 100).then((res) => {
       setTotal(res.total_num)
       setData(prevData => [...prevData, ...res.results])
       setLoading(false)
@@ -49,7 +50,6 @@ export default function ScollList({ loadDataApi, title }: ScollListProps) {
           scrollableTarget="scrollableDiv"
         >
           <List
-            style={{ overflow: 'auto' }}
             dataSource={data}
             renderItem={(item) => (
               <List.Item key={item.name}>
