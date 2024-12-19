@@ -136,7 +136,7 @@ async def get_all():
                     (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["m"]["姓名"]),
                     None,
                 ),
-                "value": node["r"][1],
+                "value": node["r"],
             }
         )
     return ResponseModel(data=res_dict)
