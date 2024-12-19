@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from sqlalchemy import TIMESTAMP, Column, func
 from sqlmodel import Field, Session, SQLModel, select
 

@@ -137,6 +137,7 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
         colophon.words_num,
         colophon.money,
         colophon.content,
+        colophon.wish,
     )
     return ResponseModel(data={})
 

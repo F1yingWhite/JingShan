@@ -51,6 +51,7 @@ def update_colophon(
     words_num: str | None,
     money: str | None,
     content: str | None,
+    wish: str | None,
 ):
     with neo4j_driver.session() as session:
         # 如果是none则设为""
@@ -60,11 +61,16 @@ def update_colophon(
         words_num = words_num if words_num else ""
         money = money if money else ""
         content = content if content else ""
+        wish = wish if wish else ""
 
         result = session.run(
             """
             MATCH (n:Colophon {volume_id: $volume_id, chapter_id: $chapter_id})
-            SET n.qianziwen = $qianziwen, n.words_num = $words_num, n.money = $money, n.content = $content
+            SET n.qianziwen = $qianziwen,
+                n.words_num = $words_num,
+                n.money = $money,
+                n.content = $content,
+                n.wish = $wish
             RETURN n
             """,
             volume_id=volume_id,
@@ -73,6 +79,7 @@ def update_colophon(
             words_num=words_num,
             content=content,
             money=money,
+            wish=wish,
         )
         # 断开之前的时间地点
         session.run(
