@@ -246,7 +246,7 @@ export default function Page() {
           </div>
         </Space>
       </Content>
-      <footer style={{ backgroundColor: '#DAA520', height: "350px", marginTop: "20px" }}>
+      <footer style={{ backgroundColor: '#DAA520', height: "30vh", maxHeight: "200px", marginTop: "20px" }}>
         {/* TODO:页脚内容 */}
         <div className=''>
           <div className='text-3xl font-semibold m-5'>

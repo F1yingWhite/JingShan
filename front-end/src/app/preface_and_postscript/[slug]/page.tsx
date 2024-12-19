@@ -118,7 +118,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
     const adjustHeight = () => {
       const rightDivHeight = rightDiv.offsetHeight;
-      const computedHeight = Math.max(window.innerHeight - 320, rightDivHeight);
+      const computedHeight = Math.max(window.innerHeight * 1.1, rightDivHeight);
       leftDiv.style.height = `${computedHeight}px`;
     };
     window.addEventListener("resize", adjustHeight);
