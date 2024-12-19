@@ -142,7 +142,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   {
                     key: 'tab1',
                     label: (
-                      <span>全部活动{renderBadge(formattedDetails.length)}</span>
+                      <span>出现经文{renderBadge(formattedDetails.length)}</span>
                     ),
                   },
                 ],

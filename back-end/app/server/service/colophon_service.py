@@ -102,6 +102,7 @@ class ColophonUpdateParams(BaseModel):
     words_num: str | None = None
     money: str | None = None
     last_modify: str | None = None
+    wish: str | None = None
 
 
 @auth_colophon_router.put("/update/{id}")
@@ -125,6 +126,7 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
         time=params.time,
         words_num=params.words_num,
         money=params.money,
+        wish=params.wish,
     )
     graph_update_colophon(
         colophon.volume_id,

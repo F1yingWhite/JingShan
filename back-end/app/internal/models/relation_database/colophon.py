@@ -21,6 +21,7 @@ class Colophon(SQLModel, table=True):
     temple: str | None = Field(default=None, max_length=255)
     words_num: str | None = Field(default=None, max_length=255)
     money: str | None = Field(default=None, max_length=255)
+    wish: str | None = Field(default=None, max_length=1000)
     last_modify: datetime = Field(sa_column=Column(TIMESTAMP, default=func.now(), onupdate=func.now()))
 
     @classmethod
