@@ -126,13 +126,6 @@ const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: C
       title: '活动',
       dataIndex: 'type',
       key: 'type',
-      valueType: 'select',
-      valueEnum: {
-        刻工: { text: '刻工', status: '刻工' },
-        书: { text: '书', status: '书' },
-        对: { text: '对', status: '对' },
-        募: { text: '募', status: '募' },
-      },
     },
     {
       title: '备注',

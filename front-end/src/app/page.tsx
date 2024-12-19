@@ -134,7 +134,7 @@ export default function Page() {
         <Space direction="vertical" size="large" >
           {/* 封面 */}
           <div
-            className="relative flex flex-col items-center w-[100vw] h-[80vh] min-h-[500px]  bg-cover bg-center"
+            className="relative flex flex-col items-center w-[100vw] h-[80vh] min-h-[700px]  bg-cover bg-center"
             style={{ backgroundImage: `url('/gate.png')` }}
           >
             <div className="absolute inset-0 bg-white opacity-50 backdrop-blur-sm z-10"></div>
