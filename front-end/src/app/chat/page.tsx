@@ -29,7 +29,7 @@ const placeholderPromptsItems: GetProp<typeof Prompts, 'items'> = [
     children: [
       {
         key: '1-1',
-        description: `径山寺有哪些禅师?`,
+        description: `查询开山大觉国一贞元祖师的信息`,
       },
       {
         key: '1-2',
@@ -37,7 +37,7 @@ const placeholderPromptsItems: GetProp<typeof Prompts, 'items'> = [
       },
       {
         key: '1-3',
-        description: `径山寺的历史?`,
+        description: `查询开山大觉国一贞元祖师的弟子有哪些`,
       }
     ],
   },

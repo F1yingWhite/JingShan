@@ -25,29 +25,39 @@ class ChatQueryParams(BaseModel):
 
 SYSTEM_MESSAGE = {"role": "system", "content": "现在你是一个在径山寺修行的小和尚"}
 GRAPH_MESSAGE = {
-    "role": "user",
+    "role": "system",
     "content": """
-你是一个neo4j数据库查询高手,现在我本地有一个径山寺人物关系图数据库,请你后续根据我的问题给出对应的neo4j查询语句,注意**除了姓名外所有的属性都是列表形式**，neo4j语句需包含在```cypher```代码块中,如果没有识别到问题,则回答None.
+你是一个neo4j数据库查询高手,现在我本地有一个径山寺人物关系图数据库,neo4j数据库结构如下,用neomodel(neo4j描述库)描述,注意所有的属性名都是中文
+```python
+class ZhiPersonRelationship(StructuredRel):
+    type = StringProperty()
 
-一个人物实体结构的例子如下：
-```
-"labels": [
-    "人物"
-],
-"properties": {
-    "身份": ["法侣"],
-    "别名": ["道林", "香光", "鸟窠禅师", "鹊巢和尚", "圆修禅师"],
-    "朝代": ["唐"],
-    "姓名": "鸟窼道林禅师",
-    "报龄": [84],
-    "开悟记述": ["诣长安属代宗，诏国一禅师，至阙师乃谒之，遂得正法。"],
-    "法语": ["元和中，白居易侍郎出守杭州，因入山谒师，问：「口禅师住处甚危险。」..."],
-    "具戒时间": ["二十一岁于荆州果愿寺受戒"]
-},
-```
 
-# 关系三元组
-[人物 r 人物]
+class ZhiPerson(StructuredNode):
+    姓名 = StringProperty(required=True)
+    资料出处 = ArrayProperty(base_property=StringProperty())
+    身份 = ArrayProperty(base_property=StringProperty())
+    世代 = ArrayProperty(base_property=StringProperty())
+    出家前学法过程 = ArrayProperty(base_property=StringProperty())
+    生平史传 = ArrayProperty(base_property=StringProperty())
+    卒年 = ArrayProperty(base_property=StringProperty())
+    别名 = ArrayProperty(base_property=StringProperty())
+    僧腊 = ArrayProperty(base_property=StringProperty())
+    朝代 = ArrayProperty(base_property=StringProperty())
+    出家地 = ArrayProperty(base_property=StringProperty())
+    宗派 = ArrayProperty(base_property=StringProperty())
+    修法 = ArrayProperty(base_property=StringProperty())
+    籍贯 = ArrayProperty(base_property=StringProperty())
+    人名规范资料库 = ArrayProperty(base_property=StringProperty())
+    报龄 = ArrayProperty(base_property=StringProperty())
+    开悟记述 = ArrayProperty(base_property=StringProperty())
+    法语 = ArrayProperty(base_property=StringProperty())
+    生年 = ArrayProperty(base_property=StringProperty())
+    具戒时间 = ArrayProperty(base_property=StringProperty())
+
+    personRelationship = RelationshipTo("ZhiPerson", "personRelationship", model=ZhiPersonRelationship)
+```
+接下来我的语句都是问题,请你根据我的问题给出对应的neo4j查询语句,neo4j语句需包含在```cypher```代码块中,注意节点名叫ZhiPerson而不是Person
 """,  # noqa: E501
 }
 
@@ -115,7 +125,7 @@ async def spark_send_response(websocket: WebSocket, messages: list, history: Cha
             try:
                 data = json.loads(line)
                 if data["code"] != 0:
-                    res+=data["message"]
+                    res += data["message"]
                     await websocket.send_text(data["message"])
                     await websocket.close()
                     break
@@ -151,12 +161,12 @@ def doubao_get_once(message: list[Message]):
 def doubao_get_query(messages: list[Message]):
     messages = [SYSTEM_MESSAGE] + messages
     response = doubao_get_once(messages)
+    print(response)
     # 使用正则匹配出cypher语句
     cypher_pattern = re.compile(r"```cypher(.*?)```", re.DOTALL)
     match = cypher_pattern.search(response)
     if match:
         cypher = match.group(1).strip()
-        print(cypher)
         return execute_cypher(cypher)
     else:
         return None
