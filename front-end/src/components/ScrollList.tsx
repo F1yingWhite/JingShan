@@ -39,6 +39,7 @@ export default function ScollList({ loadDataApi, title }: ScollListProps) {
         id="scrollableDiv"
         className='w-full h-full overflow-y-auto'
       >
+        {/* TODO:bug fix */}
         <InfiniteScroll
           dataLength={data.length}
           next={loadMoreData}
@@ -48,6 +49,7 @@ export default function ScollList({ loadDataApi, title }: ScollListProps) {
           scrollableTarget="scrollableDiv"
         >
           <List
+            style={{ overflow: 'auto' }}
             dataSource={data}
             renderItem={(item) => (
               <List.Item key={item.name}>
