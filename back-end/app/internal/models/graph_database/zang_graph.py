@@ -191,6 +191,15 @@ def update_related_individuals(
                 place=individual.place,
                 type=individual.type,
             )
+    # 删除出度为0的Person
+    with neo4j_driver.session() as session:
+        session.run(
+            """
+            MATCH (n:Person)
+            WHERE NOT (n)-[:RELATION]-()
+            DELETE n
+            """
+        )
 
 
 def get_random_individuals_with_colophon_and_scripture(size: int):
