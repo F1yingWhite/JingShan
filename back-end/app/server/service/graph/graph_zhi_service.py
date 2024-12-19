@@ -33,20 +33,20 @@ async def get_graph_by_name(name: str):
     node_map = {}
     node_category_map = {}
     for result in results:
-        if result["subject_identity"] != "Not Found":
+        if result["subject_identity"] != "-":
             list_of_strings = result["subject_identity"]
         elif result["subject.姓名"] == name:
             list_of_strings = ["查询对象"]
         else:
-            list_of_strings = ["Not Found"]
+            list_of_strings = ["-"]
         category_set.add(list_of_strings[0])
         node_category_map[result["subject.姓名"]] = list_of_strings[0]
-        if result["object_identity"] != "Not Found":
+        if result["object_identity"] != "-":
             list_of_strings = result["object_identity"]
         elif result["object.姓名"] == name:
             list_of_strings = ["查询对象"]
         else:
-            list_of_strings = ["Not Found"]
+            list_of_strings = ["-"]
         category_set.add(list_of_strings[0])
         node_category_map[result["object.姓名"]] = list_of_strings[0]
         node_map[result["subject.姓名"]] = node_map.get(result["subject.姓名"], 0) + 1
@@ -93,19 +93,19 @@ async def get_all():
         "links": [],
     }
 
-    category_list = {"Not Found"}
+    category_list = {"-"}
     node_category_map = {}
     for node in all_node:
         if "身份" in node["m"]:
             category_list.add(node["m"]["身份"][0])
             node_category_map[node["m"]["姓名"]] = node["m"]["身份"][0]
         else:
-            node_category_map[node["m"]["姓名"]] = "Not Found"
+            node_category_map[node["m"]["姓名"]] = "-"
         if "身份" in node["n"]:
             category_list.add(node["n"]["身份"][0])
             node_category_map[node["n"]["姓名"]] = node["n"]["身份"][0]
         else:
-            node_category_map[node["n"]["姓名"]] = "Not Found"
+            node_category_map[node["n"]["姓名"]] = "-"
     category_list = list(category_list)
 
     # random.shuffle(category_list)
@@ -136,7 +136,7 @@ async def get_all():
                     (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["m"]["姓名"]),
                     None,
                 ),
-                "value": node["r"][1],
+                "value": node["r"],
             }
         )
     return ResponseModel(data=res_dict)

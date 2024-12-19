@@ -21,6 +21,7 @@ class Colophon(SQLModel, table=True):
     temple: str | None = Field(default=None, max_length=255)
     words_num: str | None = Field(default=None, max_length=255)
     money: str | None = Field(default=None, max_length=255)
+    wish: str | None = Field(default=None, max_length=1000)
     last_modify: datetime = Field(sa_column=Column(TIMESTAMP, default=func.now(), onupdate=func.now()))
 
     @classmethod
@@ -142,7 +143,7 @@ class Colophon(SQLModel, table=True):
     @classmethod
     def search_by_content_no_page(cls, content: str):
         with Session(engine) as session:
-            statement = select(cls.scripture_name).where(cls.content.like(f"%{content}%")).group_by(cls.scripture_name)
+            statement = select(distinct(cls.scripture_name)).where(cls.content.like(f"%{content}%"))
 
             results = session.exec(statement).all()
             return results

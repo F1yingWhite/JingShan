@@ -1,6 +1,4 @@
-import base64
 import json
-from time import sleep
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
@@ -47,12 +45,6 @@ async def get_story_detail(id: int):
 @story_router.post("/generate_picture")
 async def generate_picture(content_model: ContentModel):
     content = content_model.content
-    img_test_path = "./assets/test.jpg"
-    sleep(2)
-    with open(img_test_path, "rb") as f:
-        img = f.read()
-        img_base64 = base64.b64encode(img).decode()
-    return ResponseModel(data={"img": img_base64})
     access_key = config.DOUBAO.ACCESS_KEY
     secret_key = config.DOUBAO.SECRET_KEY
     service = "cv"
@@ -65,9 +57,9 @@ async def generate_picture(content_model: ContentModel):
     header = {}
     action = "CVProcess"
     body = {
-        "req_key": "high_aes_general_v20_L",
+        "req_key": "high_aes_general_v21_L",
         "prompt": content,
-        "model_version": "general_v2.0_L",
+        "model_version": "general_v2.1_L",
         "req_schedule_conf": "general_v20_9B_rephraser",
         "seed": -1,
         "scale": 3.5,

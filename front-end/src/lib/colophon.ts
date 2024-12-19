@@ -22,6 +22,7 @@ export type Colophon = {
     time?: string;
     temple?: string;
     words_num?: string;
+    wish?: string;
     money?: string
     related_individuals?: RelatedIndividual[];
 }

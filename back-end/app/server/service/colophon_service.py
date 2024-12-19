@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
@@ -102,6 +101,7 @@ class ColophonUpdateParams(BaseModel):
     words_num: str | None = None
     money: str | None = None
     last_modify: str | None = None
+    wish: str | None = None
 
 
 @auth_colophon_router.put("/update/{id}")
@@ -125,6 +125,7 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
         time=params.time,
         words_num=params.words_num,
         money=params.money,
+        wish=params.wish,
     )
     graph_update_colophon(
         colophon.volume_id,
@@ -135,6 +136,7 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
         colophon.words_num,
         colophon.money,
         colophon.content,
+        colophon.wish,
     )
     return ResponseModel(data={})
 
@@ -142,7 +144,7 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
 class IndividualParams(BaseModel):
     id: int
     name: str | None
-    type: Literal["书", "刻工", "募", "对", ""]
+    type: str
     place: str | None
     note: str | None = None
 
@@ -191,8 +193,8 @@ async def update_related_individuals(request: Request, id: int, params: RelatedI
     colophon = Colophon.get_with_related_by_id(id)
     if not colophon:
         raise HTTPException(status_code=400, detail="Colophon not found")
-    graph_update_related_individuals(colophon["volume_id"], colophon["chapter_id"], params.individuals)
     await update_individuals(params.individuals, id)
     await remove_unrelated_individuals(colophon["related_individuals"], params.individuals, id)
+    graph_update_related_individuals(colophon["volume_id"], colophon["chapter_id"], params.individuals)
 
     return ResponseModel(data={})

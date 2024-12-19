@@ -119,14 +119,12 @@ async def spark_send_response(websocket: WebSocket, messages: list, history: Cha
                     await websocket.send_text(data["message"])
                     await websocket.close()
                     break
-                print(data)
                 content = data["choices"][0]["delta"]["content"]
                 res += content
                 await websocket.send_text(content)
                 await asyncio.sleep(0)  # 确保每条消息立即发送
             except json.JSONDecodeError as e:
                 print(f"JSONDecodeError: {e} - Line: {line}")
-    print(history)
     if history is not None:
         if has_cypher:
             messages = messages[1:-1]

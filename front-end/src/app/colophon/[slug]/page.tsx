@@ -95,6 +95,13 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
           placeholder="请输入该银"
         />
       </ProForm.Group>
+      <ProFormText
+        width="lg"
+        name="wish"
+        label="祈愿"
+        placeholder="请输入祈愿"
+      />
+
     </ModalForm>
   );
 };
@@ -290,10 +297,16 @@ export default function Page({ params }: { params: { slug: string } }) {
                   <div key={index} className="flex justify-between items-center">
                     <Tag text={item.label} color="#DAA520" opacity={0.2} textColor='black' />
                     <div className="text-right">
-                      {item.value || "未知"}
+                      {item.value || "-"}
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="flex justify-between items-center mt-8">
+                <Tag text="祈愿" color="#DAA520" opacity={0.2} textColor='black' />
+                <div className="text-right">
+                  {colophon.wish || "-"}
+                </div>
               </div>
             </div>
           )

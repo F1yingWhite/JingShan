@@ -44,7 +44,8 @@ export default function page() {
       <ProList
         rowKey="name"
         headerTitle="全局检索"
-        request={async (params = {}) => {
+        request={async (params) => {
+          console.log(params)
           const { current = 1, pageSize = 10 } = params;
           const { data, total, success } = await searchHybrid(slug, current, pageSize);
           const combinedList: CombinedItem[] = []
