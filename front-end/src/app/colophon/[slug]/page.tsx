@@ -95,13 +95,20 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
           placeholder="请输入该银"
         />
       </ProForm.Group>
+      <ProForm.Group>
       <ProFormText
-        width="lg"
-        name="wish"
-        label="祈愿"
-        placeholder="请输入祈愿"
-      />
-
+          width="md"
+          name="pearwood"
+          label="梨板"
+          placeholder="请输入梨板数目"
+        />
+        <ProFormText
+          width="md"
+          name="wish"
+          label="祈愿"
+          placeholder="请输入祈愿"
+        />
+      </ProForm.Group>
     </ModalForm>
   );
 };
@@ -286,6 +293,8 @@ export default function Page({ params }: { params: { slug: string } }) {
                   { label: "刊刻地点", value: colophon.place },
                   { label: "计字", value: colophon.words_num },
                   { label: "该银", value: colophon.money },
+                  { label: "梨板", value: colophon.pearwood },
+                  { label: "祈愿", value: colophon.wish },
                 ].map((item, index) => (
                   <div key={index} className="flex justify-between items-center">
                     <Tag text={item.label} color="#DAA520" opacity={0.2} textColor='black' />
@@ -294,12 +303,6 @@ export default function Page({ params }: { params: { slug: string } }) {
                     </div>
                   </div>
                 ))}
-              </div>
-              <div className="flex justify-between items-center mt-8">
-                <Tag text="祈愿" color="#DAA520" opacity={0.2} textColor='black' />
-                <div className="text-right">
-                  {colophon.wish || "-"}
-                </div>
               </div>
             </div>
           )

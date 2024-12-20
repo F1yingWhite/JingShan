@@ -22,6 +22,7 @@ class Colophon(SQLModel, table=True):
     words_num: str | None = Field(default=None, max_length=255)
     money: str | None = Field(default=None, max_length=255)
     wish: str | None = Field(default=None, max_length=1000)
+    pearwood: str | None = Field(default=None, max_length=255)
     last_modify: datetime = Field(sa_column=Column(TIMESTAMP, default=func.now(), onupdate=func.now()))
 
     @classmethod
@@ -157,14 +158,14 @@ class Colophon(SQLModel, table=True):
 
     @classmethod
     def get_with_related_by_id(cls, colophon_id: int):
-        from .ind_col import Ind_Col
+        from .ind_col import IndCol
         from .individual import Individual
 
         with Session(engine) as session:
             statement = (
-                select(cls, Ind_Col, Individual.name)
-                .join(Ind_Col, cls.id == Ind_Col.col_id)
-                .join(Individual, Individual.id == Ind_Col.ind_id)
+                select(cls, IndCol, Individual.name)
+                .join(IndCol, cls.id == IndCol.col_id)
+                .join(Individual, Individual.id == IndCol.ind_id)
                 .where(cls.id == colophon_id)
             )
             result = session.exec(statement).all()

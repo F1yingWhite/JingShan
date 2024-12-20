@@ -22,9 +22,7 @@ export default function RootLayout({
   const { setUser } = useUserStore();
 
   useEffect(() => {
-    const port = process.env.PORT || 3000;
-    console.log(port);
-    const autoLogin = localStorage.getItem('autoLogin');
+   const autoLogin = localStorage.getItem('autoLogin');
     if (!autoLogin)
       localStorage.removeItem('jwt');
     const jwt = localStorage.getItem('jwt');

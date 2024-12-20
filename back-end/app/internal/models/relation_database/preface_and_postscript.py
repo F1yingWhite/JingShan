@@ -1,11 +1,13 @@
 from datetime import datetime
+
 from sqlalchemy import TIMESTAMP, Column, func
 from sqlmodel import Field, Session, SQLModel, select
 
 from . import engine
 
 
-class Preface_And_Postscript(SQLModel, table=True):
+class PrefaceAndPostscript(SQLModel, table=True):
+    __tablename__ = "preface_and_postscript"
     id: int | None = Field(default=None, primary_key=True)
     classic: str | None = Field(default=None, max_length=100)
     translator: str | None = Field(default=None, max_length=100)

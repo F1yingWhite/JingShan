@@ -76,6 +76,10 @@ const IconList: NavItemProps[] = [
   {
     href: "/chat",
     text: "智答"
+  },
+  {
+    href: "/manage",
+    text: "管理"
   }
 ]
 
@@ -293,6 +297,10 @@ export default function NavBar() {
         {IconList.map((icon, index) => (
           icon.text === "文库" ? (
             <NavItem key={index} href={icon.href} text={icon.text} items={items} />
+          ) : icon.text === "管理" ? (
+            user && user.privilege == 2 && (
+              <NavItem key={index} href={icon.href} text={icon.text} />
+            )
           ) :
             (<NavItem key={index} href={icon.href} text={icon.text} />)
         ))}

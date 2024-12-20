@@ -50,7 +50,6 @@ export default function Page() {
   const [conversationList, setConversationList] = useState<Conversation[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isTTSPlaying, setTTSPlaying] = useState(false);
   const [ttsLoading, setTTSLoading] = useState(false);

@@ -3,7 +3,8 @@ from sqlmodel import Field, Session, SQLModel, select
 from . import engine
 
 
-class Ind_Col(SQLModel, table=True):
+class IndCol(SQLModel, table=True):
+    __tablename__ = "ind_col"
     ind_id: int | None = Field(default=None, primary_key=True)
     col_id: int | None = Field(default=None, primary_key=True)
     type: str | None = Field(default=None, max_length=255)

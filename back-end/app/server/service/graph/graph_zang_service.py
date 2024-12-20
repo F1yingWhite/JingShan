@@ -14,6 +14,8 @@ zang_graph_router = APIRouter(prefix="/graph/zang")
 # TODO:后续考虑封装组成graph的为一个特定函数避免多次复写
 @zang_graph_router.get("/by_scripture_name")
 async def get_graph_by_scripture_name(scripture_name: str, begin: int, length: int):  # noqa: C901
+    if length > 100:
+        begin = begin + length - 100
     res_dict = {
         "type": "force",
         "categories": [],
@@ -137,7 +139,7 @@ async def get_colophon_graph(page_size: int = 20):
     # n是卷数,m是人物,p是牌记
     colophon_set = set()
     individual_set = set()
-    scripture_set =["人物","牌记"]
+    scripture_set = ["人物", "牌记"]
     nodes = []
     links = []
 

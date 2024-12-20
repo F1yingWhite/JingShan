@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Input, notification, Image, Space, List } from 'antd';
+import { Input, notification, Image, Space, List, Carousel } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import { getPrefaceAndPostscriptListRandom } from '@/lib/preface_and_postscript'
 import { getIndividualRandom } from '@/lib/individual';
 import RelationChart from '@/components/RelationChart';
 import { getByScriptureName, Graph } from '@/lib/graph_zang';
-import { getGraphByName, getGraphList, getRandomPerson } from '@/lib/graph_zhi';
+import { getGraphByName, getRandomPerson } from '@/lib/graph_zhi';
 const { Search } = Input;
 
 
@@ -91,6 +91,15 @@ export default function Page() {
     }
   };
 
+  const contentStyle = (imageUrl: string) => ({
+    margin: 0,
+    height: '70vh',
+    minHeight: '500px',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundImage: `url(${imageUrl})`,
+  });
+
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
@@ -129,17 +138,28 @@ export default function Page() {
 
   return (
     <div >
+      <Carousel
+        autoplay
+        arrows
+        autoplaySpeed={5000}
+      >
+        <div>
+          <div style={contentStyle('gate.jpg')}></div>
+        </div>
+        <div>
+          <div style={contentStyle('book1.jpg')}></div>
+        </div>
+        <div>
+          <div style={contentStyle('book2.jpg')}></div>
+        </div>
+      </Carousel>
       {contextHolder}
       <Content className="flex flex-col items-center">
         <Space direction="vertical" size="large" >
-          {/* 封面 */}
           <div
             className="relative flex flex-col items-center w-[100vw] h-[80vh] min-h-[700px]  bg-cover bg-center"
-            style={{ backgroundImage: `url('/gate.png')` }}
           >
-            <div className="absolute inset-0 bg-white opacity-50 backdrop-blur-sm z-10"></div>
-            {/* TODO:搜索栏位置修改 */}
-            <div className="relative w-2/5 flex flex-col items-center z-20"
+            <div className="absolute w-2/5 flex flex-col items-center z-20"
               style={{
                 marginTop: 'calc(min(200px, 20vh))'
               }}
@@ -159,15 +179,6 @@ export default function Page() {
                 className='mt-3 text-black'
                 onSearch={search}
               />
-            </div>
-            <div className='absolute bottom-0 w-full text-white mb-0 z-20 hidden md:block'
-              style={{
-                backgroundColor: "rgba(218, 165, 32, 0.8)",
-                padding: "50px",
-                fontSize: 'clamp(10px, 1.5vw, 15px)'
-              }}
-            >
-              径山，在宋代文豪苏东坡的笔下“众峰来自天目山，势若骏马奔平川”，在元代住持楚石禅师的眼中“下方凤舞千山去，绝顶龙分两道来”，而明代四大高僧之一的紫柏大师，登径山不禁赞曰“双径萦回云雾深，五峰盘踞星辰簇”。  名山胜景，待人而兴。  开山法钦禅师，在喝石岩畔结茅庐而勤行精进，池成水满月自来，道成则名震天下，唐代宗赐号“国一禅师”，朝中大臣32人皈依径山门下。  继之洪諲禅师，儒佛通达，法济四众。唐僖宗赐寺名“乾符镇国院”，唐昭宗赐洪諲禅师“法济大师”之号。吴越钱王更对洪諲禅师执弟子之礼而厚顾此山。  径山名声大震于唐五代之际，端赖于祖师净行林野，蕴道应缘。宋代大慧禅师，中兴径山祖庭，再振临济宗风。参禅衲子云集径山千僧阁，拈提生命疑情，透脱三界牢关。大慧禅风以禅宗正脉广布天下禅林，绵邈于今而不衰。此因大慧禅师所证所传之道大，故其能摄者众。  虚堂禅师以广大愿，年届八旬，犹于径山凌霄峰前激扬妙义。道不分古今，地不分南北，他的一句“东海儿孙日转多”，让日本的一休和尚自称其为径山虚堂六世孙。径山虚堂的法脉在当今日本禅林发挥着主流的影响力。  宋代径山祖师，其禅道广大，其法脉幽远。  明朝末年，禅门已显衰微之相，被誉为明末四大高僧之一的紫柏大师，卓锡径山，倡印大藏经，以禅教互融重光祖印。历时两百年，字数达一亿的《径山藏》，成为了中国佛教史上的皇皇巨著。
             </div>
           </div>
           {/* 径山藏 */}

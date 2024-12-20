@@ -102,6 +102,7 @@ class ColophonUpdateParams(BaseModel):
     money: str | None = None
     last_modify: str | None = None
     wish: str | None = None
+    pearwood: str | None = None
 
 
 @auth_colophon_router.put("/update/{id}")
@@ -126,6 +127,7 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
         words_num=params.words_num,
         money=params.money,
         wish=params.wish,
+        pearwood=params.pearwood,
     )
     graph_update_colophon(
         colophon.volume_id,
@@ -137,6 +139,7 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
         colophon.money,
         colophon.content,
         colophon.wish,
+        colophon.pearwood,
     )
     return ResponseModel(data={})
 
@@ -154,7 +157,7 @@ class RelatedIndividuals(BaseModel):
 
 
 async def update_individuals(individuals, colophon_id):
-    from ...internal.models.relation_database.ind_col import Ind_Col
+    from ...internal.models.relation_database.ind_col import IndCol
     from ...internal.models.relation_database.individual import Individual
 
     for individual in individuals:
@@ -162,9 +165,9 @@ async def update_individuals(individuals, colophon_id):
             individual_obj = Individual.get_by_name(individual.name)
             if not individual_obj:
                 individual_obj = Individual.create(individual.name)
-            ind_col = Ind_Col.get_by_ids(individual_obj.id, colophon_id)
+            ind_col = IndCol.get_by_ids(individual_obj.id, colophon_id)
             if not ind_col:
-                Ind_Col.create(individual_obj.id, colophon_id, individual.type, individual.place, individual.note)
+                IndCol.create(individual_obj.id, colophon_id, individual.type, individual.place, individual.note)
             elif (
                 ind_col.type != individual.type or ind_col.place != individual.place or ind_col.note != individual.note
             ):
@@ -172,13 +175,13 @@ async def update_individuals(individuals, colophon_id):
 
 
 async def remove_unrelated_individuals(original_individuals, new_individuals, colophon_id):
-    from ...internal.models.relation_database.ind_col import Ind_Col
+    from ...internal.models.relation_database.ind_col import IndCol
     from ...internal.models.relation_database.individual import Individual
 
     for original_individual in original_individuals:
         if original_individual["name"] not in [individual.name for individual in new_individuals]:
-            ind_col = Ind_Col.get_by_ids(original_individual["id"], colophon_id)
-            Ind_Col.delete(ind_col.ind_id, ind_col.col_id)
+            ind_col = IndCol.get_by_ids(original_individual["id"], colophon_id)
+            IndCol.delete(ind_col.ind_id, ind_col.col_id)
             individual = Individual.get_by_id_with_related(original_individual["id"])
             if not individual:
                 Individual.delete(original_individual["id"])
