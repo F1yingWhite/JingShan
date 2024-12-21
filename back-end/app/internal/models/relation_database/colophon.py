@@ -209,4 +209,5 @@ class Colophon(SQLModel, table=True):
             session.add(self)
             session.commit()
             session.refresh(self)
+            self.last_modify = datetime.now()
             return self

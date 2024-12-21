@@ -1,9 +1,7 @@
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
-from ...internal.models import PrefaceAndPostscript, User
+from ...internal.models import ModificationRequestsPreface, PrefaceAndPostscript, User
 from ..dependencies.user_auth import user_auth
 from . import ResponseModel
 
@@ -81,7 +79,9 @@ class PrefaceAndPostscriptUpdateParams(BaseModel):
     category: str | None = None
     dynasty: str | None = None
     author: str | None = None
-    last_modify: str | None = None
+
+    class Config:
+        from_attributes = True
 
 
 @auth_preface_and_postscript_router.put("/update/{id}")
@@ -93,16 +93,15 @@ async def change_preface_and_postscript(request: Request, id: int, params: Prefa
     preface = PrefaceAndPostscript.get_by_id(id)
     if not preface:
         raise HTTPException(status_code=400, detail="Preface or postscript not found")
-    if params.last_modify:
-        params.last_modify = datetime.strptime(params.last_modify, "%Y-%m-%dT%H:%M:%S")
-        if params.last_modify != preface.last_modify:
-            raise HTTPException(status_code=400, detail="Last modify time not match")
-    preface.update(
-        classic=params.classic,
-        translator=params.translator,
-        title=params.title,
-        category=params.category,
-        dynasty=params.dynasty,
-        author=params.author,
-    )
+    modifcationRequest = ModificationRequestsPreface.get_by_userId_targetId(user.id, id)
+    old_value = PrefaceAndPostscriptUpdateParams.model_validate(preface)
+    if modifcationRequest is None:
+        ModificationRequestsPreface.create(
+            user.id,
+            preface.id,
+            old_value.model_dump(),
+            params.model_dump(),
+        )
+    else:
+        modifcationRequest.update(old_value.model_dump(), params.model_dump())
     return ResponseModel(data={})

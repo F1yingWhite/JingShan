@@ -29,18 +29,47 @@ def person_get_relation_ship_by_id_out(object_name: str):
         return result.data()
 
 
-def person_get_list(page: int, page_size: int, title: str | None):
+def person_get_list(page: int, page_size: int, title: str | None, role: str | None = None):
     with neo4j_driver.session() as session:
-        if title:
+        if role == "外户":
+            role = None
+        if title and role:
+            result = session.run(
+                """
+                MATCH (n:ZhiPerson)
+                WHERE n.姓名 CONTAINS $title AND n.身份 = $role
+                RETURN n
+                ORDER BY n.姓名
+                SKIP $skip LIMIT $limit
+                """,
+                title=title,
+                role=role,
+                skip=(page - 1) * page_size,
+                limit=page_size,
+            )
+        elif title:
             result = session.run(
                 """
                 MATCH (n:ZhiPerson)
                 WHERE n.姓名 CONTAINS $title
                 RETURN n
-                ORDER BY CASE WHEN n.身份 IS NOT NULL THEN 1 ELSE 0 END DESC
+                ORDER BY n.身份, n.姓名
                 SKIP $skip LIMIT $limit
                 """,
                 title=title,
+                skip=(page - 1) * page_size,
+                limit=page_size,
+            )
+        elif role:
+            result = session.run(
+                """
+                MATCH (n:ZhiPerson)
+                WHERE n.身份 = $role
+                RETURN n
+                ORDER BY n.姓名
+                SKIP $skip LIMIT $limit
+                """,
+                role=role,
                 skip=(page - 1) * page_size,
                 limit=page_size,
             )
@@ -49,7 +78,7 @@ def person_get_list(page: int, page_size: int, title: str | None):
                 """
                 MATCH (n:ZhiPerson)
                 RETURN n
-                ORDER BY CASE WHEN n.身份 IS NOT NULL THEN 1 ELSE 0 END DESC
+                ORDER BY n.身份, n.姓名
                 SKIP $skip LIMIT $limit
                 """,
                 skip=(page - 1) * page_size,
@@ -65,8 +94,7 @@ def person_get_list_no_page(title: str):
             MATCH (n:ZhiPerson)
             WHERE n.姓名 CONTAINS $title
             RETURN n
-            ORDER BY CASE WHEN n.身份 IS
-            NOT NULL THEN 1 ELSE 0 END DESC
+            ORDER BY n.身份, n.姓名
             """,
             title=title,
         )

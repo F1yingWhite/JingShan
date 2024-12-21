@@ -96,7 +96,7 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
         />
       </ProForm.Group>
       <ProForm.Group>
-      <ProFormText
+        <ProFormText
           width="md"
           name="pearwood"
           label="梨板"
@@ -278,10 +278,17 @@ export default function Page({ params }: { params: { slug: string } }) {
                 </div>
                 {
                   user && user.privilege > 0 && (
-                    <ColophonEditForm colophon={colophon} setColophon={setColophon} messageApi={messageApi} />
+                    <>
+                      <ColophonEditForm colophon={colophon} setColophon={setColophon} messageApi={messageApi} />
+                      <p>
+                        <Tag text="最后修改时间" color="#DAA520" opacity={0.2} textColor='black' />
+                        {colophon.last_modify}
+                      </p>
+                    </>
                   )
                 }
               </div>
+
               <p className="mb-6 mt-6 leading-relaxed">{colophon.content}</p>
               <div className="grid grid-cols-2 gap-8">
                 {[

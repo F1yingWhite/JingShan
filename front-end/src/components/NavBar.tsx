@@ -33,8 +33,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, text, items }) => {
     <div className={`${hoverColor} ${bgColor} h-full flex justify-center items-center`}>
       {items ? (
         <Dropdown menu={{ items }} trigger={['hover']} placement="bottomLeft"
-          overlayStyle={{ width: '20vw', maxWidth: "200px" }}
-        // TODO:修改下拉菜单的样式
+          overlayStyle={{ width: '20vw', minWidth: "120px" }}
         >
           <Link
             href={href}
@@ -188,12 +187,46 @@ const items: MenuProps['items'] = [
     ]
   },
   {
-    key: '径山志',
+    key: '径山寺',
+    type: 'group',
     label: (
       <Link href={'/overview/graph'} className='sm:text-sm md:text-base lg:text-lg'>
-        径山志
+        径山寺
       </Link>
     ),
+    children: [
+      {
+        key: '列祖',
+        label: (
+          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
+            列祖
+          </Link>
+        ),
+      },
+      {
+        key: '法侣',
+        label: (
+          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
+            法侣
+          </Link>
+        ),
+      },
+      {
+        key: '住持',
+        label: (
+          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
+            住持
+          </Link>
+        ),
+      }, {
+        key: '外户',
+        label: (
+          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
+            外户
+          </Link>
+        ),
+      },
+    ]
   }
 ];
 

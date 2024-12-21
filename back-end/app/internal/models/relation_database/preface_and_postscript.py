@@ -139,6 +139,7 @@ class PrefaceAndPostscript(SQLModel, table=True):
         with Session(engine) as session:
             for key, value in kwargs.items():
                 setattr(self, key, value)
+            self.last_modify = datetime.now()
             session.add(self)
             session.commit()
             session.refresh(self)

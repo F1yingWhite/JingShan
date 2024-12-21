@@ -1,11 +1,7 @@
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
-from ...internal.models import Colophon, User
-from ...internal.models.graph_database.zang_graph import update_colophon as graph_update_colophon
-from ...internal.models.graph_database.zang_graph import update_related_individuals as graph_update_related_individuals
+from ...internal.models import Colophon, ModificationRequestsColophon, ModificationRequestsIndCol, User
 from ..dependencies.user_auth import user_auth
 from . import ResponseModel
 
@@ -13,7 +9,7 @@ colophon_router = APIRouter(prefix="/colophon")
 auth_colophon_router = APIRouter(prefix="/colophon", dependencies=[Depends(user_auth)])
 
 
-class ColophonUpdateParams(BaseModel):
+class ColophonGetParams(BaseModel):
     chapter_id: str | None = None
     content: str | None = None
     id: int | None = None
@@ -24,7 +20,7 @@ class ColophonUpdateParams(BaseModel):
 
 @colophon_router.post("/")
 async def get_colophon(
-    params: ColophonUpdateParams,
+    params: ColophonGetParams,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1),
 ):
@@ -58,7 +54,6 @@ async def get_scripture_name(page: int = 1, page_size: int = 20):
     return ResponseModel(data=results)
 
 
-# 暂时不需要
 @colophon_router.get("/scripture_name/id")
 async def get_scripture_name_index(name: str):
     result = Colophon.get_name_rank(name)
@@ -100,9 +95,11 @@ class ColophonUpdateParams(BaseModel):
     time: str | None = None
     words_num: str | None = None
     money: str | None = None
-    last_modify: str | None = None
     wish: str | None = None
     pearwood: str | None = None
+
+    class Config:
+        from_attributes = True
 
 
 @auth_colophon_router.put("/update/{id}")
@@ -114,33 +111,12 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
     colophon = Colophon.get_by_id(id)
     if not colophon:
         raise HTTPException(status_code=400, detail="Colophon not found")
-    if params.last_modify:
-        params.last_modify = datetime.strptime(params.last_modify, "%Y-%m-%dT%H:%M:%S")
-        if params.last_modify != colophon.last_modify:
-            raise HTTPException(status_code=400, detail="Last modify time not match")
-    colophon.update(
-        content=params.content,
-        qianziwen=params.qianziwen,
-        place=params.place,
-        scripture_name=params.scripture_name,
-        time=params.time,
-        words_num=params.words_num,
-        money=params.money,
-        wish=params.wish,
-        pearwood=params.pearwood,
-    )
-    graph_update_colophon(
-        colophon.volume_id,
-        colophon.chapter_id,
-        colophon.qianziwen,
-        colophon.time,
-        colophon.place,
-        colophon.words_num,
-        colophon.money,
-        colophon.content,
-        colophon.wish,
-        colophon.pearwood,
-    )
+    modificationRequest = ModificationRequestsColophon.get_by_userId_targetId(user.id, colophon.id)
+    old_value = ColophonUpdateParams.model_validate(colophon)
+    if modificationRequest is None:
+        ModificationRequestsColophon.create(user.id, colophon.id, old_value.model_dump(), params.model_dump())
+    else:
+        modificationRequest.update(old_value.model_dump(), params.model_dump())
     return ResponseModel(data={})
 
 
@@ -156,37 +132,6 @@ class RelatedIndividuals(BaseModel):
     individuals: list[IndividualParams]
 
 
-async def update_individuals(individuals, colophon_id):
-    from ...internal.models.relation_database.ind_col import IndCol
-    from ...internal.models.relation_database.individual import Individual
-
-    for individual in individuals:
-        if individual.name != "":
-            individual_obj = Individual.get_by_name(individual.name)
-            if not individual_obj:
-                individual_obj = Individual.create(individual.name)
-            ind_col = IndCol.get_by_ids(individual_obj.id, colophon_id)
-            if not ind_col:
-                IndCol.create(individual_obj.id, colophon_id, individual.type, individual.place, individual.note)
-            elif (
-                ind_col.type != individual.type or ind_col.place != individual.place or ind_col.note != individual.note
-            ):
-                ind_col.update(individual.type, individual.place, individual.note)
-
-
-async def remove_unrelated_individuals(original_individuals, new_individuals, colophon_id):
-    from ...internal.models.relation_database.ind_col import IndCol
-    from ...internal.models.relation_database.individual import Individual
-
-    for original_individual in original_individuals:
-        if original_individual["name"] not in [individual.name for individual in new_individuals]:
-            ind_col = IndCol.get_by_ids(original_individual["id"], colophon_id)
-            IndCol.delete(ind_col.ind_id, ind_col.col_id)
-            individual = Individual.get_by_id_with_related(original_individual["id"])
-            if not individual:
-                Individual.delete(original_individual["id"])
-
-
 @auth_colophon_router.put("/related_individuals/{id}")
 async def update_related_individuals(request: Request, id: int, params: RelatedIndividuals):
     user_info = request.state.user_info
@@ -196,8 +141,12 @@ async def update_related_individuals(request: Request, id: int, params: RelatedI
     colophon = Colophon.get_with_related_by_id(id)
     if not colophon:
         raise HTTPException(status_code=400, detail="Colophon not found")
-    await update_individuals(params.individuals, id)
-    await remove_unrelated_individuals(colophon["related_individuals"], params.individuals, id)
-    graph_update_related_individuals(colophon["volume_id"], colophon["chapter_id"], params.individuals)
-
+    modifcationRequest = ModificationRequestsIndCol.get_by_userId_targetId(user.id, colophon["id"])
+    new_value = {"individuals": [individual.model_dump() for individual in params.individuals]}
+    if modifcationRequest is None:
+        ModificationRequestsIndCol.create(
+            user.id, colophon["id"], {"individuals": colophon["related_individuals"]}, new_value
+        )
+    else:
+        modifcationRequest.update({"individuals": colophon["related_individuals"]}, new_value)
     return ResponseModel(data={})

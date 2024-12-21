@@ -146,11 +146,12 @@ class GraphList(BaseModel):
     current: int
     pageSize: int
     title: str | None = None
+    role: str | None = None
 
 
 @zhi_graph_router.post("/list")
 async def get_graph_list(graph_data: GraphList):
-    results = person_get_list(graph_data.current, graph_data.pageSize, graph_data.title)
+    results = person_get_list(graph_data.current, graph_data.pageSize, graph_data.title, graph_data.role)
     nums = person_total_num(graph_data.title)
     res_dict = []
     for result in results:
