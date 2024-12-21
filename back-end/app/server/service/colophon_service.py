@@ -105,7 +105,7 @@ class ColophonUpdateParams(BaseModel):
 @auth_colophon_router.put("/update/{id}")
 async def update_colophon(request: Request, id: int, params: ColophonUpdateParams):
     user_info = request.state.user_info
-    user = User.get_user_by_email(user_info["sub"])
+    user = User.get_by_email(user_info["sub"])
     if user.privilege == 0:
         raise HTTPException(status_code=403, detail="Permission denied")
     colophon = Colophon.get_by_id(id)
@@ -114,7 +114,8 @@ async def update_colophon(request: Request, id: int, params: ColophonUpdateParam
     modificationRequest = ModificationRequestsColophon.get_by_userId_targetId(user.id, colophon.id)
     old_value = ColophonUpdateParams.model_validate(colophon)
     if modificationRequest is None:
-        ModificationRequestsColophon.create(user.id, colophon.id, old_value.model_dump(), params.model_dump())
+        name = colophon.scripture_name + "／" + colophon.volume_id
+        ModificationRequestsColophon.create(user.id, colophon.id, name, old_value.model_dump(), params.model_dump())
     else:
         modificationRequest.update(old_value.model_dump(), params.model_dump())
     return ResponseModel(data={})
@@ -135,7 +136,7 @@ class RelatedIndividuals(BaseModel):
 @auth_colophon_router.put("/related_individuals/{id}")
 async def update_related_individuals(request: Request, id: int, params: RelatedIndividuals):
     user_info = request.state.user_info
-    user = User.get_user_by_email(user_info["sub"])
+    user = User.get_by_email(user_info["sub"])
     if user.privilege == 0:
         raise HTTPException(status_code=403, detail="Permission denied")
     colophon = Colophon.get_with_related_by_id(id)
@@ -144,8 +145,9 @@ async def update_related_individuals(request: Request, id: int, params: RelatedI
     modifcationRequest = ModificationRequestsIndCol.get_by_userId_targetId(user.id, colophon["id"])
     new_value = {"individuals": [individual.model_dump() for individual in params.individuals]}
     if modifcationRequest is None:
+        name = colophon["scripture_name"] + "／" + colophon["volume_id"]
         ModificationRequestsIndCol.create(
-            user.id, colophon["id"], {"individuals": colophon["related_individuals"]}, new_value
+            user.id, colophon["id"], name, {"individuals": colophon["related_individuals"]}, new_value
         )
     else:
         modifcationRequest.update({"individuals": colophon["related_individuals"]}, new_value)

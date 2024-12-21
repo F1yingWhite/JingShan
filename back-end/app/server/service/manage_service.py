@@ -7,6 +7,7 @@ from ...internal.models import (
     Colophon,
     ModificationRequestsColophon,
     ModificationRequestsIndCol,
+    ModificationRequestsPreface,
     User,
 )
 from ...internal.models.graph_database.zang_graph import update_colophon as graph_update_colophon
@@ -26,7 +27,7 @@ class model_type(str, Enum):
 
 def getModel(model_type):
     if model_type == "preface":
-        return ModificationRequestsColophon
+        return ModificationRequestsPreface
     elif model_type == "colophon":
         return ModificationRequestsColophon
     elif model_type == "indcol":
@@ -36,16 +37,32 @@ def getModel(model_type):
 
 
 @manage_router.get("/pending")
-async def get_pending_list(request: Request, model_type: model_type, page: int = 1, page_size: int = 20):
+async def get_list(
+    request: Request,
+    model_type: model_type,
+    page: int = 1,
+    page_size: int = 20,
+    status: StatusEnum = None,
+    title: str = None,
+):
     user_info = request.state.user_info
-    user = User.get_user_by_email(user_info["sub"])
+    user = User.get_by_email(user_info["sub"])
     if user.privilege != 2:
         raise HTTPException(status_code=403, detail="Permission denied")
 
     model = getModel(model_type)
 
-    res = model.get_pending(page, page_size)
-    return ResponseModel(data=res)
+    res = model.get_list(page, page_size, status, title)
+    items_with_user_info = []
+    for item in res["data"]:
+        user = User.get_by_id(item.user_id)
+        item_dict = item.model_dump()
+        item_dict["user"] = {
+            "username": user.name,
+            "avatar": user.avatar,
+        }
+        items_with_user_info.append(item_dict)
+    return ResponseModel(data={"total": res["total"], "data": items_with_user_info})
 
 
 class IndividualParams(BaseModel):
@@ -60,7 +77,7 @@ class RelatedIndividuals(BaseModel):
     individuals: list[IndividualParams]
 
 
-def process_related_individuals(params:RelatedIndividuals, colophon: Colophon):  # noqa: C901
+def process_related_individuals(params: RelatedIndividuals, colophon: Colophon):  # noqa: C901
     def update_individuals(individuals, colophon_id):
         from ...internal.models.relation_database.ind_col import IndCol
         from ...internal.models.relation_database.individual import Individual
@@ -138,13 +155,14 @@ def process_update_colophon(params: ColophonUpdateParams, colophon: Colophon):
 
 
 class hanldRequestParams(BaseModel):
+    data: dict
     status: StatusEnum
 
 
 @manage_router.put("/update/{id}")
 async def handleRequest(request: Request, id: int, params: hanldRequestParams, model_type: model_type):  # noqa: C901
     user_info = request.state.user_info
-    user = User.get_user_by_email(user_info["sub"])
+    user = User.get_by_email(user_info["sub"])
     if user.privilege != 2:
         raise HTTPException(status_code=403, detail="Permission denied")
 

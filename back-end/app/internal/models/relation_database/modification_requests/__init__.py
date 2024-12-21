@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
+from sqlalchemy import func
 from sqlmodel import Field, Session, SQLModel, select
 
 from .. import engine
@@ -17,6 +18,7 @@ class ModificationRequestBase(SQLModel):
     request_id: int | None = Field(default=None, primary_key=True)
     user_id: int
     target_id: int
+    name: str
     old_value: dict
     new_value: dict
     requested_at: datetime
@@ -25,9 +27,10 @@ class ModificationRequestBase(SQLModel):
     approved_by: int | None = None
 
     @classmethod
-    def create(cls, user_id: int, target_id: int, old_value: dict, new_value: dict):
+    def create(cls, user_id: int, target_id: int, name: str, old_value: dict, new_value: dict):
         with Session(engine) as session:
             request = cls(
+                name=name,
                 user_id=user_id,
                 target_id=target_id,
                 old_value=old_value,
@@ -40,13 +43,27 @@ class ModificationRequestBase(SQLModel):
             return request
 
     @classmethod
-    def get_pending(cls, page: int, per_page: int):
+    def get_list(cls, page: int, per_page: int, status: StatusEnum = None, title: str = None):
+        offset = (page - 1) * per_page
         with Session(engine) as session:
-            statement = (
-                select(cls).where(cls.status == StatusEnum.pending).limit(per_page).offset((page - 1) * per_page)
-            )
+            query = select(cls)
+            if status:
+                query = query.where(cls.status == status)
+            else:
+                query = query.where(cls.status == StatusEnum.pending)
+
+            if title:
+                query = query.where(cls.name.like(f"%{title}%"))
+
+            total_statement = select(func.count()).select_from(query.subquery())
+            total_result = session.exec(total_statement)
+            total_count = total_result.one()
+
+            statement = query.limit(per_page).offset(offset)
             result = session.exec(statement)
-            return result.all()
+            items = result.all()
+
+            return {"total": total_count, "data": items}
 
     @classmethod
     def get_by_userId_targetId(cls, user_id: int, target_id: int):

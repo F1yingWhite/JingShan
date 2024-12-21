@@ -87,7 +87,7 @@ class PrefaceAndPostscriptUpdateParams(BaseModel):
 @auth_preface_and_postscript_router.put("/update/{id}")
 async def change_preface_and_postscript(request: Request, id: int, params: PrefaceAndPostscriptUpdateParams):
     user_info = request.state.user_info
-    user = User.get_user_by_email(user_info["sub"])
+    user = User.get_by_email(user_info["sub"])
     if user.privilege == 0:
         raise HTTPException(status_code=403, detail="Permission denied")
     preface = PrefaceAndPostscript.get_by_id(id)
@@ -96,9 +96,11 @@ async def change_preface_and_postscript(request: Request, id: int, params: Prefa
     modifcationRequest = ModificationRequestsPreface.get_by_userId_targetId(user.id, id)
     old_value = PrefaceAndPostscriptUpdateParams.model_validate(preface)
     if modifcationRequest is None:
+        name = preface.classic + "／" + preface.title
         ModificationRequestsPreface.create(
             user.id,
             preface.id,
+            name,
             old_value.model_dump(),
             params.model_dump(),
         )

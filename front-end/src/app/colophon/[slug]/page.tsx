@@ -17,7 +17,7 @@ import {
 } from '@ant-design/pro-components';
 import { MessageInstance } from 'antd/es/message/interface';
 
-const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Colophon, setColophon: React.Dispatch<React.SetStateAction<Colophon>>, messageApi: MessageInstance }) => {
+const ColophonEditForm = ({ colophon, messageApi }: { colophon: Colophon, messageApi: MessageInstance }) => {
   const [form] = Form.useForm<Colophon>();
   return (
     <ModalForm<Colophon>
@@ -33,9 +33,6 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
         values.last_modify = colophon.last_modify
         putColophon(colophon.id, values).then(() => {
           messageApi.success('修改成功');
-          getColophonById(colophon.id).then((res) => {
-            setColophon(res);
-          })
         }).catch((err) => {
           if (err.status === 403) {
             messageApi.error('权限不足');
@@ -113,7 +110,7 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
   );
 };
 
-const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: Colophon, setColophon: React.Dispatch<React.SetStateAction<Colophon>>, messageApi: MessageInstance }) => {
+const IndividualEditForm = ({ colophon, messageApi }: { colophon: Colophon, messageApi: MessageInstance }) => {
   const [form] = Form.useForm<RelatedIndividual[]>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     colophon.related_individuals ? colophon.related_individuals.map((item) => item.id) : [],
@@ -157,9 +154,6 @@ const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: C
       onFinish={async (values) => {
         updateRelatedIndividual(colophon.id, values.dataSource).then(() => {
           messageApi.success('修改成功');
-          getColophonById(colophon.id).then((res) => {
-            setColophon(res);
-          });
         }).catch((err) => {
           if (err.status === 403) {
             messageApi.error('权限不足');
@@ -279,7 +273,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                 {
                   user && user.privilege > 0 && (
                     <>
-                      <ColophonEditForm colophon={colophon} setColophon={setColophon} messageApi={messageApi} />
+                      <ColophonEditForm colophon={colophon} messageApi={messageApi} />
                       <p>
                         <Tag text="最后修改时间" color="#DAA520" opacity={0.2} textColor='black' />
                         {colophon.last_modify}
@@ -331,7 +325,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           {
             user && user.privilege > 0 && colophon && (
               // TODO:修改人物信息
-              <IndividualEditForm colophon={colophon} setColophon={setColophon} messageApi={messageApi} />
+              <IndividualEditForm colophon={colophon} messageApi={messageApi} />
             )
           }
         </div>
