@@ -29,59 +29,85 @@ def person_get_relation_ship_by_id_out(object_name: str):
         return result.data()
 
 
-def person_get_list(page: int, page_size: int, title: str | None, role: str | None = None):
+def person_get_list(page: int, page_size: int, title: str | None, role: str | None):
     with neo4j_driver.session() as session:
-        if role == "外户":
-            role = None
+        skip = (page - 1) * page_size
         if title and role:
-            result = session.run(
-                """
-                MATCH (n:ZhiPerson)
-                WHERE n.姓名 CONTAINS $title AND n.身份 = $role
-                RETURN n
-                ORDER BY n.姓名
-                SKIP $skip LIMIT $limit
-                """,
-                title=title,
-                role=role,
-                skip=(page - 1) * page_size,
-                limit=page_size,
-            )
+            if role == "外户":
+                result = session.run(
+                    """
+                    MATCH (n:ZhiPerson)
+                    WHERE n.姓名 CONTAINS $title AND (n.身份 IS NULL OR SIZE(n.身份) = 0)
+                    RETURN n
+                    ORDER BY n.姓名
+                    SKIP $skip LIMIT $limit
+                    """,
+                    title=title,
+                    skip=skip,
+                    limit=page_size,
+                )
+            else:
+                result = session.run(
+                    """
+                    MATCH (n:ZhiPerson)
+                    WHERE n.姓名 CONTAINS $title AND ANY(x IN n.身份 WHERE x CONTAINS $role)
+                    RETURN n
+                    ORDER BY n.世代Index,n.姓名
+                    SKIP $skip LIMIT $limit
+                    """,
+                    title=title,
+                    role=role,
+                    skip=skip,
+                    limit=page_size,
+                )
         elif title:
             result = session.run(
                 """
                 MATCH (n:ZhiPerson)
                 WHERE n.姓名 CONTAINS $title
                 RETURN n
-                ORDER BY n.身份, n.姓名
-                SKIP $skip LIMIT $limit
-                """,
-                title=title,
-                skip=(page - 1) * page_size,
-                limit=page_size,
-            )
-        elif role:
-            result = session.run(
-                """
-                MATCH (n:ZhiPerson)
-                WHERE n.身份 = $role
-                RETURN n
                 ORDER BY n.姓名
                 SKIP $skip LIMIT $limit
                 """,
-                role=role,
-                skip=(page - 1) * page_size,
+                title=title,
+                skip=skip,
                 limit=page_size,
             )
+        elif role:
+            if role == "外户":
+                result = session.run(
+                    """
+                    MATCH (n:ZhiPerson)
+                    WHERE n.身份 IS NULL OR SIZE(n.身份) = 0
+                    RETURN n
+                    ORDER BY n.姓名
+                    SKIP $skip LIMIT $limit
+                    """,
+                    skip=skip,
+                    limit=page_size,
+                )
+            else:
+                result = session.run(
+                    """
+                    MATCH (n:ZhiPerson)
+                    WHERE ANY(x IN n.身份 WHERE x CONTAINS $role)
+                    RETURN n
+                    ORDER BY n.世代Index, n.姓名
+                    SKIP $skip LIMIT $limit
+                    """,
+                    role=role,
+                    skip=skip,
+                    limit=page_size,
+                )
         else:
             result = session.run(
                 """
                 MATCH (n:ZhiPerson)
                 RETURN n
-                ORDER BY n.身份, n.姓名
+                ORDER BY n.身份,n.世代Index, n.姓名
                 SKIP $skip LIMIT $limit
                 """,
-                skip=(page - 1) * page_size,
+                skip=skip,
                 limit=page_size,
             )
         return result.data()
@@ -107,13 +133,63 @@ def person_get_identity_set():
         return result.data()
 
 
-def person_total_num(title: str | None):
+def person_total_num(title: str | None, role: str | None):
     with neo4j_driver.session() as session:
-        if title:
-            result = session.run("MATCH (n:ZhiPerson) WHERE n.姓名 CONTAINS $title RETURN count(n)", title=title)
+        if title and role:
+            if role == "外户":
+                result = session.run(
+                    """
+                    MATCH (n:ZhiPerson)
+                    WHERE n.姓名 CONTAINS $title AND (n.身份 IS NULL OR SIZE(n.身份) = 0)
+                    RETURN count(n)
+                    """,
+                    title=title,
+                )
+            else:
+                result = session.run(
+                    """
+                    MATCH (n:ZhiPerson)
+                    WHERE n.姓名 CONTAINS $title AND ANY(x IN n.身份 WHERE x CONTAINS $role)
+                    RETURN count(n)
+                    """,
+                    title=title,
+                    role=role,
+                )
+        elif title:
+            result = session.run(
+                """
+                MATCH (n:ZhiPerson)
+                WHERE n.姓名 CONTAINS $title
+                RETURN count(n)
+                """,
+                title=title,
+            )
+        elif role:
+            if role == "外户":
+                result = session.run(
+                    """
+                    MATCH (n:ZhiPerson)
+                    WHERE n.身份 IS NULL OR SIZE(n.身份) = 0
+                    RETURN count(n)
+                    """,
+                )
+            else:
+                result = session.run(
+                    """
+                    MATCH (n:ZhiPerson)
+                    WHERE ANY(x IN n.身份 WHERE x CONTAINS $role)
+                    RETURN count(n)
+                    """,
+                    role=role,
+                )
         else:
-            result = session.run("MATCH (n:ZhiPerson) RETURN count(n)")
-        return result.data()
+            result = session.run(
+                """
+                MATCH (n:ZhiPerson)
+                RETURN count(n)
+                """
+            )
+        return result.single()[0]
 
 
 def person_get_node_by_name(name: str):

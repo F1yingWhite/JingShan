@@ -45,6 +45,9 @@ export type GraphDetail = {
 export type GraphLists = GraphDetail[];
 
 export function getGraphList(params: any) {
+  if (params.role === "全部") {
+    delete params.role;
+  }
   return post(`/graph/zhi/list`, params);
 }
 

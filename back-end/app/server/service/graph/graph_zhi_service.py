@@ -151,15 +151,15 @@ class GraphList(BaseModel):
 
 @zhi_graph_router.post("/list")
 async def get_graph_list(graph_data: GraphList):
-    results = person_get_list(graph_data.current, graph_data.pageSize, graph_data.title, graph_data.role)
-    nums = person_total_num(graph_data.title)
+    results = person_get_list(graph_data.current, graph_data.pageSize, graph_data.title, role=graph_data.role)
+    nums = person_total_num(graph_data.title, role=graph_data.role)
     res_dict = []
     for result in results:
         temp_dict = {}
         for key in result["n"]:
             temp_dict[key] = result["n"][key]
         res_dict.append(temp_dict)
-    return ResponseModel(data={"success": True, "total": nums[0]["count(n)"], "data": res_dict})
+    return ResponseModel(data={"success": True, "total": nums, "data": res_dict})
 
 
 @zhi_graph_router.get("/detail")

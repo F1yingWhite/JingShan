@@ -37,7 +37,7 @@ export default function GraphListItem({ record, showTag, router, graph_colorMap 
                 <div>
                   <ul>
                     {Object.keys(record).map((key) => {
-                      if (key !== '姓名') {
+                      if (key !== '姓名'&&key!=="世代Index") {
                         return (
                           <li key={key}>
                             <span className="text-[#c19d50]">{key}</span>: {Array.isArray(record[key]) ? record[key].join(', ') : record[key]}

@@ -188,45 +188,11 @@ const items: MenuProps['items'] = [
   },
   {
     key: '径山寺',
-    type: 'group',
     label: (
       <Link href={'/overview/graph'} className='sm:text-sm md:text-base lg:text-lg'>
         径山寺
       </Link>
     ),
-    children: [
-      {
-        key: '列祖',
-        label: (
-          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
-            列祖
-          </Link>
-        ),
-      },
-      {
-        key: '法侣',
-        label: (
-          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
-            法侣
-          </Link>
-        ),
-      },
-      {
-        key: '住持',
-        label: (
-          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
-            住持
-          </Link>
-        ),
-      }, {
-        key: '外户',
-        label: (
-          <Link href={'/overview/story'} className='sm:text-sm md:text-base lg:text-lg pl-4'>
-            外户
-          </Link>
-        ),
-      },
-    ]
   }
 ];
 
