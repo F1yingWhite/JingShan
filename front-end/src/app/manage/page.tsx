@@ -11,6 +11,7 @@ import { MessageInstance } from 'antd/es/message/interface';
 import { EditOutlined } from '@ant-design/icons';
 import { getPdf } from '@/lib/pdf';
 import { getPrefaceAndPostscriptById, PrefaceAndPostscript, putPrefaceAndPostscript } from '@/lib/preface_and_postscript';
+import { fetchUser } from '@/lib/user';
 
 const EditForm = ({ id, oldValue, newValue, type, messageApi }) => {
   const [form] = Form.useForm();
@@ -297,7 +298,6 @@ const IndividualEditForm = ({ id, oldValue, newValue, messageApi }: { id: number
 type tabsType = 'colophon' | 'indcol' | 'preface';
 
 const ModifiactionRequestList: React.FC<{ type: tabsType, title: string }> = ({ type, title }) => {
-
   return (<ProList<ModifiactionRequest>
     rowKey="request_id"
     headerTitle={title}
@@ -385,7 +385,16 @@ export default function Page() {
   const [type, setType] = useState<tabsType>('colophon')
   const [messageApi, contextHolder] = message.useMessage();
   useEffect(() => {
-    if (!user || user.privilege !== 2) {
+    if (!user) {
+      const jwt = localStorage.getItem('jwt');
+      if (!jwt) router.push('/');
+      fetchUser().then((res) => {
+        if (res.privilege <= 1) {
+          router.push('/')
+        }
+      })
+    }
+    else if(user.privilege <= 1){
       router.push('/')
     }
   }, [user, router])
