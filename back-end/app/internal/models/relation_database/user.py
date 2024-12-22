@@ -49,6 +49,12 @@ class User(SQLModel, table=True):
             user = session.exec(select(cls).where(cls.email == email, cls.verified == True)).first()  # noqa: E712
             return user
 
+    @classmethod
+    def get_by_email_no_verify(cls, email: str):
+        with Session(engine) as session:
+            user = session.exec(select(cls).where(cls.email == email)).first()  # noqa: E712
+            return user
+
     def change_password(self, new_password: str):
         new_password = encrypt_password(new_password)
         self.password = new_password

@@ -89,14 +89,16 @@ async def register_user(params: RegisterParams):
 async def verify_user(token: str):
     encrypted_email = base64.urlsafe_b64decode(token.encode())  # 解码
     email = reversible_decrypt(encrypted_email)  # 解密
-    user = User.get_by_email(email)
-    if user:
+    print(email)
+    user = User.get_by_email_no_verify(email)
+    if user is not None:
         user.verify()
         if config.DEBUG:
             return RedirectResponse(url=config.ENV["DEBUG"].FRONT_URL)
         else:
             return RedirectResponse(url=config.ENV["NODEBUG"].FRONT_URL)
-    raise HTTPException(status_code=403, detail="Verify failed")
+    else:
+        raise HTTPException(status_code=403, detail="Verify failed")
 
 
 @user_router.get("/reset_password/code")
@@ -236,6 +238,8 @@ async def change_username(request: Request, params: ChangeUsername):
 async def get_user_info(request: Request):
     current_user = request.state.user_info
     user = User.get_by_email(current_user["sub"])
+    if user is None:
+        raise HTTPException(status_code=400, detail="User not exists")
     return ResponseModel(
         data={"username": user.name, "email": user.email, "avatar": user.avatar, "privilege": user.privilege}
     )
