@@ -32,14 +32,12 @@ export default function page() {
             total: res.data.total,
           };
         }}
-        search={{
-          filterType: 'light',
-        }}
-
+        search={{}}
         pagination={{
           pageSizeOptions: ['5', '10', '20', '50'],
           defaultPageSize: 20,
         }}
+        showActions="hover"
         metas={{
           title: {
             search: true,
