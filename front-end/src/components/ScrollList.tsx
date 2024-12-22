@@ -40,7 +40,6 @@ export default function ScollList({ loadDataApi, title }: ScollListProps) {
         id="scrollableDiv"
         className='w-full h-full overflow-y-auto'
       >
-        {/* TODO:bug fix */}
         <InfiniteScroll
           dataLength={data.length}
           next={loadMoreData}

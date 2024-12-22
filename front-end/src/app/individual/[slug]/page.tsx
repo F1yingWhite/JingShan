@@ -86,7 +86,6 @@ export default function Page({ params }: { params: { slug: string } }) {
               pageSizeOptions: ['5', '10', '20', '50'],
               defaultPageSize: 20,
             }}
-            // TODO:修改为异步加载
             // request={async (params = {}) => {
             //   let { current, pageSize, title } = params;
             //   if (title === undefined) {

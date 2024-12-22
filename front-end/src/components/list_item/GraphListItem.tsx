@@ -13,6 +13,8 @@ interface GraphListItemProps {
 
 export default function GraphListItem({ record, showTag, router, graph_colorMap }: GraphListItemProps) {
 
+  const attribute_list = ["别名", "朝代", "生年", "卒年", "报龄", "僧腊", "出家地", "籍贯", "身份", "世代", "具戒时间", "修法", "宗派", "出家前学法过程", "开悟记述", "法语", "生平史传", "人名规范资料库",];
+
   return (
     <div>
       {Object.keys(record).some(key => key !== '姓名') ? (
@@ -36,12 +38,29 @@ export default function GraphListItem({ record, showTag, router, graph_colorMap 
               children: (
                 <div>
                   <ul>
-                    {Object.keys(record).map((key) => {
-                      if (key !== '姓名'&&key!=="世代Index") {
+                    {attribute_list.map((key) => {
+                      if (record[key]) {
                         return (
-                          <li key={key}>
-                            <span className="text-[#c19d50]">{key}</span>: {Array.isArray(record[key]) ? record[key].join(', ') : record[key]}
-                          </li>
+                          Array.isArray(record[key]) && record[key].some(item => item !== '无') ? (
+                            <li key={key}>
+                              <span className="font-bold">{key}：</span>
+                              <span>
+                                {record[key].map(
+                                  (item, index) =>
+                                    item !== '无' && (
+                                      <span key={index} className='p-2'>
+                                        {item}
+                                      </span>
+                                    )
+                                )}
+                              </span>
+                            </li>
+                          ) : !Array.isArray(record[key]) && record[key] !== '无' ? (
+                            <li key={key}>
+                              <span className="font-bold">{key}：</span>
+                              <span>{record[key]}</span>
+                            </li>
+                          ) : null
                         );
                       }
                       return null;

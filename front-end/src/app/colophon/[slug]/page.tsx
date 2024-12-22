@@ -322,7 +322,6 @@ export default function Page({ params }: { params: { slug: string } }) {
           <Tag text="相关人物" color="#DAA520" opacity={0.2} textColor='black' />
           {
             user && user.privilege > 0 && colophon && (
-              // TODO:修改人物信息
               <IndividualEditForm colophon={colophon} messageApi={messageApi} />
             )
           }

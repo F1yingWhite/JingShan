@@ -26,7 +26,7 @@ const content: string = `  径山，在宋代文豪苏东坡的笔下“众峰�
 
 export default function Page() {
   return (
-    <div className="relative h-full bg-[url('/gate.png')] bg-cover bg-fixed">
+    <div className="relative h-full bg-[url('/gate.jpg')] bg-cover bg-fixed">
       <div className="absolute inset-0 bg-yellow-600 opacity-30"></div>
       <div className="flex flex-col items-center justify-start pt-16 h-full overflow-auto relative">
         <div className="mt-20 w-3/4 mx-auto my-5 py-8 px-12 bg-[#faf8f5] rounded-lg shadow-md z-9 max-w-[1200px]">
