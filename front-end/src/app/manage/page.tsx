@@ -8,7 +8,6 @@ import { EditableProTable, ModalForm, ProColumns, ProForm, ProFormText, ProFormT
 import UserAvatar from '@/components/UserAvatar';
 import { Colophon, getColophonById, putColophon, RelatedIndividual } from '@/lib/colophon';
 import { MessageInstance } from 'antd/es/message/interface';
-import { EditOutlined } from '@ant-design/icons';
 import { getPdf } from '@/lib/pdf';
 import { getPrefaceAndPostscriptById, PrefaceAndPostscript, putPrefaceAndPostscript } from '@/lib/preface_and_postscript';
 import { fetchUser } from '@/lib/user';
@@ -385,6 +384,7 @@ export default function Page() {
   const [type, setType] = useState<tabsType>('colophon')
   const [messageApi, contextHolder] = message.useMessage();
   useEffect(() => {
+    // TODO:懒得配置路由守卫了
     if (!user) {
       const jwt = localStorage.getItem('jwt');
       if (!jwt) router.push('/');
@@ -394,7 +394,7 @@ export default function Page() {
         }
       })
     }
-    else if(user.privilege <= 1){
+    else if (user.privilege <= 1) {
       router.push('/')
     }
   }, [user, router])
