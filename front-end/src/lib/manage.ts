@@ -10,7 +10,7 @@ export type ModifiactionRequest = {
   requested_at: string,
   status: "pending" | "approved" | "rejected"
   handle_at: string
-  approved_by: number
+  processed_by: number
   name: string
 }
 
@@ -26,6 +26,6 @@ export function getPending(page: number, page_size: number, model_type: string, 
   return get(url);
 }
 
-export function hadleRequest(id: number, model_type: string, data: any) {
-  return put(`/manage/update/${id}?model_type=${model_type}`, { "data": data});
+export function handleRequest(id: number, model_type: string, data: any, status: "approved" | "rejected") {
+  return put(`/manage/update/${id}?model_type=${model_type}`, { data, status });
 }

@@ -32,14 +32,12 @@ const ColophonEditForm = ({ colophon, messageApi }: { colophon: Colophon, messag
       onFinish={async (values) => {
         values.last_modify = colophon.last_modify
         putColophon(colophon.id, values).then(() => {
-          messageApi.success('修改成功');
+          messageApi.success('修改请求提交成功');
         }).catch((err) => {
           if (err.status === 403) {
             messageApi.error('权限不足');
-          } else if (err.response.data.detail === "Last modify time not match") {
-            messageApi.error('数据已被修改，请刷新页面后重试');
           } else {
-            messageApi.error('修改失败');
+            messageApi.error('修改请求提交失败');
           }
         });
         return true;
@@ -153,12 +151,12 @@ const IndividualEditForm = ({ colophon, messageApi }: { colophon: Colophon, mess
       submitTimeout={5000}
       onFinish={async (values) => {
         updateRelatedIndividual(colophon.id, values.dataSource).then(() => {
-          messageApi.success('修改成功');
+          messageApi.success('修改请求提交成功');
         }).catch((err) => {
           if (err.status === 403) {
             messageApi.error('权限不足');
           } else {
-            messageApi.error('修改失败');
+            messageApi.error('修改请求提交失败');
           }
         });
         return true;

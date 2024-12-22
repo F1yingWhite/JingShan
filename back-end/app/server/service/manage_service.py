@@ -8,11 +8,15 @@ from ...internal.models import (
     ModificationRequestsColophon,
     ModificationRequestsIndCol,
     ModificationRequestsPreface,
+    PrefaceAndPostscript,
     User,
 )
 from ...internal.models.graph_database.zang_graph import update_colophon as graph_update_colophon
 from ...internal.models.graph_database.zang_graph import update_related_individuals as graph_update_related_individuals
 from ...internal.models.relation_database.modification_requests import StatusEnum
+from ...internal.models.relation_database.modification_requests.colophon import ColophonValue
+from ...internal.models.relation_database.modification_requests.ind_col import IndColValue
+from ...internal.models.relation_database.modification_requests.preface import PrefaceValue
 from ..dependencies.user_auth import user_auth
 from . import ResponseModel
 
@@ -20,13 +24,13 @@ manage_router = APIRouter(prefix="/manage", dependencies=[Depends(user_auth)])
 
 
 class model_type(str, Enum):
-    preface = "preface"
+    preface = "preface_and_postscript"
     colophon = "colophon"
     indcol = "indcol"
 
 
 def getModel(model_type):
-    if model_type == "preface":
+    if model_type == "preface_and_postscript":
         return ModificationRequestsPreface
     elif model_type == "colophon":
         return ModificationRequestsColophon
@@ -109,8 +113,8 @@ def process_related_individuals(params: RelatedIndividuals, colophon: Colophon):
                 if not individual:
                     Individual.delete(original_individual["id"])
 
-    update_individuals(params.individuals, colophon.id)
-    remove_unrelated_individuals(colophon["related_individuals"], params.individuals, colophon.id)
+    update_individuals(params.individuals, colophon["id"])
+    remove_unrelated_individuals(colophon["related_individuals"], params.individuals, colophon["id"])
     colophon.update()
     graph_update_related_individuals(colophon["volume_id"], colophon["chapter_id"], params.individuals)
 
@@ -155,7 +159,7 @@ def process_update_colophon(params: ColophonUpdateParams, colophon: Colophon):
 
 
 class hanldRequestParams(BaseModel):
-    data: dict
+    data: dict = None
     status: StatusEnum
 
 
@@ -172,25 +176,24 @@ async def handleRequest(request: Request, id: int, params: hanldRequestParams, m
         raise HTTPException(status_code=404, detail="Request not found")
 
     if params.status == StatusEnum.approved:
-        modicationRequest.approve(user.id)
         if model_type == "colophon":
-            new_value = modicationRequest.new_value
-            colophon = Colophon.get_by_id(id)
-            if not colophon:
+            new_value = ColophonValue.model_validate(params.data)
+            preface = Colophon.get_by_id(modicationRequest.target_id)
+            if not preface:
                 raise HTTPException(status_code=404, detail="Colophon not found")
-            process_update_colophon(new_value, colophon)
+            process_update_colophon(new_value, preface)
         elif model_type == "indcol":
-            new_value = modicationRequest.new_value["individuals"]
-            colophon = Colophon.get_by_id(new_value.id)
-            if not colophon:
+            new_value = IndColValue.model_validate(params.data)
+            preface = Colophon.get_with_related_by_id(modicationRequest.target_id)
+            if not preface:
                 raise HTTPException(status_code=404, detail="Colophon not found")
-            process_related_individuals(new_value, colophon)
-        elif model_type == "preface":
-            new_value = modicationRequest.new_value
-            colophon = Colophon.get_by_id(id)
-            if not colophon:
-                raise HTTPException(status_code=404, detail="Colophon not found")
-            colophon.update(
+            process_related_individuals(new_value, preface)
+        elif model_type == "preface_and_postscript":
+            new_value = PrefaceValue.model_validate(params.data)
+            preface = PrefaceAndPostscript.get_by_id(modicationRequest.target_id)
+            if not preface:
+                raise HTTPException(status_code=404, detail="PrefaceAndPostscript not found")
+            preface.update(
                 classic=new_value.classic,
                 translator=new_value.translator,
                 title=new_value.title,
@@ -198,6 +201,7 @@ async def handleRequest(request: Request, id: int, params: hanldRequestParams, m
                 dynasty=new_value.dynasty,
                 author=new_value.author,
             )
+        modicationRequest.approve(user.id)
     elif params.status == StatusEnum.rejected:
         modicationRequest.reject(user.id)
     else:

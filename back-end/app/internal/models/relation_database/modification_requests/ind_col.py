@@ -12,11 +12,11 @@ class IndividualParams(BaseModel):
     note: str | None = None
 
 
-class RelatedIndividuals(BaseModel):
+class IndColValue(BaseModel):
     individuals: list[IndividualParams]
 
 
 class ModificationRequestsIndCol(ModificationRequestBase, table=True):
     __tablename__ = "modification_requests_indcol"
-    old_value: RelatedIndividuals = Field(sa_column=Column(JSON))
-    new_value: RelatedIndividuals = Field(sa_column=Column(JSON))
+    old_value: IndColValue = Field(sa_column=Column(JSON))
+    new_value: IndColValue = Field(sa_column=Column(JSON))

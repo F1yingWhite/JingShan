@@ -2,8 +2,8 @@
 import { useUserStore } from '@/store/useStore'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
-import { getPending, ModifiactionRequest } from '@/lib/manage';
-import { Image, Form, message, Spin, Tabs, Tag } from 'antd';
+import { getPending, handleRequest, ModifiactionRequest } from '@/lib/manage';
+import { Image, Form, message, Spin, Tabs, Tag, Button } from 'antd';
 import { EditableProTable, ModalForm, ProColumns, ProForm, ProFormText, ProFormTextArea, ProList } from '@ant-design/pro-components';
 import UserAvatar from '@/components/UserAvatar';
 import { Colophon, getColophonById, putColophon, RelatedIndividual } from '@/lib/colophon';
@@ -11,32 +11,29 @@ import { MessageInstance } from 'antd/es/message/interface';
 import { getPdf } from '@/lib/pdf';
 import { getPrefaceAndPostscriptById, PrefaceAndPostscript, putPrefaceAndPostscript } from '@/lib/preface_and_postscript';
 import { fetchUser } from '@/lib/user';
+import Link from 'next/link';
 
-const EditForm = ({ id, oldValue, newValue, type, messageApi }) => {
+const EditForm = ({ request_id, target_id, oldValue, newValue, type, messageApi, handleRefresh }) => {
   const [form] = Form.useForm();
   const [pdfPage, setPdfPage] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let res, page, pdfId;
-        if (type === 'colophon') {
-          res = await getColophonById(id);
-          page = res.page_id;
-          pdfId = res.pdf_id;
-        } else if (type === 'preface_and_postscript') {
-          res = await getPrefaceAndPostscriptById(id);
-          page = res.page_id;
-          pdfId = res.copy_id;
-        }
-        const res2 = await getPdf(type, pdfId, page);
-        setPdfPage(`data:image/jpeg;base64,${res2.image}`);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+  const fetchData = async () => {
+    try {
+      let res, page, pdfId;
+      if (type === 'colophon') {
+        res = await getColophonById(target_id);
+        page = res.page_id;
+        pdfId = res.pdf_id;
+      } else if (type === 'preface_and_postscript') {
+        res = await getPrefaceAndPostscriptById(target_id);
+        page = res.page_id;
+        pdfId = res.copy_id;
       }
-    };
-    fetchData();
-  }, [id, type]);
+      const res2 = await getPdf(type, pdfId, page);
+      setPdfPage(`data:image/jpeg;base64,${res2.image}`);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const colophonFields = [
     { name: 'scripture_name', label: '牌记名' },
@@ -66,24 +63,31 @@ const EditForm = ({ id, oldValue, newValue, type, messageApi }) => {
 
   const handleSubmit = async (values) => {
     try {
-      if (type === 'colophon') {
-        values.last_modify = newValue.last_modify;
-        await putColophon(newValue.id, values);
-      } else if (type === 'preface_and_postscript') {
-        await putPrefaceAndPostscript(id, values);
-      }
+      await handleRequest(request_id, type, values, "approved");
       messageApi.success('修改成功');
     } catch (err) {
       if (err.status === 403) {
         messageApi.error('权限不足');
-      } else if (err.response?.data?.detail === "Last modify time not match") {
-        messageApi.error('数据已被修改，请刷新页面后重试');
       } else {
         messageApi.error('修改失败');
       }
     }
-    return true;
+    handleRefresh();
   };
+
+  const handleReject = async () => {
+    try {
+      await handleRequest(request_id, type, {}, "rejected");
+      messageApi.success('拒绝成功');
+    } catch (err) {
+      if (err.status === 403) {
+        messageApi.error('权限不足');
+      } else {
+        messageApi.error('拒绝失败');
+      }
+    }
+    handleRefresh();
+  }
 
   return (
     <ModalForm
@@ -91,10 +95,27 @@ const EditForm = ({ id, oldValue, newValue, type, messageApi }) => {
       initialValues={newValue}
       trigger={<a>查看</a>}
       form={form}
+      onOpenChange={(open) => {
+        if (open) {
+          fetchData();
+        }
+      }}
       width={1200}
       autoFocusFirstInput
-      submitTimeout={5000}
-      onFinish={handleSubmit}
+      submitter={{
+        render: (_, dom) => {
+          return (
+            <div className='space-x-2'>
+              <Button danger onClick={handleReject}>
+                拒绝
+              </Button>
+              <Button type="primary" onClick={() => { handleSubmit(form.getFieldsValue()); }}>
+                提交
+              </Button>
+            </div >
+          )
+        }
+      }}
     >
       <div className="w-full h-full flex flex-col sm:flex-col md:flex-row lg:flex-row">
         <div className="md:w-2/3">
@@ -156,7 +177,7 @@ const EditForm = ({ id, oldValue, newValue, type, messageApi }) => {
         </div>
         <div className="md:w-1/3">
           {pdfPage ? (
-            <Image src={pdfPage} alt={`Page ${id}`} style={{ maxWidth: '100%' }} />
+            <Image src={pdfPage} alt={`Page ${target_id}`} style={{ maxWidth: '100%' }} />
           ) : (
             <div className="flex justify-center items-center" style={{ height: '100%', width: '100%' }}>
               <Spin />
@@ -164,12 +185,12 @@ const EditForm = ({ id, oldValue, newValue, type, messageApi }) => {
           )}
         </div>
       </div>
-    </ModalForm>
+    </ModalForm >
   );
 };
 
 
-const IndividualEditForm = ({ id, oldValue, newValue, messageApi }: { id: number, oldValue: RelatedIndividual[], newValue: RelatedIndividual[], messageApi: MessageInstance }) => {
+const IndividualEditForm = ({ request_id, target_id, oldValue, newValue, messageApi, handleRefresh }: { request_id: number, target_id: number, oldValue: RelatedIndividual[], newValue: RelatedIndividual[], messageApi: MessageInstance, handleRefresh: () => void }) => {
   const [form] = Form.useForm<RelatedIndividual[]>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() => {
     return newValue ? newValue.map((item) => item.id) : []
@@ -203,21 +224,45 @@ const IndividualEditForm = ({ id, oldValue, newValue, messageApi }: { id: number
     },
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let res, page, pdfId;
-        res = await getColophonById(id);
-        page = res.page_id;
-        pdfId = res.pdf_id;
-        const res2 = await getPdf("colophon", pdfId, page);
-        setPdfPage(`data:image/jpeg;base64,${res2.image}`);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+  const handleSubmit = async (values) => {
+    try {
+      await handleRequest(request_id, "indcol", values, "approved");
+      messageApi.success('修改成功');
+    } catch (err) {
+      if (err.status === 403) {
+        messageApi.error('权限不足');
+      } else {
+        messageApi.error('修改失败');
       }
-    };
-    fetchData();
-  }, [id]);
+    }
+    handleRefresh();
+  };
+
+  const handleReject = async () => {
+    try {
+      await handleRequest(request_id, "indcol", {}, "rejected");
+      messageApi.success('拒绝成功');
+    } catch (err) {
+      if (err.status === 403) {
+        messageApi.error('权限不足');
+      } else {
+        messageApi.error('拒绝失败');
+      }
+    }
+    handleRefresh();
+  }
+  const fetchData = async () => {
+    try {
+      let res, page, pdfId;
+      res = await getColophonById(target_id);
+      page = res.page_id;
+      pdfId = res.pdf_id;
+      const res2 = await getPdf("colophon", pdfId, page);
+      setPdfPage(`data:image/jpeg;base64,${res2.image}`);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   return (
     <ModalForm<RelatedIndividual[]> title="修改牌记信息"
@@ -228,16 +273,32 @@ const IndividualEditForm = ({ id, oldValue, newValue, messageApi }: { id: number
       form={form}
       width={1200}
       autoFocusFirstInput
-      submitTimeout={5000}
-      onFinish={async (values) => {
-        return true;
+      onOpenChange={(open) => {
+        if (open) {
+          fetchData();
+        }
       }}
+      submitter={{
+        render: (_, dom) => {
+          return (
+            <div className='space-x-2'>
+              <Button danger onClick={handleReject}>
+                拒绝
+              </Button>
+              <Button type="primary" onClick={() => { handleSubmit(form.getFieldsValue()); }}>
+                接受
+              </Button>
+            </div>
+          )
+        }
+      }
+      }
     >
       <div className="w-full h-full flex flex-col sm:flex-col md:flex-row lg:flex-row">
         <div className="md:w-2/3">
           <ProForm.Item
             label="原始人物列表"
-            name="dataSource"
+            name="oldValue"
             initialValue={oldValue}
           >
             <EditableProTable<RelatedIndividual>
@@ -249,7 +310,7 @@ const IndividualEditForm = ({ id, oldValue, newValue, messageApi }: { id: number
           </ProForm.Item>
           <ProForm.Item
             label="相关人物列表"
-            name="dataSource"
+            name="individuals"
             initialValue={newValue}
             trigger="onValuesChange"
           >
@@ -281,7 +342,7 @@ const IndividualEditForm = ({ id, oldValue, newValue, messageApi }: { id: number
         </div>
         <div className="md:w-1/3">
           {pdfPage ? (
-            <Image src={pdfPage} alt={`Page ${id}`} style={{ maxWidth: '100%' }} />
+            <Image src={pdfPage} alt={`Page ${target_id}`} style={{ maxWidth: '100%' }} />
           ) : (
             <div className="flex justify-center items-center" style={{ height: '100%', width: '100%' }}>
               <Spin />
@@ -294,12 +355,18 @@ const IndividualEditForm = ({ id, oldValue, newValue, messageApi }: { id: number
 }
 
 
-type tabsType = 'colophon' | 'indcol' | 'preface';
+type tabsType = 'colophon' | 'indcol' | 'preface_and_postscript';
 
 const ModifiactionRequestList: React.FC<{ type: tabsType, title: string }> = ({ type, title }) => {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = () => {
+    setRefreshKey((prevKey) => prevKey + 1);
+  };
   return (<ProList<ModifiactionRequest>
     rowKey="request_id"
     headerTitle={title}
+    key={refreshKey}
     pagination={{
       pageSizeOptions: ['5', '10', '20', '50'],
       defaultPageSize: 20,
@@ -316,8 +383,12 @@ const ModifiactionRequestList: React.FC<{ type: tabsType, title: string }> = ({ 
     search={{}}
     metas={{
       title: {
-        dataIndex: 'name',
         title: type === 'colophon' || type === 'indcol' ? '牌记名称' : '序跋名称',
+        dataIndex: 'name',
+        render: (_, record) => {
+          let path = type === 'colophon' || type === 'indcol' ? 'colophon' : 'preface_and_postscript'
+          return <Link href={`/${path}/${record.target_id}`}>{record.name}</Link>
+        },
       },
       avatar: {
         render: (_, record) => (
@@ -329,19 +400,25 @@ const ModifiactionRequestList: React.FC<{ type: tabsType, title: string }> = ({ 
         search: false,
         render: (_, record) => {
           return (
-            record.status === 'pending' ? (
-              <Tag color="yellow" >
-                待处理
-              </Tag>
-            ) : record.status === 'approved' ? (
-              <Tag color="green" >
-                已接受
-              </Tag>
-            ) : (
-              <Tag color="red" >
-                已拒绝
-              </Tag>
-            )
+            <>
+              {
+                record.status === 'pending' ? (
+                  <Tag color="yellow" >
+                    待处理
+                  </Tag>
+                ) : record.status === 'approved' ? (
+                  <Tag color="green" >
+                    已接受
+                  </Tag>
+                ) : (
+                  <Tag color="red" >
+                    已拒绝
+                  </Tag>
+                )
+              }
+              <Tag color='geekblue'>{record.requested_at}</Tag>
+              {record.handle_at && <Tag color='purple'>{record.handle_at}</Tag>}
+            </>
           );
         }
       },
@@ -368,9 +445,36 @@ const ModifiactionRequestList: React.FC<{ type: tabsType, title: string }> = ({ 
       actions: {
         search: false,
         render: (_, record) => [
-          type === 'colophon' ? <EditForm id={record.target_id} oldValue={record.old_value as Colophon} newValue={record.new_value as Colophon} messageApi={message} type="colophon" /> :
-            type === 'indcol' ? <IndividualEditForm id={record.target_id} oldValue={record.old_value.individuals as RelatedIndividual[]} newValue={record.new_value.individuals as RelatedIndividual[]} messageApi={message} /> :
-              <EditForm id={record.target_id} oldValue={record.old_value as PrefaceAndPostscript} newValue={record.new_value as PrefaceAndPostscript} messageApi={message} type="preface_and_postscript" />,
+          type === 'colophon' ? (
+            <EditForm
+              request_id={record.request_id}
+              target_id={record.target_id}
+              oldValue={record.old_value as Colophon}
+              newValue={record.new_value as Colophon}
+              messageApi={message}
+              type="colophon"
+              handleRefresh={handleRefresh}
+            />
+          ) : type === 'indcol' ? (
+            <IndividualEditForm
+              request_id={record.request_id}
+              target_id={record.target_id}
+              oldValue={record.old_value.individuals as RelatedIndividual[]}
+              newValue={record.new_value.individuals as RelatedIndividual[]}
+              messageApi={message}
+              handleRefresh={handleRefresh}
+            />
+          ) : (
+            <EditForm
+              target_id={record.target_id}
+              request_id={record.request_id}
+              oldValue={record.old_value as PrefaceAndPostscript}
+              newValue={record.new_value as PrefaceAndPostscript}
+              messageApi={message}
+              type="preface_and_postscript"
+              handleRefresh={handleRefresh}
+            />
+          ),
         ]
       }
     }}
@@ -409,7 +513,7 @@ export default function Page() {
       >
         <Tabs.TabPane key={'colophon'} tab={'牌记内容'} />
         <Tabs.TabPane key={'indcol'} tab={'牌记相关人物'} />
-        <Tabs.TabPane key={'preface'} tab={'序跋内容'} />
+        <Tabs.TabPane key={'preface_and_postscript'} tab={'序跋内容'} />
       </Tabs>
       {
         type === 'colophon' && <ModifiactionRequestList type='colophon' title='牌记内容' />
@@ -418,7 +522,7 @@ export default function Page() {
         type === 'indcol' && <ModifiactionRequestList type='indcol' title='牌记人物内容' />
       }
       {
-        type === 'preface' && <ModifiactionRequestList type='preface' title='序跋内容' />
+        type === 'preface_and_postscript' && <ModifiactionRequestList type='preface_and_postscript' title='序跋内容' />
       }
     </div>
   )

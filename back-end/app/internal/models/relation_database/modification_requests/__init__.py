@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 
 from sqlalchemy import func
-from sqlmodel import Field, Session, SQLModel, select
+from sqlmodel import Field, Session, SQLModel, desc, select
 
 from .. import engine
 
@@ -24,7 +24,7 @@ class ModificationRequestBase(SQLModel):
     requested_at: datetime
     status: StatusEnum = Field(default=StatusEnum.pending)
     handle_at: datetime | None = None
-    approved_by: int | None = None
+    processed_by: int | None = None
 
     @classmethod
     def create(cls, user_id: int, target_id: int, name: str, old_value: dict, new_value: dict):
@@ -49,8 +49,6 @@ class ModificationRequestBase(SQLModel):
             query = select(cls)
             if status:
                 query = query.where(cls.status == status)
-            else:
-                query = query.where(cls.status == StatusEnum.pending)
 
             if title:
                 query = query.where(cls.name.like(f"%{title}%"))
@@ -59,7 +57,7 @@ class ModificationRequestBase(SQLModel):
             total_result = session.exec(total_statement)
             total_count = total_result.one()
 
-            statement = query.limit(per_page).offset(offset)
+            statement = query.order_by(desc(cls.requested_at)).limit(per_page).offset(offset)
             result = session.exec(statement)
             items = result.all()
 
@@ -95,7 +93,7 @@ class ModificationRequestBase(SQLModel):
         with Session(engine) as session:
             self.status = StatusEnum.approved
             self.handle_at = datetime.now()
-            self.approved_by = user_id
+            self.processed_by = user_id
             session.add(self)
             session.commit()
             session.refresh(self)
@@ -105,7 +103,7 @@ class ModificationRequestBase(SQLModel):
         with Session(engine) as session:
             self.status = StatusEnum.rejected
             self.handle_at = datetime.now()
-            self.approved_by = user_id
+            self.processed_by = user_id
             session.add(self)
             session.commit()
             session.refresh(self)
