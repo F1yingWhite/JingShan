@@ -66,7 +66,12 @@ async def register_user(params: RegisterParams):
     user = User.get_by_email(params.email)
     if user is not None:
         raise HTTPException(status_code=400, detail="User already exists")
-    user = User.register(params.username, params.email, params.password)
+    user = User.get_by_email_no_verify(params.email)
+    if user is None:
+        user = User.register(params.username, params.email, params.password)
+    else:
+        user.change_password(params.password)
+        user.change_username(params.username)
     encryption_email = base64.urlsafe_b64encode(reversible_encrypt(user.email)).decode()
     if config.DEBUG:
         verify_url = f"{config.ENV['DEBUG'].URL}api/user/verify/{encryption_email}"
