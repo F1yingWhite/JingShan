@@ -5,11 +5,11 @@ export type PersonTime = {
   [key: string]: number;
 };
 
-interface TimeChartProps {
+interface CountChartProps {
   chartData: PersonTime;
 }
 
-const TimeChart: React.FC<TimeChartProps> = ({ chartData }) => {
+const CountChart: React.FC<CountChartProps> = ({ chartData }) => {
   const getOption = () => {
     const times = Object.keys(chartData);
     const counts = Object.values(chartData);
@@ -56,4 +56,4 @@ const TimeChart: React.FC<TimeChartProps> = ({ chartData }) => {
   );
 };
 
-export default TimeChart;
+export default CountChart;

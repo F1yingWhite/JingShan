@@ -1,5 +1,5 @@
 'use client'
-import RelationChart from '@/components/RelationChart'
+import RelationChart from '@/components/charts/RelationChart'
 import { Graph } from '@/lib/graph_zhi'
 import React, { useEffect, useState } from 'react'
 import { getByScriptureName } from '@/lib/graph_zang'

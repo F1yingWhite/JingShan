@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import RelationChart from '@/components/RelationChart'
+import RelationChart from '@/components/charts/RelationChart'
 import { Graph, getAllGraph } from '@/lib/graph_zhi';
 import { Tabs } from 'antd';
 import { getColophonGraph } from '@/lib/graph_zang';

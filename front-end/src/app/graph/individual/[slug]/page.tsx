@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import RelationChart from '@/components/RelationChart'
+import RelationChart from '@/components/charts/RelationChart'
 import { Graph, getGraphByName, getGraphDetailByName, GraphDetail, GraphLists, getIdentityList } from '@/lib/graph_zhi';
 import { ProList } from '@ant-design/pro-components';
 import { useRouter } from 'next/navigation';

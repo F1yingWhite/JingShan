@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { getScriptureListRandom } from '@/lib/colophon';
 import { getPrefaceAndPostscriptListRandom } from '@/lib/preface_and_postscript';
 import { getIndividualRandom } from '@/lib/individual';
-import RelationChart from '@/components/RelationChart';
+import RelationChart from '@/components/charts/RelationChart';
 import { getByScriptureName, Graph } from '@/lib/graph_zang';
 import { getGraphByName, getRandomPerson } from '@/lib/graph_zhi';
 const { Search } = Input;

@@ -29,6 +29,11 @@ export type Colophon = {
     related_individuals?: RelatedIndividual[];
 }
 
+export type ColophonADCount = {
+    ad: number[];
+    count: number[];
+}
+
 export type ContentItem = {
     name: string;
     related_data: Colophon[];
@@ -64,4 +69,8 @@ export function putColophon(id: number, data: any) {
 
 export function updateRelatedIndividual(id: number, data: RelatedIndividual[]) {
     return put(`/colophon/related_individuals/${id}`, { "individuals": data })
+}
+
+export function getColophonADCount(): Promise<ColophonADCount> {
+    return get(`/colophon/ad/count`)
 }

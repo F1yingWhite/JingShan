@@ -204,6 +204,19 @@ class Colophon(SQLModel, table=True):
             result = session.exec(statement).first()
             return result
 
+    @classmethod
+    def get_nums_by_AD(cls):
+        with Session(engine) as session:
+            statement = (
+                select(cls.AD, func.count(cls.AD))
+                .where(cls.AD != None)  # noqa: E711
+                .group_by(cls.AD)
+                .order_by(cls.AD.asc())
+                .distinct()
+            )
+            result = session.exec(statement).all()
+            return result
+
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)

@@ -62,6 +62,17 @@ async def get_scripture_name_index(name: str):
     return ResponseModel(data=result)
 
 
+@colophon_router.get("/ad/count")
+async def get_ad_count():
+    res = Colophon.get_nums_by_AD()
+    res_count = []
+    res_ad = []
+    for i in res:
+        res_ad.append(i[0])
+        res_count.append(i[1])
+    return ResponseModel(data={"count": res_count, "ad": res_ad})
+
+
 @colophon_router.get("/detail")
 async def get_colophon_detail(id: int):
     results = Colophon.get_with_related_by_id(colophon_id=id)
