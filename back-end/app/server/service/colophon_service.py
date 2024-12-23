@@ -12,10 +12,8 @@ auth_colophon_router = APIRouter(prefix="/colophon", dependencies=[Depends(user_
 class ColophonGetParams(BaseModel):
     chapter_id: str | None = None
     content: str | None = None
-    id: int | None = None
     qianziwen: str | None = None
     scripture_name: str | None = None
-    volume_id: str | None = None
 
 
 @colophon_router.post("/")
@@ -30,12 +28,21 @@ async def get_colophon(
         page_size=page_size,
         chapter_id=params.chapter_id,
         content=params.content,
-        id=params.id,
         qianziwen=params.qianziwen,
         scripture_name=params.scripture_name,
-        volume_id=params.volume_id,
     )
-    return ResponseModel(data={"data": colphons, "total_num": total})
+    res = Colophon.get_nums_by_AD(
+        chapter_id=params.chapter_id,
+        content=params.content,
+        qianziwen=params.qianziwen,
+        scripture_name=params.scripture_name,
+    )
+    res_count = []
+    res_ad = []
+    for i in res:
+        res_ad.append(i[0])
+        res_count.append(i[1])
+    return ResponseModel(data={"data": colphons, "total_num": total, "count": res_count, "ad": res_ad})
 
 
 @colophon_router.get("/scripture_name/random")

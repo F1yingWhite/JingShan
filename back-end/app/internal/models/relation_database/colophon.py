@@ -205,15 +205,20 @@ class Colophon(SQLModel, table=True):
             return result
 
     @classmethod
-    def get_nums_by_AD(cls):
+    def get_nums_by_AD(
+        cls, chapter_id: str = None, content: str = None, qianziwen: str = None, scripture_name: str = None
+    ):
         with Session(engine) as session:
-            statement = (
-                select(cls.AD, func.count(cls.AD))
-                .where(cls.AD != None)  # noqa: E711
-                .group_by(cls.AD)
-                .order_by(cls.AD.asc())
-                .distinct()
-            )
+            statement = select(cls.AD, func.count(cls.AD).label("count")).where(cls.AD != None).group_by(cls.AD)  # noqa: E711
+            if chapter_id is not None:
+                statement = statement.where(cls.chapter_id.like(f"%{chapter_id}%"))
+            if content is not None:
+                statement = statement.where(cls.content.like(f"%{content}%"))
+            if qianziwen is not None:
+                statement = statement.where(cls.qianziwen.like(f"%{qianziwen}%"))
+            if scripture_name is not None:
+                statement = statement.where(cls.scripture_name.like(f"%{scripture_name}%"))
+            statement = statement.order_by(cls.AD.asc()).distinct()
             result = session.exec(statement).all()
             return result
 
