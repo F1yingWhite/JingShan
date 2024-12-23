@@ -49,7 +49,7 @@ export default function Page() {
 
   return (
     <div>
-      <div className='h-[50vh] min-h-[500px]'>
+      <div className='h-[50vh] min-h-[500px] p-8'>
         {/* TODO:需要和下面的查询进行关联 */}
         <TimeChart
           title='牌记出现时间统计图'

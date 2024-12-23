@@ -37,7 +37,7 @@ export function getGraphByName(name: string) {
 }
 
 export type GraphDetail = {
-  姓名: string;
+  名号: string;
   [key: string]: any;
   role?: string
 }

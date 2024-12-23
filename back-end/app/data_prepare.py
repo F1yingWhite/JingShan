@@ -4,6 +4,8 @@ import re
 from uuid import uuid4
 
 import pandas as pd
+import polars as pl
+from neo4j import GraphDatabase
 
 
 def process_经名卷数(excel_file: str):
@@ -301,92 +303,86 @@ def merge_excel(excel_path: str):  # noqa: C901
     df.to_excel("assets/径山藏/各刊刻地牌记_final.xlsx", index=False)
 
 
+# 配置你的 Neo4j 数据库连接
+neo4j_uri = "bolt://localhost:7687"
+neo4j_user = "neo4j"
+neo4j_password = "12345678"
+
+# 创建 Neo4j 驱动
+driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
+
+# 中文数字到阿拉伯数字的映射
+chinese_to_arabic = {
+    "零": 0,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
+    "百": 100,
+    "千": 1000,
+    "万": 10000,
+}
+
+
+def chinese_to_int(chinese_str):
+    if chinese_str.startswith("十"):
+        chinese_str = "一" + chinese_str
+    result = 0
+    unit = 1
+    for char in reversed(chinese_str):
+        if char in chinese_to_arabic:
+            num = chinese_to_arabic[char]
+            if num >= 10:
+                if num > unit:
+                    unit = num
+                else:
+                    unit *= num
+            else:
+                result += num * unit
+        else:
+            raise ValueError(f"Invalid character {char} in input")
+    return result
+
+
+def convert_generation_to_index():
+    with driver.session() as session:
+        result = session.run(
+            """
+            MATCH (n:Person {type:"径山志"})
+            WHERE n.世代 is not null
+            RETURN n
+            """
+        )
+        persons = result.data()
+        for person in persons:
+            generation_str = person["n"]["世代"]
+            # 提取中文数字部分
+            chinese_digits = "".join(filter(lambda x: x in chinese_to_arabic, generation_str))
+            if chinese_digits:
+                generation_index = chinese_to_int(chinese_digits)
+                print(generation_str, generation_index)
+                # 更新节点
+                session.run(
+                    """
+                    MATCH (n:Person {type:"径山志"})
+                    WHERE n.名号 = $name
+                    SET n.世代Index = $generation_index
+                    """,
+                    name=person["n"]["名号"],
+                    generation_index=generation_index,
+                )
+
+
 if __name__ == "__main__":
-    file_path = "../assets/Time对照表.csv"
-    df = pd.read_csv(file_path)
-    # 第一列为年号一,第二列为年号二,第三列为时间,把前两列当字典的键,第三列当值
-    time_dict = {}
-    for i, row in df.iterrows():
-        time_dict[row["年号一"]] = row["公元"]
-        time_dict[row["年号二"]] = row["公元"]
-    #
-
-# from neo4j import GraphDatabase
-
-# # 配置你的 Neo4j 数据库连接
-# neo4j_uri = "bolt://localhost:7687"
-# neo4j_user = "neo4j"
-# neo4j_password = "12345678"
-
-# # 创建 Neo4j 驱动
-# driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
-
-# # 中文数字到阿拉伯数字的映射
-# chinese_to_arabic = {
-#     "零": 0,
-#     "一": 1,
-#     "二": 2,
-#     "三": 3,
-#     "四": 4,
-#     "五": 5,
-#     "六": 6,
-#     "七": 7,
-#     "八": 8,
-#     "九": 9,
-#     "十": 10,
-#     "百": 100,
-#     "千": 1000,
-#     "万": 10000,
-# }
-
-
-# def chinese_to_int(chinese_str):
-#     result = 0
-#     unit = 1
-#     for char in reversed(chinese_str):
-#         if char in chinese_to_arabic:
-#             num = chinese_to_arabic[char]
-#             if num >= 10:
-#                 if num > unit:
-#                     unit = num
-#                 else:
-#                     unit *= num
-#             else:
-#                 result += num * unit
-#         else:
-#             raise ValueError(f"Invalid character {char} in input")
-#     return result
-
-
-# def convert_generation_to_index():
-#     with driver.session() as session:
-#         result = session.run(
-#             """
-#             MATCH (n:ZhiPerson)
-#             WHERE n.世代 is not null
-#             RETURN n
-#             """
-#         )
-#         persons = result.data()
-#         for person in persons:
-#             generation_str = person["n"]["世代"]
-#             # 提取中文数字部分
-#             chinese_digits = "".join(filter(lambda x: x in chinese_to_arabic, generation_str))
-#             if chinese_digits:
-#                 generation_index = chinese_to_int(chinese_digits)
-#                 print(generation_index)
-#                 # 更新节点
-#                 session.run(
-#                     """
-#                     MATCH (n:ZhiPerson)
-#                     WHERE n.姓名 = $name
-#                     SET n.世代Index = $generation_index
-#                     """,
-#                     name=person["n"]["姓名"],
-#                     generation_index=generation_index,
-#                 )
-
-
-# if __name__ == "__main__":
-#     convert_generation_to_index()
-#     driver.close()
+    # convert_generation_to_index()
+    # driver.close()
+    path = "../doc/径山志/徑山歷代祖師基本資料建置 (20190801).xlsx"
+    df = pl.read_excel(path)
+    # 打印列名
+    print(df.columns)

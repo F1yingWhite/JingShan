@@ -34,23 +34,23 @@ async def get_graph_by_name(name: str):
     node_category_map = {}
     for result in results:
         if result["subject_identity"] != "-":
-            list_of_strings = result["subject_identity"]
-        elif result["subject.姓名"] == name:
-            list_of_strings = ["查询对象"]
+            role = result["subject_identity"]
+        elif result["subject.名号"] == name:
+            role = "查询对象"
         else:
-            list_of_strings = ["-"]
-        category_set.add(list_of_strings[0])
-        node_category_map[result["subject.姓名"]] = list_of_strings[0]
+            role = "-"
+        category_set.add(role)
+        node_category_map[result["subject.名号"]] = role
         if result["object_identity"] != "-":
-            list_of_strings = result["object_identity"]
-        elif result["object.姓名"] == name:
-            list_of_strings = ["查询对象"]
+            role = result["object_identity"]
+        elif result["object.名号"] == name:
+            role = "查询对象"
         else:
-            list_of_strings = ["-"]
-        category_set.add(list_of_strings[0])
-        node_category_map[result["object.姓名"]] = list_of_strings[0]
-        node_map[result["subject.姓名"]] = node_map.get(result["subject.姓名"], 0) + 1
-        node_map[result["object.姓名"]] = node_map.get(result["object.姓名"], 0) + 1
+            role = "-"
+        category_set.add(role)
+        node_category_map[result["object.名号"]] = role
+        node_map[result["subject.名号"]] = node_map.get(result["subject.名号"], 0) + 1
+        node_map[result["object.名号"]] = node_map.get(result["object.名号"], 0) + 1
 
     for category in category_set:
         res_dict["categories"].append({"name": category, "keyword": {}, "base": category})
@@ -70,11 +70,11 @@ async def get_graph_by_name(name: str):
         res_dict["links"].append(
             {
                 "source": next(
-                    (index for index, node in enumerate(res_dict["nodes"]) if node["name"] == result["subject.姓名"]),
+                    (index for index, node in enumerate(res_dict["nodes"]) if node["name"] == result["subject.名号"]),
                     None,
                 ),
                 "target": next(
-                    (index for index, node in enumerate(res_dict["nodes"]) if node["name"] == result["object.姓名"]),
+                    (index for index, node in enumerate(res_dict["nodes"]) if node["name"] == result["object.名号"]),
                     None,
                 ),
                 "value": result["relationship"],
@@ -97,15 +97,15 @@ async def get_all():
     node_category_map = {}
     for node in all_node:
         if "身份" in node["m"]:
-            category_list.add(node["m"]["身份"][0])
-            node_category_map[node["m"]["姓名"]] = node["m"]["身份"][0]
+            category_list.add(node["m"]["身份"])
+            node_category_map[node["m"]["名号"]] = node["m"]["身份"]
         else:
-            node_category_map[node["m"]["姓名"]] = "-"
+            node_category_map[node["m"]["名号"]] = "-"
         if "身份" in node["n"]:
-            category_list.add(node["n"]["身份"][0])
-            node_category_map[node["n"]["姓名"]] = node["n"]["身份"][0]
+            category_list.add(node["n"]["身份"])
+            node_category_map[node["n"]["名号"]] = node["n"]["身份"]
         else:
-            node_category_map[node["n"]["姓名"]] = "-"
+            node_category_map[node["n"]["名号"]] = "-"
     category_list = list(category_list)
 
     # random.shuffle(category_list)
@@ -113,8 +113,8 @@ async def get_all():
         res_dict["categories"].append({"name": category, "keyword": {}, "base": category})
     node_map = {}
     for node in all_node:
-        node_map[node["n"]["姓名"]] = node_map.get(node["n"]["姓名"], 0) + 1
-        node_map[node["m"]["姓名"]] = node_map.get(node["m"]["姓名"], 0) + 1
+        node_map[node["n"]["名号"]] = node_map.get(node["n"]["名号"], 0) + 1
+        node_map[node["m"]["名号"]] = node_map.get(node["m"]["名号"], 0) + 1
     for node, count in node_map.items():
         temp_dict = {
             "name": node,
@@ -129,11 +129,11 @@ async def get_all():
         res_dict["links"].append(
             {
                 "source": next(
-                    (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["n"]["姓名"]),
+                    (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["n"]["名号"]),
                     None,
                 ),
                 "target": next(
-                    (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["m"]["姓名"]),
+                    (index for index, n in enumerate(res_dict["nodes"]) if n["name"] == node["m"]["名号"]),
                     None,
                 ),
                 "value": node["r"],
