@@ -380,7 +380,11 @@ const ModifiactionRequestList: React.FC<{ type: tabsType, title: string }> = ({ 
         total: total
       }
     }}
-    search={{}}
+    search={{
+      showHiddenNum: true,
+      defaultCollapsed: false,
+      className: "bg-[#f3f1ea]",
+    }}
     metas={{
       title: {
         title: type === 'colophon' || type === 'indcol' ? '牌记名称' : '序跋名称',

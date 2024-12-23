@@ -254,7 +254,7 @@ export default function Page() {
   }
 
   return (
-    <div className='w-full h-full flex flex-row'>
+    <div className='w-full h-full flex flex-row bg-white'>
       {contextHolder}
       <div className='h-full w-1/4 max-w-[400px] bg-gray-100 overflow-auto'>
         <Button

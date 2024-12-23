@@ -4,6 +4,7 @@ from datetime import datetime
 
 from sqlmodel import TIMESTAMP, Column, Field, Session, SQLModel, distinct, func, select
 
+from ...utils.get_time_place import get_AD
 from . import CJsonEncoder, engine
 
 
@@ -24,6 +25,7 @@ class Colophon(SQLModel, table=True):
     wish: str | None = Field(default=None, max_length=1000)
     pearwood: str | None = Field(default=None, max_length=255)
     last_modify: datetime = Field(sa_column=Column(TIMESTAMP, default=func.now(), onupdate=func.now()))
+    AD: int | None = Field(default=None)
 
     @classmethod
     def random_get_scripture_name(cls, size: int):
@@ -205,6 +207,9 @@ class Colophon(SQLModel, table=True):
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
+        if "time" in kwargs:
+            self.AD = get_AD(kwargs["time"])
+            print(self.AD)
         with Session(engine) as session:
             session.add(self)
             session.commit()

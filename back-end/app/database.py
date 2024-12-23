@@ -372,8 +372,7 @@ def generate_neo4j(create):
                     )
 
 
-if __name__ == "__main__":
-
+def notknow():
     def list_attr_to_str(tx):
         """
         在事务内执行Cypher语句，将“人物”节点中列表类型的属性值转换为字符串
@@ -397,3 +396,37 @@ if __name__ == "__main__":
     with neo4j_driver.session() as session:
         # 把所有的人物节点的属性中是列表的属性转换成字符串
         session.execute_write(list_attr_to_str)
+
+
+if __name__ == "__main__":
+    file_path = "./assets/Time对照表.csv"
+    df = pd.read_csv(file_path)
+    # 第一列为年号一,第二列为年号二,第三列为时间,把前两列当字典的键,第三列当值
+    time_dict = {}
+    for i, row in df.iterrows():
+        time_dict[row["年号一"]] = row["公元"]
+        time_dict[row["年号二"]] = row["公元"]
+    # 读取Colophon表的每一行
+    with Session(engine) as session:
+        query = text("SELECT * FROM colophon")
+        result = session.exec(query)
+        for row in result:
+            time = row[8]
+            if time is not None and time != "":
+                # 遍历整个dict,看键是不是在里面
+                for key in time_dict.keys():
+                    if key in time:
+                        time = time_dict[key]
+                        # 把AD列填为time
+                        with Session(engine) as session:
+                            session.exec(
+                                text(
+                                    f"""
+                                    UPDATE colophon
+                                    SET AD = '{time}'
+                                    WHERE id = {row[0]}
+                                """
+                                )
+                            )
+                            session.commit()
+                        break

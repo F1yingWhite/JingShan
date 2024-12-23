@@ -32,7 +32,11 @@ export default function page() {
             total: res.data.total,
           };
         }}
-        search={{}}
+        search={{
+          showHiddenNum: true,
+          defaultCollapsed: false,
+          className: "bg-[#f3f1ea]",
+        }}
         pagination={{
           pageSizeOptions: ['5', '10', '20', '50'],
           defaultPageSize: 20,

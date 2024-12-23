@@ -302,8 +302,14 @@ def merge_excel(excel_path: str):  # noqa: C901
 
 
 if __name__ == "__main__":
-    file_path = "assets/径山藏/各刊刻地牌記.xls"
-    merge_excel(file_path)
+    file_path = "../assets/Time对照表.csv"
+    df = pd.read_csv(file_path)
+    # 第一列为年号一,第二列为年号二,第三列为时间,把前两列当字典的键,第三列当值
+    time_dict = {}
+    for i, row in df.iterrows():
+        time_dict[row["年号一"]] = row["公元"]
+        time_dict[row["年号二"]] = row["公元"]
+    #
 
 # from neo4j import GraphDatabase
 

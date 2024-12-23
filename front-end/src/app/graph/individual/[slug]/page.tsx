@@ -105,7 +105,7 @@ export default function page({ params }: { params: { slug: string } }) {
             ) : !Array.isArray(individual[key]) && individual[key] !== '无' ? (
               <div key={index} >
                 <Tag text={key} color="#DAA520" opacity={0.2} textColor='black' />
-                  {individual[key]}
+                {individual[key]}
               </div>
             ) : null
           );

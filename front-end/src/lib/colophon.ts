@@ -25,6 +25,7 @@ export type Colophon = {
     wish?: string;
     money?: string;
     pearwood?: string;
+    AD?: number;
     related_individuals?: RelatedIndividual[];
 }
 

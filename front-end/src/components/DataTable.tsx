@@ -32,6 +32,11 @@ const DataTable = <T extends Record<string, any>>({ columns, getList }: TablePro
     <ProTable<T>
       bordered
       columns={columns}
+      search={{
+        showHiddenNum: true,
+        defaultCollapsed: false,
+        className: "bg-[#f3f1ea]",
+      }}
       request={fetchData}
       pagination={{
         showSizeChanger: true,
