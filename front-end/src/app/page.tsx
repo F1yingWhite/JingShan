@@ -128,7 +128,7 @@ export default function Page() {
     });
 
     getRandomPerson().then((res) => {
-      getGraphByName(res[0]["n.姓名"]).then((res) => {
+      getGraphByName(res[0]["n.名号"]).then((res) => {
         setGraphIndivudual(res)
       })
     });
