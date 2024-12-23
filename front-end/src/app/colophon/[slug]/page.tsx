@@ -17,7 +17,7 @@ import {
 } from '@ant-design/pro-components';
 import { MessageInstance } from 'antd/es/message/interface';
 
-const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Colophon, setColophon: React.Dispatch<React.SetStateAction<Colophon>>, messageApi: MessageInstance }) => {
+const ColophonEditForm = ({ colophon, messageApi }: { colophon: Colophon, messageApi: MessageInstance }) => {
   const [form] = Form.useForm<Colophon>();
   return (
     <ModalForm<Colophon>
@@ -32,17 +32,12 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
       onFinish={async (values) => {
         values.last_modify = colophon.last_modify
         putColophon(colophon.id, values).then(() => {
-          messageApi.success('修改成功');
-          getColophonById(colophon.id).then((res) => {
-            setColophon(res);
-          })
+          messageApi.success('修改请求提交成功');
         }).catch((err) => {
           if (err.status === 403) {
             messageApi.error('权限不足');
-          } else if (err.response.data.detail === "Last modify time not match") {
-            messageApi.error('数据已被修改，请刷新页面后重试');
           } else {
-            messageApi.error('修改失败');
+            messageApi.error('修改请求提交失败');
           }
         });
         return true;
@@ -95,18 +90,25 @@ const ColophonEditForm = ({ colophon, setColophon, messageApi }: { colophon: Col
           placeholder="请输入该银"
         />
       </ProForm.Group>
-      <ProFormText
-        width="lg"
-        name="wish"
-        label="祈愿"
-        placeholder="请输入祈愿"
-      />
-
+      <ProForm.Group>
+        <ProFormText
+          width="md"
+          name="pearwood"
+          label="梨板"
+          placeholder="请输入梨板数目"
+        />
+        <ProFormText
+          width="md"
+          name="wish"
+          label="祈愿"
+          placeholder="请输入祈愿"
+        />
+      </ProForm.Group>
     </ModalForm>
   );
 };
 
-const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: Colophon, setColophon: React.Dispatch<React.SetStateAction<Colophon>>, messageApi: MessageInstance }) => {
+const IndividualEditForm = ({ colophon, messageApi }: { colophon: Colophon, messageApi: MessageInstance }) => {
   const [form] = Form.useForm<RelatedIndividual[]>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     colophon.related_individuals ? colophon.related_individuals.map((item) => item.id) : [],
@@ -149,15 +151,12 @@ const IndividualEditForm = ({ colophon, setColophon, messageApi }: { colophon: C
       submitTimeout={5000}
       onFinish={async (values) => {
         updateRelatedIndividual(colophon.id, values.dataSource).then(() => {
-          messageApi.success('修改成功');
-          getColophonById(colophon.id).then((res) => {
-            setColophon(res);
-          });
+          messageApi.success('修改请求提交成功');
         }).catch((err) => {
           if (err.status === 403) {
             messageApi.error('权限不足');
           } else {
-            messageApi.error('修改失败');
+            messageApi.error('修改请求提交失败');
           }
         });
         return true;
@@ -271,10 +270,17 @@ export default function Page({ params }: { params: { slug: string } }) {
                 </div>
                 {
                   user && user.privilege > 0 && (
-                    <ColophonEditForm colophon={colophon} setColophon={setColophon} messageApi={messageApi} />
+                    <>
+                      <ColophonEditForm colophon={colophon} messageApi={messageApi} />
+                      <p>
+                        <Tag text="最后修改时间" color="#DAA520" opacity={0.2} textColor='black' />
+                        {colophon.last_modify}
+                      </p>
+                    </>
                   )
                 }
               </div>
+
               <p className="mb-6 mt-6 leading-relaxed">{colophon.content}</p>
               <div className="grid grid-cols-2 gap-8">
                 {[
@@ -282,10 +288,12 @@ export default function Page({ params }: { params: { slug: string } }) {
                   { label: "卷数", value: colophon.volume_id },
                   { label: "册数", value: colophon.chapter_id },
                   { label: "千字文", value: colophon.qianziwen },
-                  { label: "刊刻时间", value: colophon.time },
+                  { label: "刊刻时间", value: colophon.time + "／公元" + colophon.AD },
                   { label: "刊刻地点", value: colophon.place },
                   { label: "计字", value: colophon.words_num },
                   { label: "该银", value: colophon.money },
+                  { label: "梨板", value: colophon.pearwood },
+                  { label: "祈愿", value: colophon.wish },
                 ].map((item, index) => (
                   <div key={index} className="flex justify-between items-center">
                     <Tag text={item.label} color="#DAA520" opacity={0.2} textColor='black' />
@@ -294,12 +302,6 @@ export default function Page({ params }: { params: { slug: string } }) {
                     </div>
                   </div>
                 ))}
-              </div>
-              <div className="flex justify-between items-center mt-8">
-                <Tag text="祈愿" color="#DAA520" opacity={0.2} textColor='black' />
-                <div className="text-right">
-                  {colophon.wish || "-"}
-                </div>
               </div>
             </div>
           )
@@ -320,8 +322,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           <Tag text="相关人物" color="#DAA520" opacity={0.2} textColor='black' />
           {
             user && user.privilege > 0 && colophon && (
-              // TODO:修改人物信息
-              <IndividualEditForm colophon={colophon} setColophon={setColophon} messageApi={messageApi} />
+              <IndividualEditForm colophon={colophon} messageApi={messageApi} />
             )
           }
         </div>

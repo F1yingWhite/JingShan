@@ -118,7 +118,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
     const adjustHeight = () => {
       const rightDivHeight = rightDiv.offsetHeight;
-      const computedHeight = Math.max(window.innerHeight - 320, rightDivHeight);
+      const computedHeight = Math.max(window.innerHeight * 1.1, rightDivHeight);
       leftDiv.style.height = `${computedHeight}px`;
     };
     window.addEventListener("resize", adjustHeight);
@@ -190,9 +190,6 @@ export default function Page({ params }: { params: { slug: string } }) {
                   { label: "译者", value: preface_and_postscript.translator },
                   { label: "类别", value: preface_and_postscript.category },
                   { label: "朝代", value: preface_and_postscript.dynasty },
-                  // { label: "册", value: preface_and_postscript.copy_id },
-                  // { label: "页", value: preface_and_postscript.page_id },
-                  // ...(user && user.privilege > 0 ? [{ label: "上次修改", value:preface_and_postscript.last_modify }] : [])
                 ].map((item, index) => (
                   <div
                     key={index}

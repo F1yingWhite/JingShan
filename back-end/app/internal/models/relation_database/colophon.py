@@ -4,6 +4,7 @@ from datetime import datetime
 
 from sqlmodel import TIMESTAMP, Column, Field, Session, SQLModel, distinct, func, select
 
+from ...utils.get_time_place import get_AD
 from . import CJsonEncoder, engine
 
 
@@ -22,7 +23,9 @@ class Colophon(SQLModel, table=True):
     words_num: str | None = Field(default=None, max_length=255)
     money: str | None = Field(default=None, max_length=255)
     wish: str | None = Field(default=None, max_length=1000)
+    pearwood: str | None = Field(default=None, max_length=255)
     last_modify: datetime = Field(sa_column=Column(TIMESTAMP, default=func.now(), onupdate=func.now()))
+    AD: int | None = Field(default=None)
 
     @classmethod
     def random_get_scripture_name(cls, size: int):
@@ -157,14 +160,14 @@ class Colophon(SQLModel, table=True):
 
     @classmethod
     def get_with_related_by_id(cls, colophon_id: int):
-        from .ind_col import Ind_Col
+        from .ind_col import IndCol
         from .individual import Individual
 
         with Session(engine) as session:
             statement = (
-                select(cls, Ind_Col, Individual.name)
-                .join(Ind_Col, cls.id == Ind_Col.col_id)
-                .join(Individual, Individual.id == Ind_Col.ind_id)
+                select(cls, IndCol, Individual.name)
+                .join(IndCol, cls.id == IndCol.col_id)
+                .join(Individual, Individual.id == IndCol.ind_id)
                 .where(cls.id == colophon_id)
             )
             result = session.exec(statement).all()
@@ -201,11 +204,28 @@ class Colophon(SQLModel, table=True):
             result = session.exec(statement).first()
             return result
 
+    @classmethod
+    def get_nums_by_AD(cls):
+        with Session(engine) as session:
+            statement = (
+                select(cls.AD, func.count(cls.AD))
+                .where(cls.AD != None)  # noqa: E711
+                .group_by(cls.AD)
+                .order_by(cls.AD.asc())
+                .distinct()
+            )
+            result = session.exec(statement).all()
+            return result
+
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
+        if "time" in kwargs:
+            self.AD = get_AD(kwargs["time"])
+            print(self.AD)
         with Session(engine) as session:
             session.add(self)
             session.commit()
             session.refresh(self)
+            self.last_modify = datetime.now()
             return self

@@ -22,8 +22,6 @@ export default function RootLayout({
   const { setUser } = useUserStore();
 
   useEffect(() => {
-    const port = process.env.PORT || 3000;
-    console.log(port);
     const autoLogin = localStorage.getItem('autoLogin');
     if (!autoLogin)
       localStorage.removeItem('jwt');
@@ -53,7 +51,7 @@ export default function RootLayout({
               },
             }}
           >
-            <div className="overflow-y-auto h-[100vh] overflow-x-hidden">
+            <div className="overflow-y-auto h-[100vh] overflow-x-hidden bg-[#F3F1EA]">
               <div className="top-0 left-0 w-full z-10">
                 <NavBar />
               </div>

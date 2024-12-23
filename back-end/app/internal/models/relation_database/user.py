@@ -38,15 +38,21 @@ class User(SQLModel, table=True):
             return user
 
     @classmethod
-    def get_user_by_id(cls, user_id: int):
+    def get_by_id(cls, user_id: int):
         with Session(engine) as session:
-            user = session.exec(select(cls).where(cls.id == user_id, cls.verified is True)).first()
+            user = session.exec(select(cls).where(cls.id == user_id, cls.verified == True)).first()  # noqa: E712
             return user
 
     @classmethod
-    def get_user_by_email(cls, email: str):
+    def get_by_email(cls, email: str):
         with Session(engine) as session:
-            user = session.exec(select(cls).where(cls.email == email)).first()
+            user = session.exec(select(cls).where(cls.email == email, cls.verified == True)).first()  # noqa: E712
+            return user
+
+    @classmethod
+    def get_by_email_no_verify(cls, email: str):
+        with Session(engine) as session:
+            user = session.exec(select(cls).where(cls.email == email)).first()  # noqa: E712
             return user
 
     def change_password(self, new_password: str):

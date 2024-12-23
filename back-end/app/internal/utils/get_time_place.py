@@ -1,5 +1,7 @@
 import re
 
+import pandas as pd
+
 TIME_LIST = [
     "洪武",
     "建文",
@@ -126,6 +128,14 @@ PROVINCE_DICT = {
     "能仁禅院": (108.48, 23.38),
 }
 
+file_path = "./assets/Time对照表.csv"
+df = pd.read_csv(file_path)
+# 第一列为年号一,第二列为年号二,第三列为时间,把前两列当字典的键,第三列当值
+time_dict = {}
+for i, row in df.iterrows():
+    time_dict[row["年号一"]] = row["公元"]
+    time_dict[row["年号二"]] = row["公元"]
+
 
 def last_segment(str):
     # 使用正则表达式分割字符串，匹配逗号或句号
@@ -162,3 +172,11 @@ def get_latitude_and_longitude(place):
         return PROVINCE_DICT[place]
     else:
         return "Not found"
+
+
+def get_AD(year: str):
+    for key in time_dict.keys():
+        if key in year:
+            time = time_dict[key]
+            return time
+    return None

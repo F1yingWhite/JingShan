@@ -52,6 +52,7 @@ def update_colophon(
     money: str | None,
     content: str | None,
     wish: str | None,
+    pearwood: str | None,
 ):
     with neo4j_driver.session() as session:
         # 如果是none则设为""
@@ -62,6 +63,7 @@ def update_colophon(
         money = money if money else ""
         content = content if content else ""
         wish = wish if wish else ""
+        pearwood = pearwood if pearwood else ""
 
         result = session.run(
             """
@@ -70,7 +72,8 @@ def update_colophon(
                 n.words_num = $words_num,
                 n.money = $money,
                 n.content = $content,
-                n.wish = $wish
+                n.wish = $wish,
+                n.pearwood = $pearwood
             RETURN n
             """,
             volume_id=volume_id,
@@ -80,6 +83,7 @@ def update_colophon(
             content=content,
             money=money,
             wish=wish,
+            pearwood=pearwood,
         )
         # 断开之前的时间地点
         session.run(

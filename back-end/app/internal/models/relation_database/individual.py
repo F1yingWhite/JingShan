@@ -46,7 +46,7 @@ class Individual(SQLModel, table=True):
     @classmethod
     def get_by_id_with_related(cls, user_id: int):
         from .colophon import Colophon
-        from .ind_col import Ind_Col
+        from .ind_col import IndCol
 
         # 使用连表查询
         with Session(engine) as session:
@@ -55,12 +55,12 @@ class Individual(SQLModel, table=True):
                     cls.name,
                     Colophon.content,
                     Colophon.scripture_name,
-                    Ind_Col.type,
-                    Ind_Col.place,
-                    Ind_Col.col_id,
+                    IndCol.type,
+                    IndCol.place,
+                    IndCol.col_id,
                 )
-                .join(Ind_Col, cls.id == Ind_Col.ind_id)
-                .join(Colophon, Ind_Col.col_id == Colophon.id)
+                .join(IndCol, cls.id == IndCol.ind_id)
+                .join(Colophon, IndCol.col_id == Colophon.id)
                 .where(cls.id == user_id)
             )
             results = session.exec(statement)
@@ -113,17 +113,17 @@ class Individual(SQLModel, table=True):
 
     @classmethod
     def get_individuals_hybrid(cls, page: int, page_size: int, name: str | None, works: list[str], place: list[str]):
-        from .ind_col import Ind_Col
+        from .ind_col import IndCol
 
         with Session(engine) as session:
             # 基础查询
-            base_query = select(cls).join(Ind_Col, cls.id == Ind_Col.ind_id).distinct()
+            base_query = select(cls).join(IndCol, cls.id == IndCol.ind_id).distinct()
             if name:
                 base_query = base_query.where(cls.name.like(f"%{name}%"))
             if works:
-                base_query = base_query.where(Ind_Col.type.in_(works))
+                base_query = base_query.where(IndCol.type.in_(works))
             if place:
-                base_query = base_query.where(Ind_Col.place.in_(place))
+                base_query = base_query.where(IndCol.place.in_(place))
 
             # 获取总数
             count_query = select(func.count().label("total")).select_from(base_query)

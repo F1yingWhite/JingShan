@@ -4,7 +4,7 @@ from .graph_database.zhi_graph import person_get_list_no_page
 from .relation_database import engine
 from .relation_database.colophon import Colophon
 from .relation_database.individual import Individual
-from .relation_database.preface_and_postscript import Preface_And_Postscript
+from .relation_database.preface_and_postscript import PrefaceAndPostscript
 
 
 def hybird_search(keyword: str, current: int, pageSize: int):
@@ -12,7 +12,7 @@ def hybird_search(keyword: str, current: int, pageSize: int):
         keyword_pattern = f"%{keyword}%"
         individual_query = select(Individual).where(Individual.name.like(keyword_pattern))
         individual_results = list(session.exec(individual_query).all())
-        preface_and_postscript_results = Preface_And_Postscript.search_by_classic(keyword)
+        preface_and_postscript_results = PrefaceAndPostscript.search_by_classic(keyword)
 
         colophon_results = Colophon.search_by_content_no_page(keyword)
 
@@ -48,7 +48,7 @@ def hybird_search(keyword: str, current: int, pageSize: int):
                 res_dict["preface_and_postscript"].append(
                     {
                         "name": res["data"],
-                        "related_data": Preface_And_Postscript.get_by_classic_and_title(res["data"], keyword),
+                        "related_data": PrefaceAndPostscript.get_by_classic_and_title(res["data"], keyword),
                     }
                 )
             elif res["type"] == "colophon":

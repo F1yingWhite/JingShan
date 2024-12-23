@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import RelationChart from '@/components/RelationChart'
+import RelationChart from '@/components/charts/RelationChart'
 import { Graph, getAllGraph } from '@/lib/graph_zhi';
 import { Tabs } from 'antd';
 import { getColophonGraph } from '@/lib/graph_zang';
@@ -35,7 +35,7 @@ export default function Page() {
       items={[
         {
           key: '1',
-          label: <div className="text-2xl font-bold text-center my-4 text-[#1A2B5C]">人物关系图</div>,
+          label: <div className="text-2xl font-bold text-center my-4 text-[#1A2B5C]">径山寺人物关系图</div>,
           children: (
             <div>
               <div className='h-screen w-screen'>

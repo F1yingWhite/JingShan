@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Mapbox from "@/components/Mapbox";
 import { ProList } from '@ant-design/pro-components';
 import { Badge, Breadcrumb, Collapse } from 'antd';
-import TimeChart from "@/components/TimeChart";
+import CountChart from "@/components/CountChart";
 import { useRouter } from "next/navigation";
 import Tag from "@/components/Tag";
 
@@ -86,7 +86,6 @@ export default function Page({ params }: { params: { slug: string } }) {
               pageSizeOptions: ['5', '10', '20', '50'],
               defaultPageSize: 20,
             }}
-            // TODO:修改为异步加载
             // request={async (params = {}) => {
             //   let { current, pageSize, title } = params;
             //   if (title === undefined) {
@@ -108,7 +107,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                         key: record.title,
                         label: (
                           <span>
-                              <a className="text-[#1A2B5C]">{record.title}</a>
+                            <a className="text-[#1A2B5C]">{record.title}</a>
                             {renderBadge(record.count)}
                           </span>
                         ),
@@ -160,7 +159,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           <div className="h-auto p-4">
             <div className="h-[300px] md:h-[300px] lg:h-[400px]">
               <h2 className="text-lg font-semibold text-center">刻经时间</h2>
-              {time && <TimeChart chartData={time}></TimeChart>}
+              {time && <CountChart chartData={time}></CountChart>}
             </div>
           </div>
           <div className="h-auto p-4">

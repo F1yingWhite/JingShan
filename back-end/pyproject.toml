@@ -36,6 +36,8 @@ dependencies = [
     "sqlalchemy-utils>=0.41.2",
     "cachetools>=5.5.0",
     "volcengine-python-sdk[ark]>=1.0.103",
+    "polars>=1.17.1",
+    "fastexcel>=0.12.0",
 ]
 
 [tool.ruff]

@@ -1,8 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from ...internal.models import Ind_Col
-from ...internal.models import Individual
+from ...internal.models import IndCol, Individual
 from ...internal.utils.get_time_place import (
     TIME_LIST,
     get_latitude_and_longitude,
@@ -83,13 +82,13 @@ async def get_random_individuals(size: int):
 
 @individual_router.get("/works")
 async def get_individuals_works(key: str | None = None):
-    works = Ind_Col.get_works_type(key)
+    works = IndCol.get_works_type(key)
     return ResponseModel(data=works)
 
 
 @individual_router.get("/places")
 async def get_individuals_places(key: str | None = None):
-    works = Ind_Col.get_works_place(key)
+    works = IndCol.get_works_place(key)
     return ResponseModel(data=works)
 
 

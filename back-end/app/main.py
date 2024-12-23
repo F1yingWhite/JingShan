@@ -10,6 +10,7 @@ from .server import (
     colophon_router,
     hybrid_router,
     individual_router,
+    manage_router,
     pdf_router,
     preface_and_postscript_router,
     story_router,
@@ -34,6 +35,7 @@ main_router.include_router(zang_graph_router)
 main_router.include_router(user_router)
 main_router.include_router(auth_user_router)
 main_router.include_router(auth_colophon_router)
+main_router.include_router(manage_router)
 main_router.include_router(auth_preface_and_postscript_router)
 
 app.add_middleware(

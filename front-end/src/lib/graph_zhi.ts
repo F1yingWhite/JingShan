@@ -37,14 +37,18 @@ export function getGraphByName(name: string) {
 }
 
 export type GraphDetail = {
-  姓名: string;
+  名号: string;
   [key: string]: any;
+  role?: string
 }
 
 
 export type GraphLists = GraphDetail[];
 
 export function getGraphList(params: any) {
+  if (params.role === "全部") {
+    delete params.role;
+  }
   return post(`/graph/zhi/list`, params);
 }
 

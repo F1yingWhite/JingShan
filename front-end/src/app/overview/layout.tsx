@@ -9,7 +9,7 @@ const path_map = {
   "preface_and_postscript": "径山藏/序跋",
   "colophon": "径山藏/牌记",
   "individual": "径山藏/人物",
-  "graph": "径山藏",
+  "graph": "径山寺",
   "story": "径山藏/故事",
 };
 

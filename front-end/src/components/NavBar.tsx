@@ -33,8 +33,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, text, items }) => {
     <div className={`${hoverColor} ${bgColor} h-full flex justify-center items-center`}>
       {items ? (
         <Dropdown menu={{ items }} trigger={['hover']} placement="bottomLeft"
-          overlayStyle={{ width: '20vw', maxWidth: "200px" }}
-        // TODO:修改下拉菜单的样式
+          overlayStyle={{ width: '20vw', minWidth: "120px" }}
         >
           <Link
             href={href}
@@ -76,6 +75,10 @@ const IconList: NavItemProps[] = [
   {
     href: "/chat",
     text: "智答"
+  },
+  {
+    href: "/manage",
+    text: "管理"
   }
 ]
 
@@ -184,10 +187,10 @@ const items: MenuProps['items'] = [
     ]
   },
   {
-    key: '径山志',
+    key: '径山寺',
     label: (
       <Link href={'/overview/graph'} className='sm:text-sm md:text-base lg:text-lg'>
-        径山志
+        径山寺
       </Link>
     ),
   }
@@ -293,6 +296,10 @@ export default function NavBar() {
         {IconList.map((icon, index) => (
           icon.text === "文库" ? (
             <NavItem key={index} href={icon.href} text={icon.text} items={items} />
+          ) : icon.text === "管理" ? (
+            user && user.privilege == 2 && (
+              <NavItem key={index} href={icon.href} text={icon.text} />
+            )
           ) :
             (<NavItem key={index} href={icon.href} text={icon.text} />)
         ))}

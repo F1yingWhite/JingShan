@@ -29,7 +29,7 @@ const placeholderPromptsItems: GetProp<typeof Prompts, 'items'> = [
     children: [
       {
         key: '1-1',
-        description: `径山寺有哪些禅师?`,
+        description: `查询开山大觉国一贞元祖师的信息`,
       },
       {
         key: '1-2',
@@ -37,7 +37,7 @@ const placeholderPromptsItems: GetProp<typeof Prompts, 'items'> = [
       },
       {
         key: '1-3',
-        description: `径山寺的历史?`,
+        description: `查询开山大觉国一贞元祖师的弟子有哪些`,
       }
     ],
   },
@@ -50,7 +50,6 @@ export default function Page() {
   const [conversationList, setConversationList] = useState<Conversation[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isTTSPlaying, setTTSPlaying] = useState(false);
   const [ttsLoading, setTTSLoading] = useState(false);
@@ -255,7 +254,7 @@ export default function Page() {
   }
 
   return (
-    <div className='w-full h-full flex flex-row'>
+    <div className='w-full h-full flex flex-row bg-white'>
       {contextHolder}
       <div className='h-full w-1/4 max-w-[400px] bg-gray-100 overflow-auto'>
         <Button
