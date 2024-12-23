@@ -26,12 +26,14 @@ export default function LoginModal({ type, setIsModalOpen, setType }: LoginModal
   const [messageApi, contextHolder] = message.useMessage();
   const { user, setUser } = useUserStore();
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (values) => {
+    setLoading(true);
     const { email, password, autoLogin } = values;
-    if(autoLogin) {
+    if (autoLogin) {
       window.localStorage.setItem('autoLogin', 'true');
-    }else{
+    } else {
       window.localStorage.removeItem('autoLogin');
     }
     login({ email, password }).then((res) => {
@@ -47,10 +49,13 @@ export default function LoginModal({ type, setIsModalOpen, setType }: LoginModal
         type: 'error',
         content: '登录失败',
       });
-    });
+    }).finally(() => {
+      setLoading(false);
+    })
   };
 
   const handleRegister = async (values) => {
+    setLoading(true);
     register(values).then((res) => {
       messageApi.open({
         type: 'success',
@@ -69,7 +74,9 @@ export default function LoginModal({ type, setIsModalOpen, setType }: LoginModal
           content: '注册失败',
         });
       }
-    });
+    }).finally(() => {
+      setLoading(false);
+    })
   }
 
   return (
@@ -150,7 +157,7 @@ export default function LoginModal({ type, setIsModalOpen, setType }: LoginModal
                 忘记密码
               </a>
             </div>
-            <Button type='primary' className='w-full' htmlType="submit">
+            <Button disabled={loading} type='primary' className='w-full' htmlType="submit">
               登录
             </Button>
           </>
@@ -229,7 +236,7 @@ export default function LoginModal({ type, setIsModalOpen, setType }: LoginModal
                 }),
               ]}
             />
-            <Button type='primary' className='w-full' htmlType="submit">
+            <Button type='primary' className='w-full' htmlType="submit" disabled={loading}>
               注册
             </Button>
           </>

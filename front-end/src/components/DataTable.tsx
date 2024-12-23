@@ -1,18 +1,22 @@
 'use client';
-import React from 'react';
+import React, { SetStateAction } from 'react';
 import ProTable from '@ant-design/pro-table';
 
 interface TableProps<T extends Record<string, any>> {
   columns: any[];
   getList: (page: number, pageSize: number, params: any) => Promise<T>;
+  setAdCount?: SetStateAction<any>;
 }
 
 
-const DataTable = <T extends Record<string, any>>({ columns, getList }: TableProps<T>) => {
+const DataTable = <T extends Record<string, any>>({ columns, getList, setAdCount }: TableProps<T>) => {
   const fetchData = async (params: any) => {
     const { current, pageSize, ...rest } = params;
     try {
       const res = await getList(current, pageSize, rest);
+      if (setAdCount) {
+        setAdCount({ ad: res.data.ad, count: res.data.count });
+      }
       return {
         data: res.data.data,
         total: res.data.total_num,

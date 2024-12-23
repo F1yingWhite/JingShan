@@ -40,27 +40,23 @@ const columns = [
 export default function Page() {
   const [adCount, setAdCount] = React.useState<ColophonADCount>({ ad: [], count: [] });
 
-  useEffect(() => {
-    getColophonADCount().then((res) => {
-      setAdCount(res);
-    });
-  }, []);
-
-
   return (
     <div>
       <div className='h-[50vh] min-h-[500px] p-8'>
-        {/* TODO:需要和下面的查询进行关联 */}
-        <TimeChart
-          title='牌记出现时间统计图'
-          x_title='年份'
-          y_title='出现次数'
-          x_data={adCount.ad}
-          y_data={adCount.count}
-        />
+        {
+          adCount &&
+          <TimeChart
+            title='牌记出现时间统计图'
+            x_title='年份'
+            y_title='出现次数'
+            x_data={adCount.ad}
+            y_data={adCount.count}
+          />
+        }
       </div>
       <DataTable<Colophon>
         columns={columns}
+        setAdCount={setAdCount}
         getList={getColophonList}
       />
     </div>
