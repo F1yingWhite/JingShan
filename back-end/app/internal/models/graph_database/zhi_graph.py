@@ -127,6 +127,12 @@ def person_get_node_by_name(name: str):
 def get_random_person():
     with neo4j_driver.session() as session:
         result = session.run(
-            'MATCH (n:Person {type:"径山志"}) WHERE n.身份 IS NOT NULL RETURN n.名号 ORDER BY rand() LIMIT 1'
+            """
+            MATCH (n:Person {type:"径山志"})
+            WHERE (n)-[]->() OR ()-[]->(n)
+            RETURN n.名号
+            ORDER BY rand()
+            LIMIT 1
+            """
         )
         return result.data()

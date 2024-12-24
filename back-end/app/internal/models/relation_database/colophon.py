@@ -244,8 +244,8 @@ class Colophon(SQLModel, table=True):
         for key, value in kwargs.items():
             setattr(self, key, value)
         if "time" in kwargs:
-            self.AD = get_AD(kwargs["time"])
-            print(self.AD)
+            if year := kwargs["time"]:
+                self.AD = get_AD(year)
         with Session(engine) as session:
             session.add(self)
             session.commit()

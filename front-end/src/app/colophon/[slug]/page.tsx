@@ -288,7 +288,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   { label: "卷数", value: colophon.volume_id },
                   { label: "册数", value: colophon.chapter_id },
                   { label: "千字文", value: colophon.qianziwen },
-                  { label: "刊刻时间", value: colophon.time + "／公元" + colophon.AD },
+                  { label: "刊刻时间", value: colophon.time ? colophon.time + "／公元" + colophon.AD : "-" },
                   { label: "刊刻地点", value: colophon.place },
                   { label: "计字", value: colophon.words_num },
                   { label: "该银", value: colophon.money },

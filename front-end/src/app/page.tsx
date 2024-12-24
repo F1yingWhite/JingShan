@@ -71,6 +71,7 @@ export default function Page() {
   const [colophon, setColophon] = useState<dataSource[]>([]);
   const [preface, setPreface] = useState<dataSource[]>([]);
   const [individual, setIndividual] = useState<dataSource[]>([]);
+  const [graph_ind_name, setGraphIndName] = useState<string>('')
   const [graph_individual, setGraphIndivudual] = useState<Graph>()
   const [graph_scripture, setGraphScripture] = useState<Graph>()
   const [api, contextHolder] = notification.useNotification();
@@ -128,6 +129,7 @@ export default function Page() {
     });
 
     getRandomPerson().then((res) => {
+      setGraphIndName(res[0]["n.名号"])
       getGraphByName(res[0]["n.名号"]).then((res) => {
         setGraphIndivudual(res)
       })
@@ -225,7 +227,7 @@ export default function Page() {
                 <RelationChart graph={graph_scripture} layout='none' emphasis={true} zoom={0.8} />
               </div>
               <div className={`h-[700px] ${isSmallScreen ? 'w-[90%]' : 'w-[45%]'} bg-gray-300 rounded-lg shadow-lg flex flex-col items-center`}>
-                {individual.length != 0 && <div className="w-full text-center mt-2">{individual[0].name}</div>}
+                <div className="w-full text-center mt-2">{graph_ind_name}</div>
                 <RelationChart graph={graph_individual} layout='none' emphasis={true} zoom={0.8} />
               </div>
             </div>
