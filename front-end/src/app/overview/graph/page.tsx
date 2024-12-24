@@ -5,9 +5,9 @@ import { ProList } from '@ant-design/pro-components'
 import { useRouter } from 'next/navigation';
 import GraphListItem from '@/components/list_item/GraphListItem';
 import { identityColorList } from '@/utils/getColor';
+import { Select } from 'antd';
 export default function page() {
   const router = useRouter();
-
   const [colorMap, setColorMap] = useState({})
   useEffect(() => {
     getIdentityList().then(res => {
@@ -25,7 +25,7 @@ export default function page() {
       <ProList< GraphDetail>
         rowKey="name"
         headerTitle="人物列表"
-        request={async (params = { role: "全部" }) => {
+        request={async (params = { role: "全部", }) => {
           const res = await getGraphList(params);
           return {
             data: res.data.data,
@@ -59,6 +59,18 @@ export default function page() {
               列祖: { text: '列祖' },
               住持: { text: '住持' },
               外户: { text: '外户' },
+            },
+          },
+          dynasty: {
+            title: '朝代',
+            valueType: 'select',
+            valueEnum: {
+              唐: { text: '唐' },
+              五代十国: { text: '五代十国' },
+              宋: { text: '宋' },
+              元: { text: '元' },
+              明: { text: '明' },
+              清: { text: '清' },
             },
           },
         }}

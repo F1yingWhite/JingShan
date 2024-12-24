@@ -74,7 +74,7 @@ const TimeChart: React.FC<RelationChartProps> = ({ title, x_data, x_title, y_dat
     series: [
       {
         name: y_title,
-        type: 'line',
+        type: 'bar',
         symbolSize: 8,
         // prettier-ignore
         data: y_data

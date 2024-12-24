@@ -73,7 +73,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               ))}
             </Menu.SubMenu>
             <Menu.Item key="4" icon={<NodeIndexOutlined />}>
-              <Link href={`/search/${slug}/graph`}>径山志</Link>
+              <Link href={`/search/${slug}/graph`}>径山寺</Link>
             </Menu.Item>
           </Menu>
         </Sider>

@@ -93,19 +93,19 @@ async def get_all():
         "links": [],
     }
 
-    category_list = {"-"}
+    category_list = {"外户"}
     node_category_map = {}
     for node in all_node:
         if "身份" in node["m"]:
             category_list.add(node["m"]["身份"])
             node_category_map[node["m"]["名号"]] = node["m"]["身份"]
         else:
-            node_category_map[node["m"]["名号"]] = "-"
+            node_category_map[node["m"]["名号"]] = "外户"
         if "身份" in node["n"]:
             category_list.add(node["n"]["身份"])
             node_category_map[node["n"]["名号"]] = node["n"]["身份"]
         else:
-            node_category_map[node["n"]["名号"]] = "-"
+            node_category_map[node["n"]["名号"]] = "外户"
     category_list = list(category_list)
 
     # random.shuffle(category_list)
@@ -147,12 +147,15 @@ class GraphList(BaseModel):
     pageSize: int
     title: str | None = None
     role: str | None = None
+    dynasty: str | None = None
 
 
 @zhi_graph_router.post("/list")
 async def get_graph_list(graph_data: GraphList):
-    results = person_get_list(graph_data.current, graph_data.pageSize, graph_data.title, role=graph_data.role)
-    nums = person_total_num(graph_data.title, role=graph_data.role)
+    results = person_get_list(
+        graph_data.current, graph_data.pageSize, graph_data.title, role=graph_data.role, dynasty=graph_data.dynasty
+    )
+    nums = person_total_num(graph_data.title, role=graph_data.role, dynasty=graph_data.dynasty)
     res_dict = []
     for result in results:
         temp_dict = {}

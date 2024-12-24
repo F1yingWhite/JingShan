@@ -77,7 +77,7 @@ class Colophon(SQLModel, table=True):
             return rank if rank else -1
 
     @classmethod
-    def get_colphon_with_num(
+    def get_colphon_with_num(  # noqa: C901
         cls,
         page: int,
         page_size: int,
@@ -90,11 +90,14 @@ class Colophon(SQLModel, table=True):
         time: str = None,
         place: str = None,
         temple: str = None,
+        start_time: int = None,
+        end_time: int = None,
     ):
         with Session(engine) as session:
             page_size = min(page_size, 100)  # 限制 page_size 不超过 100
             offset = (page - 1) * page_size
-
+            if start_time is not None and end_time is not None and start_time > end_time:
+                end_time = None
             # 构造查询语句
             statement = select(cls, func.count().over().label("total_count"))
 
@@ -116,7 +119,10 @@ class Colophon(SQLModel, table=True):
                 statement = statement.where(cls.place.like(f"%{place}%"))
             if temple is not None:
                 statement = statement.where(cls.temple.like(f"%{temple}%"))
-
+            if start_time is not None:
+                statement = statement.where(cls.AD >= start_time)
+            if end_time is not None:
+                statement = statement.where(cls.AD <= end_time)
             statement = statement.offset(offset).limit(page_size)
             results = session.exec(statement).all()
             total_count = results[0].total_count if results else 0
@@ -206,8 +212,16 @@ class Colophon(SQLModel, table=True):
 
     @classmethod
     def get_nums_by_AD(
-        cls, chapter_id: str = None, content: str = None, qianziwen: str = None, scripture_name: str = None
+        cls,
+        chapter_id: str = None,
+        content: str = None,
+        qianziwen: str = None,
+        scripture_name: str = None,
+        start_time: int = None,
+        end_time: int = None,
     ):
+        if start_time is not None and end_time is not None and start_time > end_time:
+            end_time = None
         with Session(engine) as session:
             statement = select(cls.AD, func.count(cls.AD).label("count")).where(cls.AD != None).group_by(cls.AD)  # noqa: E711
             if chapter_id is not None:
@@ -218,6 +232,10 @@ class Colophon(SQLModel, table=True):
                 statement = statement.where(cls.qianziwen.like(f"%{qianziwen}%"))
             if scripture_name is not None:
                 statement = statement.where(cls.scripture_name.like(f"%{scripture_name}%"))
+            if start_time is not None:
+                statement = statement.where(cls.AD >= start_time)
+            if end_time is not None:
+                statement = statement.where(cls.AD <= end_time)
             statement = statement.order_by(cls.AD.asc()).distinct()
             result = session.exec(statement).all()
             return result

@@ -14,6 +14,8 @@ class ColophonGetParams(BaseModel):
     content: str | None = None
     qianziwen: str | None = None
     scripture_name: str | None = None
+    start_time: int | None = None
+    end_time: int | None = None
 
 
 @colophon_router.post("/")
@@ -23,20 +25,8 @@ async def get_colophon(
     page_size: int = Query(20, ge=1),
 ):
     # 从请求模型中提取其他参数
-    colphons, total = Colophon.get_colphon_with_num(
-        page=page,
-        page_size=page_size,
-        chapter_id=params.chapter_id,
-        content=params.content,
-        qianziwen=params.qianziwen,
-        scripture_name=params.scripture_name,
-    )
-    res = Colophon.get_nums_by_AD(
-        chapter_id=params.chapter_id,
-        content=params.content,
-        qianziwen=params.qianziwen,
-        scripture_name=params.scripture_name,
-    )
+    colphons, total = Colophon.get_colphon_with_num(page=page, page_size=page_size, **params.model_dump())
+    res = Colophon.get_nums_by_AD(**params.model_dump())
     res_count = []
     res_ad = []
     for i in res:
