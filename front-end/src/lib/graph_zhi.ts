@@ -40,6 +40,7 @@ export type GraphDetail = {
   名号: string;
   [key: string]: any;
   role?: string
+  dynasty?: string
 }
 
 
