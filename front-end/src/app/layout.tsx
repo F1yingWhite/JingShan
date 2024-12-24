@@ -8,7 +8,7 @@ import Script from "next/script";
 import { fetchUser } from "@/lib/user";
 import { useEffect } from "react";
 import { useUserStore } from "@/store/useStore";
-
+import './snow.css';
 const noto_sans_sc = Noto_Sans_SC({
   display: 'swap',
   subsets: ['vietnamese'],
@@ -55,6 +55,14 @@ export default function RootLayout({
             <div className="overflow-y-auto h-[100vh] overflow-x-hidden "
               style={{ backgroundImage: 'url(/bg_home.jpg)', backgroundRepeat: 'repeat', backgroundSize: 'auto' }}
             >
+              <div className="snow-container">
+                <div className="snow foreground"></div>
+                <div className="snow foreground layered"></div>
+                <div className="snow middleground"></div>
+                <div className="snow middleground layered"></div>
+                <div className="snow background"></div>
+                <div className="snow background layered"></div>
+              </div>
               <div className="top-0 left-0 w-full z-10">
                 <NavBar />
               </div>
