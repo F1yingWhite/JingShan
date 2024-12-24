@@ -42,7 +42,7 @@ const DataTable = <T extends Record<string, any>>({ columns, getList, setAdCount
   };
   const [messageApi, contextHolder] = message.useMessage();
   return (
-    <div>
+    <div className='mt-8'>
       {contextHolder}
       <ProTable<T>
         bordered
@@ -50,7 +50,7 @@ const DataTable = <T extends Record<string, any>>({ columns, getList, setAdCount
         search={{
           showHiddenNum: true,
           defaultCollapsed: false,
-          className: "bg-[#f3f1ea]",
+          // className: "bg-[#f3f1ea]",
         }}
         request={fetchData}
         pagination={{

@@ -51,7 +51,10 @@ export default function RootLayout({
               },
             }}
           >
-            <div className="overflow-y-auto h-[100vh] overflow-x-hidden bg-[#F3F1EA]">
+            {/* bg-[#F3F1EA] */}
+            <div className="overflow-y-auto h-[100vh] overflow-x-hidden "
+              style={{ backgroundImage: 'url(/bg_home.jpg)', backgroundRepeat: 'repeat', backgroundSize: 'auto' }}
+            >
               <div className="top-0 left-0 w-full z-10">
                 <NavBar />
               </div>

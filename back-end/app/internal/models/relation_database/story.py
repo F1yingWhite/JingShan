@@ -8,6 +8,7 @@ class Story(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     title: str | None = Field(default=None, max_length=100)
     content: str | None = Field(default=None, max_length=10000)
+    picture: str | None = Field(default=None)
 
     @classmethod
     def get_story_with_num(cls, page: int, page_size: int, title: str = None, content: str = None):
@@ -26,7 +27,9 @@ class Story(SQLModel, table=True):
             results = session.exec(statement).all()
             total_count = results[0].total_count if results else 0
 
-            return [result[0] for result in results], total_count
+            return [
+                {"title": result[0].title, "content": result[0].content, "id": result[0].id} for result in results
+            ], total_count
 
     @classmethod
     def get_story_detail(cls, story_id: int):

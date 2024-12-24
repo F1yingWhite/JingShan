@@ -103,7 +103,7 @@ export default function Page() {
           </span>
           {' '}项
         </span>
-        <div className='w-full flex rounded-lg p-2 border'>
+        <div className='w-full flex rounded-lg p-2 border bg-white'>
           <Checkbox.Group style={{ width: '100%' }} onChange={handleWorkChange}>
             {workValues.map((work) => (
               <div className='w-full pl-3'>
@@ -125,7 +125,7 @@ export default function Page() {
           </span>
           {' '}项
         </span>
-        <div className="w-full flex rounded-lg p-2 overflow-auto border auto max-h-[500px]">
+        <div className="w-full flex rounded-lg p-2 overflow-auto border auto max-h-[500px] bg-white">
           <Checkbox.Group style={{ width: '100%', height: "auto" }} onChange={handleLocationChange}>
             {locationValues.map((location) => (
               <div className='w-full pl-3'>
