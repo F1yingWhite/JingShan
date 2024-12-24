@@ -7,7 +7,7 @@ authors = [
     { name = "Xv Lizhi", email = "xvlizhi24@163.com" },
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi[all]>=0.115.4",
     "mysqlclient>=2.2.5",
