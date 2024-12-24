@@ -30,13 +30,12 @@ export default function page({ params }: { params: { slug: string } }) {
   useEffect(() => {
     getGraphByName(slug).then(graph => {
       if (graph) {
+        setIndividual(graph.person)
         const fetchGraphDetails = async () => {
           const details = [];
           for (const node of graph.nodes) {
             const res = await getGraphDetailByName(node.name);
-            if (node.name === slug) {
-              setIndividual(res[0]);
-            } else {
+            if (node.name !== slug) {
               details.push(res[0]);
             }
           }
@@ -112,8 +111,13 @@ export default function page({ params }: { params: { slug: string } }) {
         }
         return null;
       })}
-      <div className="text-2xl font-bold text-center my-4 text-[#1A2B5C]">人物关系图</div>
-      <div className="h-2/3"><RelationChart graph={graph} layout='none' emphasis={true} zoom={1} /></div>
+      {
+        graph && graph.nodes.length > 0 &&
+        <>
+          <div className="text-2xl font-bold text-center my-4 text-[#1A2B5C]">人物关系图</div>
+          <div className="h-2/3"><RelationChart graph={graph} layout='none' emphasis={true} zoom={1} /></div>
+        </>
+      }
       <ProList<GraphDetail>
         rowKey="name"
         headerTitle="相关人物列表"

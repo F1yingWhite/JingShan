@@ -144,13 +144,10 @@ export default function Page() {
         autoplaySpeed={5000}
       >
         <div>
-          <div style={contentStyle('/gate.jpg')}></div>
+          <div style={contentStyle('/bg-1.jpg')}></div>
         </div>
         <div>
           <div style={contentStyle('/book1.jpg')}></div>
-        </div>
-        <div>
-          <div style={contentStyle('/book2.jpg')}></div>
         </div>
       </Carousel>
       {contextHolder}

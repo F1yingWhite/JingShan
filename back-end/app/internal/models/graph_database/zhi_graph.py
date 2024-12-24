@@ -9,6 +9,12 @@ def person_get_all_node_and_relation():
         return result.data()
 
 
+def person_no_relation():
+    with neo4j_driver.session() as session:
+        result = session.run('MATCH (n:Person {type:"径山志"}) WHERE NOT (n)-[]-() RETURN n')
+        return result.data()
+
+
 def person_get_relation_ship_by_id_in(subject_name: str):
     with neo4j_driver.session() as session:
         result = session.run(

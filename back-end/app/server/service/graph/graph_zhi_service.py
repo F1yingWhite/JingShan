@@ -11,6 +11,7 @@ from ....internal.models.graph_database.zhi_graph import (
     person_get_node_by_name,
     person_get_relation_ship_by_id_in,
     person_get_relation_ship_by_id_out,
+    person_no_relation,
     person_total_num,
 )
 from .. import ResponseModel
@@ -18,6 +19,7 @@ from .. import ResponseModel
 zhi_graph_router = APIRouter(prefix="/graph/zhi")
 
 
+# TODO:这里吧没有联系的人也查出来
 @zhi_graph_router.get("/")
 async def get_graph_by_name(name: str):
     res_dict = {
@@ -80,6 +82,8 @@ async def get_graph_by_name(name: str):
                 "value": result["relationship"],
             }
         )
+    person =  person_get_node_by_name(name)[0]['n']
+    res_dict["person"] = person
     return ResponseModel(data=res_dict)
 
 
@@ -139,6 +143,18 @@ async def get_all():
                 "value": node["r"],
             }
         )
+    person_no_conn = person_no_relation()
+    for person in person_no_conn:
+        role = person["n"].get("身份", "外户")
+        temp_dict = {
+            "name": person["n"]["名号"],
+            "url": "/graph/individual/" + person["n"]["名号"],
+            "category": list(category_list).index(role),
+            "symbolSize": 10,
+            "label": {"show": True},
+            "value": 1,
+        }
+        res_dict["nodes"].append(temp_dict)
     return ResponseModel(data=res_dict)
 
 

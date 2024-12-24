@@ -71,7 +71,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           ]}
         />
       </div >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mb-4">
         <Tag text="人物" color="#1A2B5C" opacity={0.7} />
         <div className='text-4xl font-bold'>
           {name}
@@ -86,17 +86,6 @@ export default function Page({ params }: { params: { slug: string } }) {
               pageSizeOptions: ['5', '10', '20', '50'],
               defaultPageSize: 20,
             }}
-            // request={async (params = {}) => {
-            //   let { current, pageSize, title } = params;
-            //   if (title === undefined) {
-            //     title = '';
-            //   }
-            //   const res = await getAllIndividuals(current, pageSize, title);
-            //   return {
-            //     data: res.data.data,
-            //     total: res.data.total,
-            //   };
-            // }}
             metas={{
               title: {
                 render: (text, record) => (
