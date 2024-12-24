@@ -22,6 +22,7 @@ export default function page() {
 
   return (
     <div className="h-full overflow-hidden rounded-md">
+      <div className='mt-8'></div>
       <ProList< GraphDetail>
         rowKey="name"
         headerTitle="人物列表"
@@ -35,7 +36,7 @@ export default function page() {
         search={{
           showHiddenNum: true,
           defaultCollapsed: false,
-          className: "bg-[#f3f1ea]",
+          // className: "bg-[#f3f1ea]",
         }}
         pagination={{
           pageSizeOptions: ['5', '10', '20', '50'],
