@@ -1,6 +1,7 @@
 'use client';
 import React, { SetStateAction } from 'react';
 import ProTable from '@ant-design/pro-table';
+import { Input } from 'antd';
 
 interface TableProps<T extends Record<string, any>> {
   columns: any[];
@@ -13,6 +14,14 @@ const DataTable = <T extends Record<string, any>>({ columns, getList, setAdCount
   const fetchData = async (params: any) => {
     const { current, pageSize, ...rest } = params;
     try {
+      // 看rest中的内容,如果是空的,就不传
+      if(rest){
+        for (const key in rest) {
+          if (!rest[key]) {
+            delete rest[key];
+          }
+        }
+      }
       const res = await getList(current, pageSize, rest);
       if (setAdCount) {
         setAdCount({ ad: res.data.ad, count: res.data.count });

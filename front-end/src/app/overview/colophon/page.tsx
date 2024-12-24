@@ -34,6 +34,16 @@ const columns = [
     title: "千字文",
     dataIndex: "qianziwen",
     key: "qianziwen"
+  },
+  {
+    title: "开始时间",
+    key: "start_time",
+    hideInTable: true,
+  },
+  {
+    title: "结束时间",
+    key: "end_time",
+    hideInTable: true,
   }
 ];
 

@@ -45,15 +45,15 @@ const TimeChart: React.FC<RelationChartProps> = ({ title, x_data, x_title, y_dat
       {
         show: true,
         realtime: true,
-        start: 30,
-        end: 70,
+        start: 0,
+        end: 100,
         xAxisIndex: [0, 1]
       },
       {
         type: 'inside',
         realtime: true,
-        start: 30,
-        end: 70,
+        start: 0,
+        end: 100,
         xAxisIndex: [0, 1]
       }
     ],
